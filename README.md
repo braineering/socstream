@@ -1,6 +1,6 @@
-# SABD 2016 - STREAM
+# SOCSTREAM
 
-*A data stream processing application.*
+*Soccer match analytics leveraging data stream processing. Solution for DEBS 2013 Grand Challenge.*
 
 *Coursework in Systems and Architectures for Big Data 2016/2017*
 
