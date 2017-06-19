@@ -1,0 +1,2 @@
+# KAFKA SLAVE
+This is a test file
