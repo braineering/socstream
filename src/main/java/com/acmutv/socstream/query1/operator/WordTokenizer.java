@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,24 +23,35 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
+package com.acmutv.socstream.query1.operator;
 
-package com.acmutv.socstream.config;
-
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import com.acmutv.socstream.query1.tuple.WordWithCount;
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.RichFlatMapFunction;
+import org.apache.flink.util.Collector;
 
 /**
- * JUnit test suite for configuration.
+ * A simple words tokenizer.
+ * Used in {@link com.acmutv.socstream.query1.SocstreamQuery1}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see AppConfigurationServiceTest
- * @see AppConfigurationTest
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    AppConfigurationServiceTest.class,
-    AppConfigurationTest.class
-})
-public class TestAllConfig {
+public class WordTokenizer implements FlatMapFunction<String,WordWithCount> {
+
+  /**
+   * The core method of the FlatMapFunction. Takes an element from the input data set and transforms
+   * it into zero, one, or more elements.
+   *
+   * @param value The input value.
+   * @param out   The collector for returning result values.
+   * @throws Exception This method may throw exceptions. Throwing an exception will cause the operation
+   *                   to fail and may trigger recovery.
+   */
+  @Override
+  public void flatMap(String value, Collector<WordWithCount> out) throws Exception {
+    for (String word : value.split("\\s")) {
+      out.collect(new WordWithCount(word, 1L));
+    }
+  }
 }

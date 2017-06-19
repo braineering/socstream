@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,32 +23,34 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
+package com.acmutv.socstream.query3.operator;
 
-package com.acmutv.socstream.config.serial;
-
-import com.acmutv.socstream.config.AppConfiguration;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import lombok.EqualsAndHashCode;
+import com.acmutv.socstream.query3.tuple.WordWithCount;
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.util.Collector;
 
 /**
- * This class realizes the YAML constructor for {@link AppConfiguration}.
+ * A simple words tokenizer.
+ * Used in {@link com.acmutv.socstream.query3.SocstreamQuery3}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see AppConfiguration
  */
-@EqualsAndHashCode(callSuper = true)
-public class AppConfigurationYamlMapper extends YAMLMapper {
+public class WordTokenizer implements FlatMapFunction<String,WordWithCount> {
 
   /**
-   * Initializes the JSON constructor.
+   * The core method of the FlatMapFunction. Takes an element from the input data set and transforms
+   * it into zero, one, or more elements.
+   *
+   * @param value The input value.
+   * @param out   The collector for returning result values.
+   * @throws Exception This method may throw exceptions. Throwing an exception will cause the operation
+   *                   to fail and may trigger recovery.
    */
-  public AppConfigurationYamlMapper() {
-    super();
-    SimpleModule module = new SimpleModule();
-    module.addSerializer(AppConfiguration.class, AppConfigurationSerializer.getInstance());
-    module.addDeserializer(AppConfiguration.class, AppConfigurationDeserializer.getInstance());
-    super.registerModule(module);
+  @Override
+  public void flatMap(String value, Collector<WordWithCount> out) throws Exception {
+    for (String word : value.split("\\s")) {
+      out.collect(new WordWithCount(word, 1L));
+    }
   }
 }

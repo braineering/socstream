@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,48 +23,29 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
-
-package com.acmutv.socstream.config;
+package com.acmutv.socstream.query1.tuple;
 
 /**
- * This class encapsulates app details.
+ * A tuple for word counting.
+ * Used in {@link com.acmutv.socstream.query1.SocstreamQuery1}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-public class AppManifest {
+public class WordWithCount {
 
-  /**
-   * The app name.
-   * CRIMEGRAPH
-   */
-  public static final String APP_NAME = "SOCSTREAM";
+  public String word;
+  public long count;
 
-  /**
-   * The app version.
-   * 1.0
-   */
-  public static final String APP_VERSION = "1.0";
+  public WordWithCount() { }
 
-  /**
-   * The app description.
-   * Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-   * labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-   * laboris nisi ut aliquip ex ea commodo consequat.
-   */
-  public static final String APP_DESCRIPTION =
-      "Soccer analytics leveraging Flink. Solution to DEBS 2013 Grand Challenge." +
-          "Coursework in Systems and Architectures for Big Data 2016/2017";
+  public WordWithCount(String word, long count) {
+    this.word = word;
+    this.count = count;
+  }
 
-  /**
-   * The app team name.
-   * ACM Rome Tor Vergata
-   */
-  public static final String APP_TEAM_NAME = "ACM Rome Tor Vergata";
-
-  /**
-   * The app team website.
-   * http://acm.uniroma2.it
-   */
-  public static final String APP_TEAM_URL = "http://acm.uniroma2.it";
+  @Override
+  public String toString() {
+    return word + " : " + count;
+  }
 }

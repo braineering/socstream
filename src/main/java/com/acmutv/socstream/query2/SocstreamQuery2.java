@@ -26,14 +26,14 @@
 
 package com.acmutv.socstream.query2;
 
-import com.acmutv.socstream.config.AppConfiguration;
-import com.acmutv.socstream.config.AppConfigurationService;
-import com.acmutv.socstream.config.serial.AppConfigurationYamlMapper;
-import com.acmutv.socstream.common.db.DbConfiguration;
-import com.acmutv.socstream.common.source.SourceType;
+import com.acmutv.socstream.query2.operator.WordCountReducer;
+import com.acmutv.socstream.query2.operator.WordTokenizer;
+import com.acmutv.socstream.query2.tuple.WordWithCount;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;
-import com.acmutv.socstream.ui.CliService;
+import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.time.Time;
 
 /**
  * The app word-point for {@code SocstreamQuery1} application.
@@ -43,65 +43,58 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see AppConfigurationService
  * @see RuntimeManager
  */
 public class SocstreamQuery2 {
 
-  private static final String QUERY_NAME = "socstream-query-2";
+  /**
+   * The program name.
+   */
+  public static final String PROGRAM_NAME = "socstream-query-2";
 
   /**
-   * The app main method, executed when the program is launched.
+   * The program description.
+   */
+  public static final String PROGRAM_DESCRIPTION = "Insert here program description";
+
+  /**
+   * The program main method.
    * @param args the command line arguments.
    */
   public static void main(String[] args) throws Exception {
 
-    CliService.printSplash();
+    // CONFIGURATION
+    ParameterTool parameter = ParameterTool.fromArgs(args);
+    final int port = Integer.valueOf(parameter.getRequired("port"));
+    final int parallelism = parameter.getInt("parallelism", 1);
 
-    /* CONFIGURATION */
-    CliService.handleArguments(args);
-    AppConfiguration config = AppConfigurationService.getConfigurations();
-    System.out.println(new AppConfigurationYamlMapper().writeValueAsString(config));
-    final SourceType source = config.getSource();
-
-    /* ENVIRONMENT */
+    // ENVIRONMENT
     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-    env.setParallelism(config.getParallelism());
+    env.setParallelism(parallelism);
 
-    /* TOPOLOGY */
-    /*
-    DataStream<Link> links;
-    if (source.equals(SourceType.KAFKA)) {
-      final KafkaProperties props = config.getKafkaProperties();
-      final String topic = config.getTopic();
-      links = env.addSource(new LinkKafkaSource(topic, props));
-    } else {
-      final String dataset = config.getDataset();
-      final String datasetPath = (dataset.startsWith("/")) ?
-          dataset : FileSystems.getDefault().getPath(
-              System.getenv("FLINK_HOME"), config.getDataset()
-      ).toAbsolutePath().toString();
-      links = env.addSource(new LinkSource(datasetPath));
-    }
+    // CONFIGURATION RESUME
+    System.out.println("############################################################################");
+    System.out.printf("%s\n", PROGRAM_NAME);
+    System.out.println("----------------------------------------------------------------------------");
+    System.out.printf("%s\n", PROGRAM_DESCRIPTION);
+    System.out.println("****************************************************************************");
+    System.out.println("Port: " + port);
+    System.out.println("Parallelism: " + parallelism);
+    System.out.println("############################################################################");
 
-    DataStream<NodePair> updates = links.flatMap(new GraphUpdate(dbconf)).shuffle();
+    // TOPOLOGY
+    DataStream<String> text = env.socketTextStream("localhost", port, "\n");
 
-    DataStream<NodePairScore> scores = updates.flatMap(new ScoreCalculator(dbconf))
-        .keyBy(new NodePairScoreKeyer());
+    DataStream<WordWithCount> windowCounts = text
+        .flatMap(new WordTokenizer())
+        .keyBy("word")
+        .timeWindow(Time.seconds(5), Time.seconds(1))
+        .reduce(new WordCountReducer());
 
-    SplitStream<NodePairScore> split = scores.split(new ScoreSplitter());
+    windowCounts.print().setParallelism(1);
 
-    DataStream<NodePairScore> hiddenScores = split.select(ScoreType.HIDDEN.name());
-
-    DataStream<NodePairScore> potentialScores = split.select(ScoreType.POTENTIAL.name());
-
-    hiddenScores.addSink(new HiddenSink(dbconf, config.getHiddenThreshold()));
-
-    potentialScores.addSink(new PotentialSink(dbconf, config.getPotentialThreshold()));
-    */
-
-    /* EXECUTION */
-    env.execute(QUERY_NAME);
+    // EXECUTION
+    env.execute(PROGRAM_NAME);
   }
 
 }

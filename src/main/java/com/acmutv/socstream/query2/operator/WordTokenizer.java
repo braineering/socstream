@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,34 +23,34 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
+package com.acmutv.socstream.query2.operator;
 
-package com.acmutv.socstream.config;
-
-import com.acmutv.socstream.config.serial.AppConfigurationYamlMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.Assert;
-import org.junit.Test;
+import com.acmutv.socstream.query2.tuple.WordWithCount;
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.util.Collector;
 
 /**
- * JUnit tests for {@link AppConfiguration}.
+ * A simple words tokenizer.
+ * Used in {@link com.acmutv.socstream.query2.SocstreamQuery2}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see AppConfiguration
  */
-public class AppConfigurationTest {
+public class WordTokenizer implements FlatMapFunction<String,WordWithCount> {
 
   /**
-   * Tests the restoring of default configuration.
+   * The core method of the FlatMapFunction. Takes an element from the input data set and transforms
+   * it into zero, one, or more elements.
+   *
+   * @param value The input value.
+   * @param out   The collector for returning result values.
+   * @throws Exception This method may throw exceptions. Throwing an exception will cause the operation
+   *                   to fail and may trigger recovery.
    */
-  @Test
-  public void test_toDefault() throws JsonProcessingException {
-    AppConfiguration actual = new AppConfiguration();
-    actual.setDataset("Custom");
-    actual.toDefault();
-    System.out.println(new AppConfigurationYamlMapper().writeValueAsString(actual));
-    final AppConfiguration expected = new AppConfiguration();
-    Assert.assertEquals(expected, actual);
+  @Override
+  public void flatMap(String value, Collector<WordWithCount> out) throws Exception {
+    for (String word : value.split("\\s")) {
+      out.collect(new WordWithCount(word, 1L));
+    }
   }
-
 }

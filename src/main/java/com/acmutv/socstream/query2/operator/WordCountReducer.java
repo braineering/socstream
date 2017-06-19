@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,32 +23,22 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
+package com.acmutv.socstream.query2.operator;
 
-package com.acmutv.socstream.config.serial;
-
-import com.acmutv.socstream.config.AppConfiguration;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import lombok.EqualsAndHashCode;
+import com.acmutv.socstream.query2.tuple.WordWithCount;
+import org.apache.flink.api.common.functions.ReduceFunction;
 
 /**
- * This class realizes the JSON constructor for {@link AppConfiguration}.
+ * A simple word counting reducer.
+ * Used in {@link com.acmutv.socstream.query2.SocstreamQuery2}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see AppConfiguration
  */
-@EqualsAndHashCode(callSuper = true)
-public class AppConfigurationJsonMapper extends ObjectMapper {
+public class WordCountReducer implements ReduceFunction<WordWithCount> {
 
-  /**
-   * Initializes the JSON constructor.
-   */
-  public AppConfigurationJsonMapper() {
-    super();
-    SimpleModule module = new SimpleModule();
-    module.addSerializer(AppConfiguration.class, AppConfigurationSerializer.getInstance());
-    module.addDeserializer(AppConfiguration.class, AppConfigurationDeserializer.getInstance());
-    super.registerModule(module);
+  @Override
+  public WordWithCount reduce(WordWithCount value1, WordWithCount value2) throws Exception {
+    return new WordWithCount(value1.word, value1.count + value2.count);
   }
 }

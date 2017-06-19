@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,26 +23,22 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
+package com.acmutv.socstream.query3.operator;
 
-package com.acmutv.socstream;
-
-import com.acmutv.socstream.core.TestAllCore;
-import com.acmutv.socstream.tool.TestAllTool;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import com.acmutv.socstream.query3.tuple.WordWithCount;
+import org.apache.flink.api.common.functions.ReduceFunction;
 
 /**
- * JUnit test suite that encapsulates all the JUnit tests for the whole app.
+ * A simple word counting reducer.
+ * Used in {@link com.acmutv.socstream.query3.SocstreamQuery3}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see TestAllCore
- * @see TestAllTool
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    TestAllCore.class,
-    TestAllTool.class
-})
-public class TestAll {
+public class WordCountReducer implements ReduceFunction<WordWithCount> {
+
+  @Override
+  public WordWithCount reduce(WordWithCount value1, WordWithCount value2) throws Exception {
+    return new WordWithCount(value1.word, value1.count + value2.count);
+  }
 }

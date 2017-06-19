@@ -104,10 +104,6 @@
     </repository>
   </repositories>
 
-  <prerequisites>
-    <maven>3.5.0</maven>
-  </prerequisites>
-
   <properties>
     <!-- General -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

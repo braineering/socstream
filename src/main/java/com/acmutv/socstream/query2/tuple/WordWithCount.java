@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,26 +23,29 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
-
-package com.acmutv.socstream;
-
-import com.acmutv.socstream.core.TestAllCore;
-import com.acmutv.socstream.tool.TestAllTool;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+package com.acmutv.socstream.query2.tuple;
 
 /**
- * JUnit test suite that encapsulates all the JUnit tests for the whole app.
+ * A tuple for word counting.
+ * Used in {@link com.acmutv.socstream.query2.SocstreamQuery2}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see TestAllCore
- * @see TestAllTool
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    TestAllCore.class,
-    TestAllTool.class
-})
-public class TestAll {
+public class WordWithCount {
+
+  public String word;
+  public long count;
+
+  public WordWithCount() { }
+
+  public WordWithCount(String word, long count) {
+    this.word = word;
+    this.count = count;
+  }
+
+  @Override
+  public String toString() {
+    return word + " : " + count;
+  }
 }

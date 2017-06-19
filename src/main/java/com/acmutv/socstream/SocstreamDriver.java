@@ -26,47 +26,61 @@
 
 package com.acmutv.socstream;
 
-import com.acmutv.socstream.config.AppConfiguration;
-import com.acmutv.socstream.config.AppConfigurationService;
-import com.acmutv.socstream.config.serial.AppConfigurationYamlMapper;
-import com.acmutv.socstream.common.db.DbConfiguration;
-import com.acmutv.socstream.common.source.SourceType;
+import com.acmutv.socstream.common.ProgramDriver;
 import com.acmutv.socstream.query1.SocstreamQuery1;
-import com.acmutv.socstream.query2.SocstreamQuery2;
-import com.acmutv.socstream.query3.SocstreamQuery3;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;
-import com.acmutv.socstream.ui.CliService;
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The app entry-point for the application.
- * Before starting the application, it is necessary to open the socket, running
- * {@code $> ncat 127.0.0.1 9000 -l}
- * and start typing tuples.
+ * The app entry-point as programs driver.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see AppConfigurationService
  * @see RuntimeManager
  */
 public class SocstreamDriver {
 
+  /**
+   * The logger.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(SocstreamDriver.class);
+
 
   /**
-   * The app main method, executed when the program is launched.
+   * Thedriver main method.
    * @param args the command line arguments.
    */
   public static void main(String[] args) throws Exception {
+    int exitCode = -1;
+    ProgramDriver driver = new ProgramDriver();
 
-    String queryName = args[0];
+    try {
+    /* *********************************************************************************************
+     * QUERY 1
+     **********************************************************************************************/
+      driver.addClass(SocstreamQuery1.PROGRAM_NAME, SocstreamQuery1.class, SocstreamQuery1.PROGRAM_DESCRIPTION);
 
-    if ("query-1".equals(queryName)) {
-      SocstreamQuery1.main(args);
-    } else if ("query-2".equals(queryName)) {
-      SocstreamQuery2.main(args);
-    } else if ("query-3".equals(queryName)) {
-      SocstreamQuery3.main(args);
+    /* *********************************************************************************************
+     * QUERY 2
+     **********************************************************************************************/
+      driver.addClass(SocstreamQuery1.PROGRAM_NAME, SocstreamQuery1.class, SocstreamQuery1.PROGRAM_DESCRIPTION);
+
+    /* *********************************************************************************************
+     * QUERY 3
+     **********************************************************************************************/
+      driver.addClass(SocstreamQuery1.PROGRAM_NAME, SocstreamQuery1.class, SocstreamQuery1.PROGRAM_DESCRIPTION);
+
+      LOG.info("Running driver...");
+
+      exitCode = driver.run(args);
+
+    } catch (Throwable exc) {
+      exc.printStackTrace();
+      LOG.error(exc.getMessage());
     }
+
+    System.exit(exitCode);
   }
 
 }

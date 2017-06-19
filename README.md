@@ -31,27 +31,23 @@ Start the environment:
 
     $socstream_home> bash start-env.sh
 
-If it is the first environment setup, you need to run:
-
-    $socstream_home> bash start-env.sh format
-
-WARNING: notice that the last command will format your HDFS.
+Visit the Flink web dashboard at **http://localhost:8081**.
 
 The general job submission is as follows:
 
-    $flink_home> bin/flink jar <SOCSTREAM-JAR> [QUERY] [HADOOP_OPTS] [PROGRAM_OPTS] <ARGS>
+    $flink_home> bin/flink jar <SOCSTREAM-JAR> [QUERY] [QUERY_OPTS]
 
 where
 * **[SOCSTREAM-JAR]** is the local absolute path to the Socstream's JAR;
-* **[QUERY]** is the name of the query to execute;
-* **[HADOOP_OPTS]** are optional Hadoop options (e.g. -Dopt=val);
-* **[PROGRAM_OPTS]** are optional program options (e.g. -D opt=val);
-* **[ARGS]** are the mandatory program arguments.
+* **[QUERY]** is the name of the Socstream query to execute;
+* **[QUERY_OPTS]** are query arguments (e.g. --optName optValue).
 
 Notice that the following map/reduce programs are available:
-* **query-1** the 1st query, leveraging ... ;
-* **query-2** the 2nd query, leveraging ... ;
-* **query-3** the 3rd query, leveraging ... .
+* **socstream-query-1** the 1st query, leveraging ... ;
+* **socstream-query-2** the 2nd query, leveraging ... ;
+* **socstream-query-3** the 3rd query, leveraging ... .
+
+The job can be interrupted typing **Ctrl+C**.
 
 Read the output:
 
@@ -64,8 +60,44 @@ Stop the environment:
 
     $socstream_home> bash stop-env.sh
     
+## Query 1
+The 1st query requires a netcat session to be started:
+
+    $> ncat 127.0.0.1 9000 -l
+    
+The 1st query can be executed running:
+
+    $socstream_home> bash socstream-query-1.sh
+    
+The output is saved to **${FLINK_HOME}/log/\*.out**.
+
+
+## Query 2
+The 2nd query requires a netcat session to be started:
+
+    $> ncat 127.0.0.1 9000 -l
+    
+The 2nd query can be executed running:
+
+    $socstream_home> bash socstream-query-2.sh
+    
+The output is saved to **${FLINK_HOME}/log/\*.out**.
+
+
+## Query 3
+The 3rd query requires a netcat session to be started:
+
+    $> ncat 127.0.0.1 9000 -l
+    
+The 3rd query can be executed running:
+
+    $socstream_home> bash socstream-query-2.sh
+    
+The output is saved to **${FLINK_HOME}/log/\*.out**.
+
+
 ## Dataset
-INSERT DESCRIPTION HERE
+The dataset is provided by DEBS Grand Challenge commitee and can be downloaded from [here](http://debs.org/?p=41).
 
 
 ## Authors
