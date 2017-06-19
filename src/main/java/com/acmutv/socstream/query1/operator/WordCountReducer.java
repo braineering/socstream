@@ -25,12 +25,13 @@
  */
 package com.acmutv.socstream.query1.operator;
 
+import com.acmutv.socstream.query1.TopologyQuery1;
 import com.acmutv.socstream.query1.tuple.WordWithCount;
 import org.apache.flink.api.common.functions.ReduceFunction;
 
 /**
  * A simple word counting reducer.
- * Used in {@link com.acmutv.socstream.query1.SocstreamQuery1}.
+ * Used in {@link TopologyQuery1}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0

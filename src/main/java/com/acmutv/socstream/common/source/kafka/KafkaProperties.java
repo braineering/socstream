@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2017 Giacomo Marciani
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,42 +23,42 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
-
-package com.acmutv.socstream.common.tuple;
+package com.acmutv.socstream.common.source.kafka;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.Properties;
 
 /**
- * All types of links.
+ * Collection of Kafka properties.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
- * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
 @Getter
-public enum LinkType {
+@NoArgsConstructor
+public class KafkaProperties extends Properties {
 
-  REAL      ("REAL"),
-  POTENTIAL ("POTENTIAL"),
-  HIDDEN    ("HIDDEN"),
+  public static final String BOOTSTRAP_SERVERS = "bootstrap.servers";
 
-  /* FOR MULTI INDEX COMPUTING */
-  CN ("CN"),
-  RA ("RA"),
-  NRA ("NRA"),
-  TA  ("TA"),
-  NTA ("NTA"),
-  JACCARD ("JACCARD"),
-  SALTON ("SALTON"),
-  SORENSEN ("SORENSEN"),
-  HPI ("HPI"),
-  HDI ("HDI"),
-  LHN1 ("LHN1"),
-  PA ("PA"),
-  AA ("AA");
+  public static final String ZOOKEEPER_CONNECT = "zookeeper.connect";
 
-  private final String name;
-
-  LinkType(final String name) {
-    this.name = name;
+  public KafkaProperties(String bootstrapServers, String zookeeperConnect) {
+    super();
+    super.put(BOOTSTRAP_SERVERS, bootstrapServers);
+    super.put(ZOOKEEPER_CONNECT, zookeeperConnect);
   }
+
+  public KafkaProperties(KafkaProperties other) {
+    super(other);
+  }
+
+  public void setBootstrapServers(String bootstrapServers) {
+    super.put(BOOTSTRAP_SERVERS, bootstrapServers);
+  }
+
+  public void setZookeeperConnect(String zookeeperConnect) {
+    super.put(ZOOKEEPER_CONNECT, zookeeperConnect);
+  }
+
 }

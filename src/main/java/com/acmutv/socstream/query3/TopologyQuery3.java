@@ -24,11 +24,14 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream.query2;
+package com.acmutv.socstream.query3;
 
-import com.acmutv.socstream.query2.operator.WordCountReducer;
-import com.acmutv.socstream.query2.operator.WordTokenizer;
-import com.acmutv.socstream.query2.tuple.WordWithCount;
+import com.acmutv.socstream.common.source.kafka.KafkaProperties;
+import com.acmutv.socstream.common.source.kafka.SensorEventKafkaSource;
+import com.acmutv.socstream.common.tuple.SensorEvent;
+import com.acmutv.socstream.query3.operator.WordCountReducer;
+import com.acmutv.socstream.query3.operator.WordTokenizer;
+import com.acmutv.socstream.query3.tuple.WordWithCount;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -36,21 +39,18 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
 /**
- * The app word-point for {@code SocstreamQuery1} application.
- * Before starting the application, it is necessary to open the socket, running
- * {@code $> ncat 127.0.0.1 9000 -l}
- * and start typing tuples.
+ * The topology for query-3.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  * @see RuntimeManager
  */
-public class SocstreamQuery2 {
+public class TopologyQuery3 {
 
   /**
    * The program name.
    */
-  public static final String PROGRAM_NAME = "socstream-query-2";
+  public static final String PROGRAM_NAME = "query-3";
 
   /**
    * The program description.
@@ -65,12 +65,15 @@ public class SocstreamQuery2 {
 
     // CONFIGURATION
     ParameterTool parameter = ParameterTool.fromArgs(args);
-    final int port = Integer.valueOf(parameter.getRequired("port"));
+    final String kafkaZookeeper = parameter.get("kafka.zookeeper", "localhost:2181");
+    final String kafkaBootstrap = parameter.get("kafka.bootstrap", "localhost:9092");
+    final String kafkaTopic = parameter.get("kafka.topic", "socstream.topic.sensorEvents");
     final int parallelism = parameter.getInt("parallelism", 1);
 
     // ENVIRONMENT
     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     env.setParallelism(parallelism);
+    final KafkaProperties kafkaProps = new KafkaProperties(kafkaBootstrap, kafkaZookeeper);
 
     // CONFIGURATION RESUME
     System.out.println("############################################################################");
@@ -78,20 +81,16 @@ public class SocstreamQuery2 {
     System.out.println("----------------------------------------------------------------------------");
     System.out.printf("%s\n", PROGRAM_DESCRIPTION);
     System.out.println("****************************************************************************");
-    System.out.println("Port: " + port);
+    System.out.println("Kafka Zookeeper: " + kafkaZookeeper);
+    System.out.println("Kafka Bootstrap: " + kafkaBootstrap);
+    System.out.println("Kafka Topic: " + kafkaTopic);
     System.out.println("Parallelism: " + parallelism);
     System.out.println("############################################################################");
 
     // TOPOLOGY
-    DataStream<String> text = env.socketTextStream("localhost", port, "\n");
+    DataStream<SensorEvent> sensorEvents = env.addSource(new SensorEventKafkaSource(kafkaTopic, kafkaProps));
 
-    DataStream<WordWithCount> windowCounts = text
-        .flatMap(new WordTokenizer())
-        .keyBy("word")
-        .timeWindow(Time.seconds(5), Time.seconds(1))
-        .reduce(new WordCountReducer());
-
-    windowCounts.print().setParallelism(1);
+    sensorEvents.print().setParallelism(1);
 
     // EXECUTION
     env.execute(PROGRAM_NAME);

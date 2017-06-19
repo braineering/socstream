@@ -27,7 +27,7 @@
 package com.acmutv.socstream;
 
 import com.acmutv.socstream.common.ProgramDriver;
-import com.acmutv.socstream.query1.SocstreamQuery1;
+import com.acmutv.socstream.query1.TopologyQuery1;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,12 +39,12 @@ import org.slf4j.LoggerFactory;
  * @since 1.0
  * @see RuntimeManager
  */
-public class SocstreamDriver {
+public class Driver {
 
   /**
    * The logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(SocstreamDriver.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Driver.class);
 
 
   /**
@@ -59,17 +59,17 @@ public class SocstreamDriver {
     /* *********************************************************************************************
      * QUERY 1
      **********************************************************************************************/
-      driver.addClass(SocstreamQuery1.PROGRAM_NAME, SocstreamQuery1.class, SocstreamQuery1.PROGRAM_DESCRIPTION);
+      driver.addClass(TopologyQuery1.PROGRAM_NAME, TopologyQuery1.class, TopologyQuery1.PROGRAM_DESCRIPTION);
 
     /* *********************************************************************************************
      * QUERY 2
      **********************************************************************************************/
-      driver.addClass(SocstreamQuery1.PROGRAM_NAME, SocstreamQuery1.class, SocstreamQuery1.PROGRAM_DESCRIPTION);
+      driver.addClass(TopologyQuery1.PROGRAM_NAME, TopologyQuery1.class, TopologyQuery1.PROGRAM_DESCRIPTION);
 
     /* *********************************************************************************************
      * QUERY 3
      **********************************************************************************************/
-      driver.addClass(SocstreamQuery1.PROGRAM_NAME, SocstreamQuery1.class, SocstreamQuery1.PROGRAM_DESCRIPTION);
+      driver.addClass(TopologyQuery1.PROGRAM_NAME, TopologyQuery1.class, TopologyQuery1.PROGRAM_DESCRIPTION);
 
       LOG.info("Running driver...");
 

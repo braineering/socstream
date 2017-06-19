@@ -25,9 +25,11 @@
  */
 package com.acmutv.socstream.query2.tuple;
 
+import com.acmutv.socstream.query2.TopologyQuery2;
+
 /**
  * A tuple for word counting.
- * Used in {@link com.acmutv.socstream.query2.SocstreamQuery2}.
+ * Used in {@link TopologyQuery2}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0

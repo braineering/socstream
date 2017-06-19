@@ -25,14 +25,14 @@
  */
 package com.acmutv.socstream.query1.operator;
 
+import com.acmutv.socstream.query1.TopologyQuery1;
 import com.acmutv.socstream.query1.tuple.WordWithCount;
 import org.apache.flink.api.common.functions.FlatMapFunction;
-import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.util.Collector;
 
 /**
  * A simple words tokenizer.
- * Used in {@link com.acmutv.socstream.query1.SocstreamQuery1}.
+ * Used in {@link TopologyQuery1}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0

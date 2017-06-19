@@ -24,9 +24,9 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream.common.source;
+package com.acmutv.socstream.common.source.fs;
 
-import com.acmutv.socstream.common.tuple.Link;
+import com.acmutv.socstream.common.tuple.SensorEvent;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,9 +42,9 @@ import java.nio.file.Paths;
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see Link
+ * @see SensorEvent
  */
-public class LinkSource extends RichSourceFunction<Link> {
+public class LinkSource extends RichSourceFunction<SensorEvent> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LinkSource.class);
 
@@ -73,16 +73,16 @@ public class LinkSource extends RichSourceFunction<Link> {
    * @param ctx The context to emit elements to and for accessing locks.
    */
   @Override
-  public void run(SourceContext<Link> ctx) throws Exception {
+  public void run(SourceContext<SensorEvent> ctx) throws Exception {
     Path path = Paths.get(this.dataset);
 
     this.reader = Files.newBufferedReader(path);
 
     String line;
-    Link link;
+    SensorEvent link;
     while ((line = this.reader.readLine()) != null && line.length() != 0) {
       try {
-        link = Link.valueOf(line);
+        link = SensorEvent.valueOf(line);
         ctx.collect(link);
       } catch (IllegalArgumentException exc) {
         LOGGER.warn("Malformed link: {}", line);

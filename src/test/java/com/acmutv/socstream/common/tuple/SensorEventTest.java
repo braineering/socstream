@@ -25,6 +25,7 @@
  */
 
 package com.acmutv.socstream.common.tuple;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -34,31 +35,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * JUnit test suite for {@link NodePairScore}.
+ * JUnit test suite for {@link SensorEvent}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
- * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see Link
+ * @see SensorEvent
  */
-public class NodePairScoreTest {
+public class SensorEventTest {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(NodePairScoreTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SensorEventTest.class);
 
   /**
-   * Tests serialization of {@link NodePair}.
+   * Tests serialization of {@link SensorEvent}.
    */
   @Test
   public void test_serialize() throws Exception {
-    List<NodePairScore>  data = new ArrayList<>();
-    data.add(new NodePairScore(1,2,0.1,ScoreType.HIDDEN));
-    data.add(new NodePairScore(4,3,0.1,ScoreType.POTENTIAL));
-    data.add(new NodePairScore(3,5,0.1,ScoreType.POTENTIAL));
-    data.add(new NodePairScore(4,5,0.1,ScoreType.HIDDEN));
+    List<SensorEvent> sensorEvents = new ArrayList<>();
+    sensorEvents.add(new SensorEvent(1,2,3,4,5,6,7,8,9,10,11,12,13));
 
-    for (NodePairScore expected : data) {
-      LOGGER.debug("NodePairScore serialized: " + expected);
+    for (SensorEvent expected : sensorEvents) {
+      LOGGER.debug("SensorEvent serialized: " + expected);
       String str = expected.toString();
-      NodePairScore actual = NodePairScore.valueOf(str);
+      SensorEvent actual = SensorEvent.valueOf(str);
       Assert.assertEquals(expected, actual);
     }
   }

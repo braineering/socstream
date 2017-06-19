@@ -34,13 +34,11 @@ import org.junit.runners.Suite;
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see LinkTest
+ * @see SensorEventTest
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    LinkTest.class,
-    NodePairTest.class,
-    NodePairScoreTest.class
+    SensorEventTest.class
 })
 public class TestAllTuple {
 }

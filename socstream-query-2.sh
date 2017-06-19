@@ -15,8 +15,11 @@ FLINK_RUN="${FLINK_HOME}/bin/flink run"
 ##
 SOCSTREAM_JAR="${SOCSTREAM_HOME}/target/socstream-1.0-jar-with-dependencies.jar"
 SOCSTREAM_QUERY="socstream-query-2"
-SOCSTREAM_OPTS="--port 9000"
-
+SOCSTREAM_OPTS=""
+SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --kafka.zookeeper localhost:2181"
+SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --kafka.bootstrap localhost:9092"
+SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --kafka.topic socstream-topic-query-1"
+SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --parallelism 1"
 
 ##
 # EXECUTION
