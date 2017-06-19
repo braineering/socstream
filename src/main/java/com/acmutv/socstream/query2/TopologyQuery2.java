@@ -29,14 +29,10 @@ package com.acmutv.socstream.query2;
 import com.acmutv.socstream.common.source.kafka.KafkaProperties;
 import com.acmutv.socstream.common.source.kafka.SensorEventKafkaSource;
 import com.acmutv.socstream.common.tuple.SensorEvent;
-import com.acmutv.socstream.query2.operator.WordCountReducer;
-import com.acmutv.socstream.query2.operator.WordTokenizer;
-import com.acmutv.socstream.query2.tuple.WordWithCount;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.time.Time;
 
 /**
  * The topology for query-2.
