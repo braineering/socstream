@@ -1,2 +1,0 @@
-# FLINK SLAVE
-This is a test file
