@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * A source that produces {@link SensorEvent} from a Kafka topic.
@@ -42,12 +43,64 @@ import java.util.Properties;
 public class SensorEventKafkaSource extends FlinkKafkaConsumer010<SensorEvent> {
 
   /**
-   * Constructs a new Kafka source parsing lines.
+   * The logger.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(SensorEventKafkaSource.class);
+
+  /**
+   * The starting timestamp (events before this will be ignored).
+   */
+  private Long tsStart;
+
+  /**
+   * The ending timestamp (events after this will be ignored).
+   */
+  private Long tsEnd;
+
+  /**
+   * The starting timestamp to ignore (events between this and {@code tsEndIgnore} will be ignored).
+   */
+  private Long tsStartIgnore;
+
+  /**
+   * The ending timestamp to ignore (events between {@code tsStartIgnore} and this will be ignored).
+   */
+  private Long tsEndIgnore;
+
+  /**
+   * The ignore list for sensors id.
+   */
+  private Set<Long> ignoredSensors;
+
+  /**
+   * Constructs a new Kafka source for sensor events.
    * @param topic Kafka topics.
    * @param props Kafka properties.
    */
   public SensorEventKafkaSource(String topic, Properties props) {
     super(topic, new SensorEventDeserializationSchema(), props);
+  }
+
+  /**
+   * Constructs a new Kafka source for sensor events with ignoring features.
+   * @param topic Kafka topics.
+   * @param props Kafka properties.
+   * @param tsStart the starting timestamp (events before this will be ignored).
+   * @param tsEnd the ending timestamp (events after this will be ignored).
+   * @param tsStartIgnore the starting timestamp to ignore (events between this and {@code tsEndIgnore} will be ignored).
+   * @param tsEndIgnore the ending timestamp to ignore (events between {@code tsStartIgnore} and this will be ignored).
+   * @param ignoredSensors the list of sensors id to be ignored.
+   */
+  public SensorEventKafkaSource(String topic, Properties props,
+                                long tsStart, long tsEnd,
+                                long tsStartIgnore, long tsEndIgnore,
+                                Set<Long> ignoredSensors) {
+    super(topic, new SensorEventDeserializationSchema(), props);
+    this.tsStart = tsStart;
+    this.tsEnd = tsEnd;
+    this.tsStartIgnore = tsStartIgnore;
+    this.tsEndIgnore = tsEndIgnore;
+    this.ignoredSensors = ignoredSensors;
   }
 
   /**
@@ -75,7 +128,7 @@ public class SensorEventKafkaSource extends FlinkKafkaConsumer010<SensorEvent> {
       try {
         sensorEvent = SensorEvent.valueOf(new String(message));
       } catch (IllegalArgumentException exc) {
-        LOG.warn(exc.getMessage());
+        LOG.warn("Malformed sensor event: {}", message);
       }
 
       return sensorEvent;

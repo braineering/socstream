@@ -36,18 +36,25 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
 
 /**
- * A source that reads links from a file.
+ * A source that reads sensor events from a file.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  * @see SensorEvent
  */
-public class LinkSource extends RichSourceFunction<SensorEvent> {
+public class SensorEventFSSource extends RichSourceFunction<SensorEvent> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(LinkSource.class);
+  /**
+   * The logger.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(SensorEventFSSource.class);
 
+  /**
+   * The source status.
+   */
   private volatile boolean isRunning = true;
 
   /**
@@ -56,16 +63,62 @@ public class LinkSource extends RichSourceFunction<SensorEvent> {
   private String dataset;
 
   /**
+   * The starting timestamp (events before this will be ignored).
+   */
+  private Long tsStart;
+
+  /**
+   * The ending timestamp (events after this will be ignored).
+   */
+  private Long tsEnd;
+
+  /**
+   * The starting timestamp to ignore (events between this and {@code tsEndIgnore} will be ignored).
+   */
+  private Long tsStartIgnore;
+
+  /**
+   * The ending timestamp to ignore (events between {@code tsStartIgnore} and this will be ignored).
+   */
+  private Long tsEndIgnore;
+
+  /**
+   * The list of sensors id to be ignored.
+   */
+  private Set<Long> ignoredSensors;
+
+  /**
    * The dataset reader.
    */
   private transient BufferedReader reader;
 
   /**
-   * Creates a new link source.
+   * Creates a new file system source for sensor events.
    * @param dataset the dataset path.
    */
-  public LinkSource(String dataset) {
+  public SensorEventFSSource(String dataset) {
     this.dataset = dataset;
+  }
+
+  /**
+   * Creates a new file system source for sensor events with ignoring features.
+   * @param dataset the dataset path.
+   * @param tsStart the starting timestamp (events before this will be ignored).
+   * @param tsEnd the ending timestamp (events after this will be ignored).
+   * @param tsStartIgnore the starting timestamp to ignore (events between this and {@code tsEndIgnore} will be ignored).
+   * @param tsEndIgnore the ending timestamp to ignore (events between {@code tsStartIgnore} and this will be ignored).
+   * @param ignoredSensors the list of sensors id to be ignored.
+   */
+  public SensorEventFSSource(String dataset,
+                             long tsStart, long tsEnd,
+                             long tsStartIgnore, long tsEndIgnore,
+                             Set<Long> ignoredSensors) {
+    this.dataset = dataset;
+    this.tsStart = tsStart;
+    this.tsEnd = tsEnd;
+    this.tsStartIgnore = tsStartIgnore;
+    this.tsEndIgnore = tsEndIgnore;
+    this.ignoredSensors = ignoredSensors;
   }
 
   /**
@@ -79,13 +132,17 @@ public class LinkSource extends RichSourceFunction<SensorEvent> {
     this.reader = Files.newBufferedReader(path);
 
     String line;
-    SensorEvent link;
+    SensorEvent event;
     while ((line = this.reader.readLine()) != null && line.length() != 0) {
       try {
-        link = SensorEvent.valueOf(line);
-        ctx.collect(link);
+        event = SensorEvent.valueOf(line);
+        final long ts = event.getTs();
+        if (ts < this.tsStart || ts > this.tsEnd || (ts > tsStartIgnore && ts < tsEndIgnore) ||
+            this.ignoredSensors.contains(event.getSid()))
+          continue;
+        ctx.collect(event);
       } catch (IllegalArgumentException exc) {
-        LOGGER.warn("Malformed link: {}", line);
+        LOG.warn("Malformed link: {}", line);
       }
     }
 
@@ -114,7 +171,7 @@ public class LinkSource extends RichSourceFunction<SensorEvent> {
       try {
         this.reader.close();
       } catch (IOException exc) {
-        LOGGER.error(exc.getMessage());
+        LOG.error(exc.getMessage());
       } finally {
         this.reader = null;
       }

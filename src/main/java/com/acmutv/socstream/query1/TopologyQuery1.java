@@ -28,12 +28,17 @@ package com.acmutv.socstream.query1;
 
 import com.acmutv.socstream.common.source.kafka.KafkaProperties;
 import com.acmutv.socstream.common.source.kafka.SensorEventKafkaSource;
+import com.acmutv.socstream.common.source.meta.Match;
+import com.acmutv.socstream.common.source.meta.MatchService;
 import com.acmutv.socstream.common.tuple.SensorEvent;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.time.Time;
+
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.*;
 
 /**
  * The topology for query-1.
@@ -66,6 +71,13 @@ public class TopologyQuery1 {
     final String kafkaBootstrap = parameter.get("kafka.bootstrap", "localhost:9092");
     final String kafkaTopic = parameter.get("kafka.topic", "socstream.topic.sensorEvents");
     final int parallelism = parameter.getInt("parallelism", 1);
+    final long matchStart = parameter.getLong("match.start", 10753295594424116L);
+    final long matchEnd = parameter.getLong("match.end", 14879639146403495L);
+    final long matchIntervalStart = parameter.getLong("match.interval.start", 12557295594424116L);
+    final long matchIntervalEnd = parameter.getLong("match.interval.end", 13086639146403495L);
+    final Path metadataPath = FileSystems.getDefault().getPath(parameter.get("metadata", "./metadata.yml"));
+    final Match metadataMatch = MatchService.fromYamlFile(metadataPath);
+    final Set<Long> ignoredSensors = MatchService.collectIgnoredSensors(metadataMatch);
 
     // ENVIRONMENT
     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -81,11 +93,18 @@ public class TopologyQuery1 {
     System.out.println("Kafka Zookeeper: " + kafkaZookeeper);
     System.out.println("Kafka Bootstrap: " + kafkaBootstrap);
     System.out.println("Kafka Topic: " + kafkaTopic);
+    System.out.println("Metadata: " + metadataPath);
     System.out.println("Parallelism: " + parallelism);
+    System.out.println("Match Start: " + matchStart);
+    System.out.println("Match End: " + matchEnd);
+    System.out.println("Match Interval Start: " + matchIntervalStart);
+    System.out.println("Match Interval End: " + matchIntervalEnd);
+    System.out.println("Ignored Sensors: " + ignoredSensors);
     System.out.println("############################################################################");
 
     // TOPOLOGY
-    DataStream<SensorEvent> sensorEvents = env.addSource(new SensorEventKafkaSource(kafkaTopic, kafkaProps));
+    DataStream<SensorEvent> sensorEvents = env.addSource(new SensorEventKafkaSource(kafkaTopic, kafkaProps,
+        matchStart, matchEnd, matchIntervalStart, matchIntervalEnd, ignoredSensors));
 
     sensorEvents.print().setParallelism(1);
 
