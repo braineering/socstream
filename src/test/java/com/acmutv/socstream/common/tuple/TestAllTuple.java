@@ -41,7 +41,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     RichSensorEventTest.class,
     PositionRichSensorEventTest.class,
-    PlayerOccupation.class
+    PlayerOccupationTest.class
 })
 public class TestAllTuple {
 }
