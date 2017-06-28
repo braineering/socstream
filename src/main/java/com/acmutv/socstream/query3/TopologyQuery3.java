@@ -86,6 +86,7 @@ public class TopologyQuery3 {
     // TOPOLOGY
     DataStream<SensorEvent> sensorEvents = env.addSource(new SensorEventKafkaSource(kafkaTopic, kafkaProps));
 
+
     sensorEvents.print().setParallelism(1);
 
     // EXECUTION
