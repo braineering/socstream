@@ -26,7 +26,6 @@
 
 package com.acmutv.socstream.tool;
 
-import com.acmutv.socstream.tool.io.TestAllToolIO;
 import com.acmutv.socstream.tool.runtime.TestAllToolRuntime;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -36,12 +35,10 @@ import org.junit.runners.Suite;
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see TestAllToolIO
  * @see TestAllToolRuntime
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    TestAllToolIO.class,
     TestAllToolRuntime.class
 })
 public class TestAllTool {
