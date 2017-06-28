@@ -24,28 +24,31 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream;
+package com.acmutv.socstream.common.meta.serial;
 
-import com.acmutv.socstream.common.TestAllCommon;
-import com.acmutv.socstream.core.TestAllCore;
-import com.acmutv.socstream.tool.TestAllTool;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import com.acmutv.socstream.common.meta.Match;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import lombok.EqualsAndHashCode;
 
 /**
- * JUnit test suite that encapsulates all the JUnit tests for the whole app.
+ * This class realizes the YAML constructor for {@link Match}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see TestAllCommon
- * @see TestAllCore
- * @see TestAllTool
+ * @see Match
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    TestAllCommon.class,
-    TestAllCore.class,
-    TestAllTool.class
-})
-public class TestAll {
+@EqualsAndHashCode(callSuper = true)
+public class MatchMetadataYamlMapper extends YAMLMapper {
+
+  /**
+   * Initializes the JSON constructor.
+   */
+  public MatchMetadataYamlMapper() {
+    super();
+    SimpleModule module = new SimpleModule();
+    module.addSerializer(Match.class, MatchMetadataConfigurationSerializer.getInstance());
+    module.addDeserializer(Match.class, MatchMetadataConfigurationDeserializer.getInstance());
+    super.registerModule(module);
+  }
 }

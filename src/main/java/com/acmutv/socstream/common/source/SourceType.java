@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -24,39 +24,23 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream.common.tuple;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.acmutv.socstream.common.source;
 
 /**
- * JUnit test suite for {@link SensorEvent}.
+ * Enumerates available types of sources.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
+ * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see SensorEvent
  */
-public class SensorEventTest {
+public enum SourceType {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SensorEventTest.class);
+  FILE ("file"),
+  KAFKA ("kafka");
 
-  /**
-   * Tests serialization of {@link SensorEvent}.
-   */
-  @Test
-  public void test_serialize() throws Exception {
-    List<SensorEvent> sensorEvents = new ArrayList<>();
-    sensorEvents.add(new SensorEvent(1,2,3,4,5,6,7,8,9,10,11,12,13));
+  private final String name;
 
-    for (SensorEvent expected : sensorEvents) {
-      LOGGER.debug("SensorEvent serialized: " + expected);
-      String str = expected.toString();
-      SensorEvent actual = SensorEvent.valueOf(str);
-      Assert.assertEquals(expected, actual);
-    }
+  SourceType(final String name) {
+    this.name = name;
   }
+  
 }

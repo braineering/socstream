@@ -1,0 +1,47 @@
+##
+# MATCH METADATA
+##
+
+ball:
+  half.1: [1, 2]
+  half.2: [3, 4]
+
+referee:
+  leg.left: 5
+  leg.right: 6
+
+teamA:
+  name: "Team-A"
+  players:
+    - name: "goalkeeper-A"
+      leg.left: 7
+      leg.right: 8
+      arm.left: 9
+      arm.right: 10
+    - name: "player-A-1"
+      leg.left: 11
+      leg.right: 12
+    - name: "player-A-2"
+      leg.left: 13
+      leg.right: 14
+    - name: "player-A-3"
+      leg.left: 15
+      leg.right: 16
+
+teamB:
+  name: "Team-B"
+  players:
+    - name: "goalkeeper-B"
+      leg.left: 17
+      leg.right: 18
+      arm.left: 19
+      arm.right: 20
+    - name: "player-B-1"
+      leg.left: 21
+      leg.right: 22
+    - name: "player-B-2"
+      leg.left: 23
+      leg.right: 24
+    - name: "player-B-3"
+      leg.left: 25
+      leg.right: 26

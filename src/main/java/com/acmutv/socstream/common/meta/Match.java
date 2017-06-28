@@ -24,39 +24,48 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream.common.db;
+package com.acmutv.socstream.common.meta;
 
 import lombok.Data;
-import lombok.NonNull;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * A Neo4j configuration model.
+ * The collection of metadata about the match.
+ *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
 @Data
-public class DbConfiguration implements Serializable {
-
-  private static final long serialVersionUID = 1L;
+public class Match {
 
   /**
-   * The hostname of the NEO4J instance.
+   * The list of sensors on balls for the 1st half of the match.
    */
-  @NonNull
-  private String hostname;
+  private List<Long> ballsHalf1 = new ArrayList<>();
 
   /**
-   * The username of the NEO4J instance.
+   * The list of sensors on balls for the 2nd half of the match.
    */
-  @NonNull
-  private String username;
+  private List<Long> ballsHalf2 = new ArrayList<>();
 
   /**
-   * The password of the NEO4J instance.
+   * The match referee.
    */
-  @NonNull
-  private String password;
+  private Person referee = new Person("referee");
+
+  /**
+   * The hosting team.
+   */
+  private Team teamA = new Team("1");
+
+  /**
+   * The hosted team.
+   */
+  private Team teamB = new Team("2");;
+
+
+
 }

@@ -30,17 +30,18 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 /**
- * JUnit test suite for sinks.
+ * JUnit test suite for tuples.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see SensorEventTest
+ * @see RichSensorEventTest
+ * @see PositionRichSensorEventTest
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    SensorEventTest.class,
+    RichSensorEventTest.class,
+    PositionRichSensorEventTest.class,
     PlayerOccupation.class
-
 })
 public class TestAllTuple {
 }

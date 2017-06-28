@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,22 +23,32 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
+package com.acmutv.socstream.common.meta;
 
-package com.acmutv.socstream.tool.io;
+import lombok.Data;
+import lombok.NonNull;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * JUnit test suite for tools related to reflection.
+ * A soccer team.
+ *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see IOManagerTest
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    IOManagerTest.class
-})
-public class TestAllToolIO {
+@Data
+public class Team {
+
+  /**
+   * The team name.
+   */
+  @NonNull
+  private String name;
+
+  /**
+   * The list of players.
+   */
+  private List<Person> players = new ArrayList<>();
 }

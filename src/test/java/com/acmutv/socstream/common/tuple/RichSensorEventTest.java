@@ -24,21 +24,39 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream.common.db;
+package com.acmutv.socstream.common.tuple;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.Assert;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * JUnit test suite for database services.
+ * JUnit test suite for {@link RichSensorEvent}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
- * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see RedisManagerTest
+ * @see RichSensorEvent
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    RedisManagerTest.class
-})
-public class TestAllDb {
+public class RichSensorEventTest {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(RichSensorEventTest.class);
+
+  /**
+   * Tests serialization of {@link RichSensorEvent}.
+   */
+  @Test
+  public void test_serialize() throws Exception {
+    List<RichSensorEvent> sensorEvents = new ArrayList<>();
+    sensorEvents.add(new RichSensorEvent("1",2,3,4,5,6,7,8,9,10,11,12,13));
+
+    for (RichSensorEvent expected : sensorEvents) {
+      LOGGER.debug("RichSensorEvent serialized: " + expected);
+      String str = expected.toString();
+      RichSensorEvent actual = RichSensorEvent.valueOf(str);
+      Assert.assertEquals(expected, actual);
+    }
+  }
 }

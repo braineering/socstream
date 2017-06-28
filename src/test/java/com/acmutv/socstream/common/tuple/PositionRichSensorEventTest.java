@@ -32,23 +32,42 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * JUnit test suite for {@link PlayerOccupation}.
+ * JUnit test suite for {@link RichSensorEvent}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
- * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see PlayerOccupation
+ * @see RichSensorEvent
  */
-public class PlayerOccupationTest {
-
-  //private static final Logger LOGGER = LoggerFactory.getLogger(PlayerOccupationTest.class);
+public class PositionRichSensorEventTest {
 
   /**
-   * Tests serialization of {@link PlayerOccupation}.
+   * The logger.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(PositionRichSensorEventTest.class);
+
+  /**
+   * Tests deserialization of {@link PositionSensorEvent} from a string representing a {@link RichSensorEvent}.
    */
   @Test
-  public void test_serialize_occupation() throws Exception {
-    String expected ="63,64,0;0,0.0,0;1,10.0,0;2,20.0";
-    PlayerOccupation actual = PlayerOccupation.valueOf(expected);
-    Assert.assertEquals(expected, actual.toString());
+  public void test_valueOfAsSensorEvent() throws Exception {
+    RichSensorEvent sensorEvent = new RichSensorEvent("1",2,3,4,5,6,7,8,9,10,11,12,13);
+
+    PositionSensorEvent actual = PositionSensorEvent.valueOfAsSensorEvent(sensorEvent.toString());
+
+    PositionSensorEvent expected = new PositionSensorEvent("1", 2, 3, 4, 5);
+
+    Assert.assertEquals(expected, actual);
+  }
+
+  /**
+   * Tests deserialization of {@link PositionSensorEvent}.
+   */
+  @Test
+  public void test_valueOf() throws Exception {
+
+    PositionSensorEvent expected = new PositionSensorEvent("1", 2, 3, 4, 5);
+
+    PositionSensorEvent actual = PositionSensorEvent.valueOf(expected.toString());
+
+    Assert.assertEquals(expected, actual);
   }
 }

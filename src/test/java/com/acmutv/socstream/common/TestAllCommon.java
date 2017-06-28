@@ -24,28 +24,26 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream;
+package com.acmutv.socstream.common;
 
-import com.acmutv.socstream.common.TestAllCommon;
-import com.acmutv.socstream.core.TestAllCore;
-import com.acmutv.socstream.tool.TestAllTool;
+import com.acmutv.socstream.common.meta.TestAllMeta;
+import com.acmutv.socstream.common.tuple.TestAllTuple;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 /**
- * JUnit test suite that encapsulates all the JUnit tests for the whole app.
+ * JUnit test suite for all common services.
+ *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see TestAllCommon
- * @see TestAllCore
- * @see TestAllTool
+ * @see TestAllTuple
+ * @see TestAllMeta
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    TestAllCommon.class,
-    TestAllCore.class,
-    TestAllTool.class
+    TestAllTuple.class,
+    TestAllMeta.class
 })
-public class TestAll {
+public class TestAllCommon {
 }

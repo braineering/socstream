@@ -81,7 +81,8 @@ public class PlayerOccupation {
    * Creates an empty PlayerOccupation
    * This constructor is mandatory for Flink serialization.
    */
-  public PlayerOccupation(){}
+  public PlayerOccupation(){
+  }
 
   /**
    * Parses {@link PlayerOccupation} from string.

@@ -23,18 +23,47 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
+package com.acmutv.socstream.common.keyer;
 
-package com.acmutv.socstream.common.db;
-
+import com.acmutv.socstream.common.tuple.PositionSensorEvent;
+import org.apache.flink.api.java.functions.KeySelector;
 
 /**
- * Collections of Redis useful queries.
+ * A keyselector that used the player id (PID) as key of a position sensor event.
+ *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-public class RedisManager {
+public class PositionSensorEventKeyer implements KeySelector<PositionSensorEvent,String> {
 
-
-
+  /**
+   * User-defined function that extracts the key from an arbitrary object.
+   * <p>
+   * For example for a class:
+   * <pre>
+   * 	public class Word {
+   * 		String word;
+   * 		int count;
+   *    }
+   * </pre>
+   * The key extractor could return the word as
+   * a key to group all Word objects by the String they contain.
+   * <p>
+   * The code would look like this
+   * <pre>
+   * 	public String getKey(Word w) {
+   * 		return w.word;
+   *  }
+   * </pre>
+   *
+   * @param value The object to get the key from.
+   * @return The extracted key.
+   * @throws Exception Throwing an exception will cause the execution of the respective task to fail,
+   *                   and trigger recovery or cancellation of the program.
+   */
+  @Override
+  public String getKey(PositionSensorEvent value) throws Exception {
+    return value.getId();
+  }
 }

@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,29 +23,70 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
+package com.acmutv.socstream.common.meta;
 
-package com.acmutv.socstream;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NonNull;
+import org.apache.avro.generic.GenericData;
 
-import com.acmutv.socstream.common.TestAllCommon;
-import com.acmutv.socstream.core.TestAllCore;
-import com.acmutv.socstream.tool.TestAllTool;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * JUnit test suite that encapsulates all the JUnit tests for the whole app.
+ * A monitored person.
+ *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see TestAllCommon
- * @see TestAllCore
- * @see TestAllTool
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    TestAllCommon.class,
-    TestAllCore.class,
-    TestAllTool.class
-})
-public class TestAll {
+@Data
+@AllArgsConstructor
+public class Person {
+
+  /**
+   * Person's name.
+   */
+  @NonNull
+  private String name;
+
+  /**
+   * The id of the sensor placed on the left leg.
+   */
+  private Long legLeft;
+
+  /**
+   * The id of the sensor placed on the right leg.
+   */
+  private Long legRight;
+
+  /**
+   * The id of the sensor placed on the left arm.
+   */
+  private Long armLeft;
+
+  /**
+   * The id of the sensor placed on the right arm.
+   */
+  private Long armRight;
+
+  public Person(String name) {
+    this.name = name;
+  }
+
+  /**
+   * Returns the array of all sensors id.
+   * @return the array of all sensors id.
+   */
+  public List<Long> getAllSensors() {
+    List<Long> sensors = new ArrayList<>();
+
+    sensors.add(this.getLegLeft());
+    sensors.add(this.getLegRight());
+    sensors.add(this.getArmLeft());
+    sensors.add(this.getArmRight());
+
+    return sensors;
+  }
+
 }
