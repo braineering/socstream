@@ -27,14 +27,10 @@
 package com.acmutv.socstream.common.tuple;
 
 import lombok.Data;
-import org.apache.flink.api.java.tuple.Tuple13;
-import org.apache.flink.api.java.tuple.Tuple4;
+import lombok.EqualsAndHashCode;
 
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * The tuple representing a sensor event.
@@ -43,43 +39,19 @@ import java.util.stream.Stream;
  * @since 1.0
  */
 @Data
-public class SensorEvent {
+@EqualsAndHashCode(callSuper=false)
+public class RichSensorEvent extends PositionSensorEvent {
 
   /**
    * The regular expression
    */
   private static final String REGEXP =
-      "^(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+)$";
+      "^([a-zA-Z0-9]+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+)$";
 
   /**
    * The pattern matcher used to match strings on {@code REGEXP}.
    */
-  private static final Pattern PATTERN = Pattern.compile(REGEXP);
-
-  /**
-   * The sensor id.
-   */
-  private long sid;
-
-  /**
-   * The timestamp.
-   */
-  private long ts;
-
-  /**
-   * The sensor x-coordinate (mm).
-   */
-  private long x;
-
-  /**
-   * The sensor y-coordinate (mm).
-   */
-  private long y;
-
-  /**
-   * The sensor z-coordinate (mm).
-   */
-  private long z;
+  public static final Pattern PATTERN = Pattern.compile(REGEXP);
 
   /**
    * The sensor speed magnitude (um/s).
@@ -122,16 +94,12 @@ public class SensorEvent {
   private long az;
 
 
-  public SensorEvent(long sid, long ts,
-                     long x, long y, long z,
-                     long v, long a,
-                     long vx, long vy, long vz,
-                     long ax, long ay, long az) {
-    this.sid = sid;
-    this.ts = ts;
-    this.x = x;
-    this.y = y;
-    this.z = z;
+  public RichSensorEvent(String id, long ts,
+                         long x, long y, long z,
+                         long v, long a,
+                         long vx, long vy, long vz,
+                         long ax, long ay, long az) {
+    super(id, ts, x, y, z);
     this.v = v;
     this.a = a;
     this.vx = vx;
@@ -146,19 +114,21 @@ public class SensorEvent {
    * Creates an empty sensor event..
    * This constructor is mandatory for Flink serialization.
    */
-  public SensorEvent(){}
+  public RichSensorEvent(){
+    super();
+  }
 
   /**
-   * Parses {@link SensorEvent} from string.
+   * Parses {@link RichSensorEvent} from string.
    * @param string the string to parse.
-   * @return the parsed {@link SensorEvent}.
+   * @return the parsed {@link RichSensorEvent}.
    * @throws IllegalArgumentException when {@code string} cannot be parsed.
    */
-  public static SensorEvent valueOf(String string) throws IllegalArgumentException {
+  public static RichSensorEvent valueOf(String string) throws IllegalArgumentException {
     if (string == null) throw new IllegalArgumentException();
     Matcher matcher = PATTERN.matcher(string);
     if (!matcher.matches()) throw new IllegalArgumentException(string);
-    long sid = Long.valueOf(matcher.group(1));
+    String id = matcher.group(1);
     long ts = Long.valueOf(matcher.group(2));
     long x = Long.valueOf(matcher.group(3));
     long y = Long.valueOf(matcher.group(4));
@@ -171,13 +141,13 @@ public class SensorEvent {
     long ax = Long.valueOf(matcher.group(11));
     long ay = Long.valueOf(matcher.group(12));
     long az = Long.valueOf(matcher.group(13));
-    return new SensorEvent(sid, ts, x, y, z, v, a, vx, vy, vz, ax, ay, az);
+    return new RichSensorEvent(id, ts, x, y, z, v, a, vx, vy, vz, ax, ay, az);
   }
 
   @Override
   public String toString() {
-    return String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
-        this.sid, this.ts, this.x, this.y, this.z,
+    return String.format("%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
+        super.getId(), super.getTs(), super.getX(), super.getY(), super.getZ(),
         this.v, this.a,
         this.vx, this.vy, this.vz,
         this.ax, this.ay, this.az);

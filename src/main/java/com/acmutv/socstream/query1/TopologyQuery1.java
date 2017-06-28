@@ -26,16 +26,21 @@
 
 package com.acmutv.socstream.query1;
 
+import com.acmutv.socstream.common.keyer.RichSensorEventKeyer;
+import com.acmutv.socstream.common.operator.IdentityMap;
+import com.acmutv.socstream.common.sink.ToStringSink;
+import com.acmutv.socstream.common.sink.WriterSink;
 import com.acmutv.socstream.common.source.kafka.KafkaProperties;
-import com.acmutv.socstream.common.source.kafka.SensorEventKafkaSource;
-import com.acmutv.socstream.common.source.meta.Match;
-import com.acmutv.socstream.common.source.meta.MatchService;
-import com.acmutv.socstream.common.tuple.SensorEvent;
+import com.acmutv.socstream.common.source.kafka.RichSensorEventKafkaSource;
+import com.acmutv.socstream.common.meta.Match;
+import com.acmutv.socstream.common.meta.MatchService;
+import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
+import java.io.PrintWriter;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.*;
@@ -76,8 +81,9 @@ public class TopologyQuery1 {
     final long matchIntervalStart = parameter.getLong("match.interval.start", 12557295594424116L);
     final long matchIntervalEnd = parameter.getLong("match.interval.end", 13086639146403495L);
     final Path metadataPath = FileSystems.getDefault().getPath(parameter.get("metadata", "./metadata.yml"));
-    final Match metadataMatch = MatchService.fromYamlFile(metadataPath);
-    final Set<Long> ignoredSensors = MatchService.collectIgnoredSensors(metadataMatch);
+    final Match match = MatchService.fromYamlFile(metadataPath);
+    final Set<Long> ignoredSensors = MatchService.collectIgnoredSensors(match);
+    final Map<String,String> sid2Pid = MatchService.collectSid2Pid(match);
 
     // ENVIRONMENT
     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -103,10 +109,12 @@ public class TopologyQuery1 {
     System.out.println("############################################################################");
 
     // TOPOLOGY
-    DataStream<SensorEvent> sensorEvents = env.addSource(new SensorEventKafkaSource(kafkaTopic, kafkaProps,
-        matchStart, matchEnd, matchIntervalStart, matchIntervalEnd, ignoredSensors));
+    DataStream<RichSensorEvent> sensorEvents = env.addSource(new RichSensorEventKafkaSource(kafkaTopic, kafkaProps,
+        matchStart, matchEnd, matchIntervalStart, matchIntervalEnd, ignoredSensors, sid2Pid));
 
-    sensorEvents.print().setParallelism(1);
+    DataStream<RichSensorEvent> out = sensorEvents.keyBy(new RichSensorEventKeyer()).flatMap(new IdentityMap<>());
+
+    out.addSink(new WriterSink<>(new PrintWriter(System.out)));
 
     // EXECUTION
     env.execute(PROGRAM_NAME);

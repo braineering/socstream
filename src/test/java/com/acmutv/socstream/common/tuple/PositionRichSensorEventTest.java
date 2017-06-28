@@ -26,21 +26,48 @@
 
 package com.acmutv.socstream.common.tuple;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.Assert;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * JUnit test suite for tuples.
+ * JUnit test suite for {@link RichSensorEvent}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
- * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see RichSensorEventTest
- * @see PositionRichSensorEventTest
+ * @see RichSensorEvent
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    RichSensorEventTest.class,
-    PositionRichSensorEventTest.class
-})
-public class TestAllTuple {
+public class PositionRichSensorEventTest {
+
+  /**
+   * The logger.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(PositionRichSensorEventTest.class);
+
+  /**
+   * Tests deserialization of {@link PositionSensorEvent} from a string representing a {@link RichSensorEvent}.
+   */
+  @Test
+  public void test_valueOfAsSensorEvent() throws Exception {
+    RichSensorEvent sensorEvent = new RichSensorEvent("1",2,3,4,5,6,7,8,9,10,11,12,13);
+
+    PositionSensorEvent actual = PositionSensorEvent.valueOfAsSensorEvent(sensorEvent.toString());
+
+    PositionSensorEvent expected = new PositionSensorEvent("1", 2, 3, 4, 5);
+
+    Assert.assertEquals(expected, actual);
+  }
+
+  /**
+   * Tests deserialization of {@link PositionSensorEvent}.
+   */
+  @Test
+  public void test_valueOf() throws Exception {
+
+    PositionSensorEvent expected = new PositionSensorEvent("1", 2, 3, 4, 5);
+
+    PositionSensorEvent actual = PositionSensorEvent.valueOf(expected.toString());
+
+    Assert.assertEquals(expected, actual);
+  }
 }

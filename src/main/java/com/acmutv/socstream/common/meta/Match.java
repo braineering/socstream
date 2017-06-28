@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -24,39 +24,48 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream.common.tuple;
+package com.acmutv.socstream.common.meta;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * JUnit test suite for {@link SensorEvent}.
+ * The collection of metadata about the match.
+ *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
+ * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see SensorEvent
  */
-public class SensorEventTest {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SensorEventTest.class);
+@Data
+public class Match {
 
   /**
-   * Tests serialization of {@link SensorEvent}.
+   * The list of sensors on balls for the 1st half of the match.
    */
-  @Test
-  public void test_serialize() throws Exception {
-    List<SensorEvent> sensorEvents = new ArrayList<>();
-    sensorEvents.add(new SensorEvent(1,2,3,4,5,6,7,8,9,10,11,12,13));
+  private List<Long> ballsHalf1 = new ArrayList<>();
 
-    for (SensorEvent expected : sensorEvents) {
-      LOGGER.debug("SensorEvent serialized: " + expected);
-      String str = expected.toString();
-      SensorEvent actual = SensorEvent.valueOf(str);
-      Assert.assertEquals(expected, actual);
-    }
-  }
+  /**
+   * The list of sensors on balls for the 2nd half of the match.
+   */
+  private List<Long> ballsHalf2 = new ArrayList<>();
+
+  /**
+   * The match referee.
+   */
+  private Person referee = new Person("referee");
+
+  /**
+   * The hosting team.
+   */
+  private Team teamA = new Team("1");
+
+  /**
+   * The hosted team.
+   */
+  private Team teamB = new Team("2");;
+
+
+
 }

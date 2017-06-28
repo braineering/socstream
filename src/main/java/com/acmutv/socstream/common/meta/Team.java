@@ -23,49 +23,32 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
-
-package com.acmutv.socstream.common.source.meta;
+package com.acmutv.socstream.common.meta;
 
 import lombok.Data;
+import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The collection of metadata about the match.
+ * A soccer team.
  *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
 @Data
-public class Match {
+public class Team {
 
   /**
-   * The list of sensors on balls for the 1st half of the match.
+   * The team name.
    */
-  private List<Long> ballsHalf1 = new ArrayList<>();
+  @NonNull
+  private String name;
 
   /**
-   * The list of sensors on balls for the 2nd half of the match.
+   * The list of players.
    */
-  private List<Long> ballsHalf2 = new ArrayList<>();
-
-  /**
-   * The match referee.
-   */
-  private Person referee = new Person("referee");
-
-  /**
-   * The hosting team.
-   */
-  private Team teamA = new Team("1");
-
-  /**
-   * The hosted team.
-   */
-  private Team teamB = new Team("2");;
-
-
-
+  private List<Person> players = new ArrayList<>();
 }

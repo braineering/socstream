@@ -1,0 +1,71 @@
+##
+# MATCH METADATA
+##
+
+ball:
+  - half.1: [4, 8, 10]
+  - half.2: [4, 8, 10, 12]
+
+referee:
+  leg.left: 105
+  leg.right: 106
+
+teamA:
+  name: "TeamA"
+  players:
+    - name: "Nick Gertje"
+      leg.left: 13
+      leg.right: 14
+      arm.left: 97
+      arm.right: 98
+    - name: "Dennis Dotterweich"
+      leg.left: 47
+      leg.right: 16
+    - name: "Niklas Waelzlein"
+      leg.left: 49
+      leg.right: 88
+    - name: "Wili Sommer"
+      leg.left: 19
+      leg.right: 52
+    - name: "Philipp Harlass"
+      leg.left: 53
+      leg.right: 54
+    - name: "Roman Hartleb"
+      leg.left: 23
+      leg.right: 24
+    - name: "Erik Engelhardt"
+      leg.left: 57
+      leg.right: 58
+    - name: "Sandro Schneider"
+      leg.left: 59
+      leg.right: 28
+
+teamB:
+  name: "TeamB"
+  players:
+    - name: "Leon Krapf"
+      leg.left: 61
+      leg.right: 62
+      arm.left: 99
+      arm.right: 100
+    - name: "Kevin Baer"
+      leg.left: 63
+      leg.right: 64
+    - name: "Luca Ziegler"
+      leg.left: 65
+      leg.right: 66
+    - name: "Ben Mueller"
+      leg.left: 67
+      leg.right: 68
+    - name: "Vale Reitstetter"
+      leg.left: 69
+      leg.right: 38
+    - name: "Christopher Lee"
+      leg.left: 71
+      leg.right: 40
+    - name: "Leon Heinze"
+      leg.left: 73
+      leg.right: 74
+    - name: "Leo Langhans"
+      leg.left: 75
+      leg.right: 44

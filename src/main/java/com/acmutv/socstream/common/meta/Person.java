@@ -23,14 +23,15 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
-package com.acmutv.socstream.common.source.meta;
+package com.acmutv.socstream.common.meta;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
+import org.apache.avro.generic.GenericData;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A monitored person.
@@ -72,4 +73,20 @@ public class Person {
   public Person(String name) {
     this.name = name;
   }
+
+  /**
+   * Returns the array of all sensors id.
+   * @return the array of all sensors id.
+   */
+  public List<Long> getAllSensors() {
+    List<Long> sensors = new ArrayList<>();
+
+    sensors.add(this.getLegLeft());
+    sensors.add(this.getLegRight());
+    sensors.add(this.getArmLeft());
+    sensors.add(this.getArmRight());
+
+    return sensors;
+  }
+
 }

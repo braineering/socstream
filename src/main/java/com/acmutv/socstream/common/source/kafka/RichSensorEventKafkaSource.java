@@ -25,28 +25,31 @@
  */
 package com.acmutv.socstream.common.source.kafka;
 
-import com.acmutv.socstream.common.tuple.SensorEvent;
+import com.acmutv.socstream.common.tuple.RichSensorEvent;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
 import org.apache.flink.streaming.util.serialization.AbstractDeserializationSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
 /**
- * A source that produces {@link SensorEvent} from a Kafka topic.
+ * A source that produces {@link RichSensorEvent} from a Kafka topic.
  *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @since 1.0
  */
-public class SensorEventKafkaSource extends FlinkKafkaConsumer010<SensorEvent> {
+public class RichSensorEventKafkaSource extends FlinkKafkaConsumer010<RichSensorEvent> {
 
   /**
    * The logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(SensorEventKafkaSource.class);
+  private static final Logger LOG = LoggerFactory.getLogger(RichSensorEventKafkaSource.class);
 
   /**
    * The starting timestamp (events before this will be ignored).
@@ -74,16 +77,6 @@ public class SensorEventKafkaSource extends FlinkKafkaConsumer010<SensorEvent> {
   private Set<Long> ignoredSensors;
 
   /**
-   * Constructs a new Kafka source for sensor events.
-   *
-   * @param topic Kafka topics.
-   * @param props Kafka properties.
-   */
-  public SensorEventKafkaSource(String topic, Properties props) {
-    super(topic, new SensorEventDeserializationSchema(), props);
-  }
-
-  /**
    * Constructs a new Kafka source for sensor events with ignoring features.
    *
    * @param topic Kafka topics.
@@ -93,12 +86,14 @@ public class SensorEventKafkaSource extends FlinkKafkaConsumer010<SensorEvent> {
    * @param tsStartIgnore the starting timestamp to ignore (events between this and {@code tsEndIgnore} will be ignored).
    * @param tsEndIgnore the ending timestamp to ignore (events between {@code tsStartIgnore} and this will be ignored).
    * @param ignoredSensors the list of sensors id to be ignored.
+   * @param sid2Pid the map (SID->(PID).
    */
-  public SensorEventKafkaSource(String topic, Properties props,
-                                long tsStart, long tsEnd,
-                                long tsStartIgnore, long tsEndIgnore,
-                                Set<Long> ignoredSensors) {
-    super(topic, new SensorEventDeserializationSchema(), props);
+  public RichSensorEventKafkaSource(String topic, Properties props,
+                                    long tsStart, long tsEnd,
+                                    long tsStartIgnore, long tsEndIgnore,
+                                    Set<Long> ignoredSensors,
+                                    Map<String,String> sid2Pid) {
+    super(topic, new SensorEventDeserializationSchema(sid2Pid), props);
     this.tsStart = tsStart;
     this.tsEnd = tsEnd;
     this.tsStartIgnore = tsStartIgnore;
@@ -107,17 +102,33 @@ public class SensorEventKafkaSource extends FlinkKafkaConsumer010<SensorEvent> {
   }
 
   /**
-   * The Kafka deserialization schema for {@link SensorEvent}.
+   * The Kafka deserialization schema for {@link RichSensorEvent}.
    *
    * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
    * @since 1.0
    */
-  public static final class SensorEventDeserializationSchema extends AbstractDeserializationSchema<SensorEvent> {
+  @Data
+  @EqualsAndHashCode(callSuper=false)
+  public static final class SensorEventDeserializationSchema extends AbstractDeserializationSchema<RichSensorEvent> {
 
     /**
      * The logger.
      */
     private static final Logger LOG = LoggerFactory.getLogger(SensorEventDeserializationSchema.class);
+
+    /**
+     * The map (SID)->(PID).
+     */
+    private Map<String,String> sid2Pid;
+
+    /**
+     * Creates a new deserialization schema.
+     * @param sid2Pid the map (SID)->(PID).
+     */
+    public SensorEventDeserializationSchema(Map<String,String> sid2Pid) {
+      super();
+      this.sid2Pid = sid2Pid;
+    }
 
     /**
      * De-serializes the byte message.
@@ -126,16 +137,17 @@ public class SensorEventKafkaSource extends FlinkKafkaConsumer010<SensorEvent> {
      * @return The de-serialized message as an object.
      */
     @Override
-    public SensorEvent deserialize(byte[] message) throws IOException {
-      SensorEvent sensorEvent = null;
+    public RichSensorEvent deserialize(byte[] message) throws IOException {
+      RichSensorEvent event = null;
 
       try {
-        sensorEvent = SensorEvent.valueOf(new String(message));
+        event = RichSensorEvent.valueOf(new String(message));
+        event.setId(this.sid2Pid.get(event.getId()));
       } catch (IllegalArgumentException exc) {
         LOG.warn("Malformed sensor event: {}", message);
       }
 
-      return sensorEvent;
+      return event;
     }
   }
 }

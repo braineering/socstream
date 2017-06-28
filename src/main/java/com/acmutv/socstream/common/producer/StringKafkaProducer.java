@@ -25,7 +25,7 @@
  */
 package com.acmutv.socstream.common.producer;
 
-import com.acmutv.socstream.common.tuple.SensorEvent;
+import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -55,7 +55,7 @@ public class StringKafkaProducer {
     this.producer = new KafkaProducer<>(props);
   }
 
-  public void send(String topic, SensorEvent link) {
+  public void send(String topic, RichSensorEvent link) {
     String message = link.toString();
     ProducerRecord<String,String> record = new ProducerRecord<>(topic, message, message);
     this.producer.send(record);

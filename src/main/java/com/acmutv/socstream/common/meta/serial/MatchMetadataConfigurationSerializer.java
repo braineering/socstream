@@ -24,9 +24,9 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream.common.source.meta.serial;
+package com.acmutv.socstream.common.meta.serial;
 
-import com.acmutv.socstream.common.source.meta.Match;
+import com.acmutv.socstream.common.meta.Match;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;

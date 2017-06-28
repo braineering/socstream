@@ -26,7 +26,7 @@
 
 package com.acmutv.socstream.common.source.fs;
 
-import com.acmutv.socstream.common.tuple.SensorEvent;
+import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,9 +43,9 @@ import java.util.Set;
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see SensorEvent
+ * @see RichSensorEvent
  */
-public class SensorEventFSSource extends RichSourceFunction<SensorEvent> {
+public class SensorEventFSSource extends RichSourceFunction<RichSensorEvent> {
 
   /**
    * The logger.
@@ -126,19 +126,19 @@ public class SensorEventFSSource extends RichSourceFunction<SensorEvent> {
    * @param ctx The context to emit elements to and for accessing locks.
    */
   @Override
-  public void run(SourceContext<SensorEvent> ctx) throws Exception {
+  public void run(SourceContext<RichSensorEvent> ctx) throws Exception {
     Path path = Paths.get(this.dataset);
 
     this.reader = Files.newBufferedReader(path);
 
     String line;
-    SensorEvent event;
+    RichSensorEvent event;
     while ((line = this.reader.readLine()) != null && line.length() != 0) {
       try {
-        event = SensorEvent.valueOf(line);
+        event = RichSensorEvent.valueOf(line);
         final long ts = event.getTs();
         if (ts < this.tsStart || ts > this.tsEnd || (ts > tsStartIgnore && ts < tsEndIgnore) ||
-            this.ignoredSensors.contains(event.getSid()))
+            this.ignoredSensors.contains(event.getId()))
           continue;
         ctx.collect(event);
       } catch (IllegalArgumentException exc) {

@@ -23,9 +23,9 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
-package com.acmutv.socstream.common.source.meta;
+package com.acmutv.socstream.common.meta;
 
-import com.acmutv.socstream.common.source.meta.serial.MatchMetadataYamlMapper;
+import com.acmutv.socstream.common.meta.serial.MatchMetadataYamlMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,9 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -95,11 +97,42 @@ public class MatchService {
     ignoredSensors.add(match.getReferee().getLegLeft());
     ignoredSensors.add(match.getReferee().getLegRight());
 
-    ignoredSensors.add(match.getTeamA().getGoalkeeper().getArmLeft());
-    ignoredSensors.add(match.getTeamA().getGoalkeeper().getArmRight());
-    ignoredSensors.add(match.getTeamB().getGoalkeeper().getArmLeft());
-    ignoredSensors.add(match.getTeamB().getGoalkeeper().getArmRight());
+    ignoredSensors.add(match.getTeamA().getPlayers().get(0).getArmLeft());
+    ignoredSensors.add(match.getTeamA().getPlayers().get(0).getArmRight());
+    ignoredSensors.add(match.getTeamB().getPlayers().get(0).getArmLeft());
+    ignoredSensors.add(match.getTeamB().getPlayers().get(0).getArmRight());
 
     return ignoredSensors;
+  }
+
+  /**
+   * Collects ids of sensors to be ignored.
+   * @param match the metdata about the match.
+   * @return the collection of sensors id to be ignored.
+   */
+  public static Map<String,String> collectSid2Pid(Match match) {
+    Map<String,String> sid2Pid = new HashMap<>();
+
+    int idxA = 0;
+    for (Person player : match.getTeamA().getPlayers()) {
+      String pid = "A" + idxA;
+      for (Long sensor : player.getAllSensors()) {
+        if (sensor == null) continue;
+        sid2Pid.put(sensor.toString(), pid);
+      }
+      idxA++;
+    }
+
+    int idxB = 0;
+    for (Person player : match.getTeamB().getPlayers()) {
+      String pid = "B" + idxB;
+      for (Long sensor : player.getAllSensors()) {
+        if (sensor == null) continue;
+        sid2Pid.put(sensor.toString(), pid);
+      }
+      idxB++;
+    }
+
+    return sid2Pid;
   }
 }

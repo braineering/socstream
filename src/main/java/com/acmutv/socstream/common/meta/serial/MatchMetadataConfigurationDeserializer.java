@@ -24,9 +24,9 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream.common.source.meta.serial;
+package com.acmutv.socstream.common.meta.serial;
 
-import com.acmutv.socstream.common.source.meta.*;
+import com.acmutv.socstream.common.meta.*;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -109,7 +109,6 @@ public class MatchMetadataConfigurationDeserializer extends StdDeserializer<Matc
       final String teamName = nTeam.get("name").asText();
       Team team = new Team(teamName);
       Iterator<JsonNode> iterPlayers = nTeam.get("players").elements();
-      boolean first = true;
       while (iterPlayers.hasNext()) {
         JsonNode n = iterPlayers.next();
         final String playerName = n.get("name").asText();
@@ -118,14 +117,7 @@ public class MatchMetadataConfigurationDeserializer extends StdDeserializer<Matc
         final Long armLeft = (n.get("arm.left") != null) ? n.get("arm.left").asLong() : null;
         final Long armRight = (n.get("arm.right") != null) ? n.get("arm.right").asLong() : null;
         Person player = new Person(playerName, legLeft, legRight, armLeft, armRight);
-
-        if (first) {
-          team.setGoalkeeper(player);
-          first = false;
-        } else {
-          team.getPlayers().add(player);
-        }
-
+        team.getPlayers().add(player);
       }
 
       match.setTeamA(team);
@@ -145,14 +137,7 @@ public class MatchMetadataConfigurationDeserializer extends StdDeserializer<Matc
         final Long armLeft = (n.get("arm.left") != null) ? n.get("arm.left").asLong() : null;
         final Long armRight = (n.get("arm.right") != null) ? n.get("arm.right").asLong() : null;
         Person player = new Person(playerName, legLeft, legRight, armLeft, armRight);
-
-        if (first) {
-          team.setGoalkeeper(player);
-          first = false;
-        } else {
-          team.getPlayers().add(player);
-        }
-
+        team.getPlayers().add(player);
       }
 
       match.setTeamB(team);

@@ -24,31 +24,39 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream.common.source.meta.serial;
+package com.acmutv.socstream.common.tuple;
 
-import com.acmutv.socstream.common.source.meta.Match;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import lombok.EqualsAndHashCode;
+import org.junit.Assert;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * This class realizes the YAML constructor for {@link Match}.
+ * JUnit test suite for {@link RichSensorEvent}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
- * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see Match
+ * @see RichSensorEvent
  */
-@EqualsAndHashCode(callSuper = true)
-public class MatchMetadataYamlMapper extends YAMLMapper {
+public class RichSensorEventTest {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(RichSensorEventTest.class);
 
   /**
-   * Initializes the JSON constructor.
+   * Tests serialization of {@link RichSensorEvent}.
    */
-  public MatchMetadataYamlMapper() {
-    super();
-    SimpleModule module = new SimpleModule();
-    module.addSerializer(Match.class, MatchMetadataConfigurationSerializer.getInstance());
-    module.addDeserializer(Match.class, MatchMetadataConfigurationDeserializer.getInstance());
-    super.registerModule(module);
+  @Test
+  public void test_serialize() throws Exception {
+    List<RichSensorEvent> sensorEvents = new ArrayList<>();
+    sensorEvents.add(new RichSensorEvent("1",2,3,4,5,6,7,8,9,10,11,12,13));
+
+    for (RichSensorEvent expected : sensorEvents) {
+      LOGGER.debug("RichSensorEvent serialized: " + expected);
+      String str = expected.toString();
+      RichSensorEvent actual = RichSensorEvent.valueOf(str);
+      Assert.assertEquals(expected, actual);
+    }
   }
 }
