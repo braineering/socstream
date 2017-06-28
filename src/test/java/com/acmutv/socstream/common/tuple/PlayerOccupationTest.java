@@ -26,21 +26,34 @@
 
 package com.acmutv.socstream.common.tuple;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Assert;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * JUnit test suite for sinks.
+ * JUnit test suite for {@link SensorEvent}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
- * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see SensorEventTest
+ * @see SensorEvent
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    SensorEventTest.class,
-    PlayerOccupation.class
+public class PlayerOccupationTest {
 
-})
-public class TestAllTuple {
+  private static final Logger LOGGER = LoggerFactory.getLogger(PlayerOccupationTest.class);
+
+  /**
+   * Tests serialization of {@link SensorEvent}.
+   */
+  @Test
+  public void test_serialize() throws Exception {
+    String expected ="63,64,0;0,0.0,0;1,10.0,0;2,20.0";
+    PlayerOccupation actual = PlayerOccupation.valueOf(expected);
+    Assert.assertEquals(expected, actual.toString());
+  }
 }
