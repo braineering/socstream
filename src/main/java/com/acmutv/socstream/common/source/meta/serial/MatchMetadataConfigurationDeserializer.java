@@ -72,86 +72,90 @@ public class MatchMetadataConfigurationDeserializer extends StdDeserializer<Matc
     Match match = new Match();
     JsonNode node = parser.getCodec().readTree(parser);
 
-    if (!node.hasNonNull("ball") || !node.hasNonNull("referee") ||
-        !node.hasNonNull("teamA") || !node.hasNonNull("teamB")) {
-      throw new IOException("Malformed match metadata (missing fields)");
-    }
+    if (node.hasNonNull("ball")) {
+      if (node.get("ball").hasNonNull("half.1")) {
+        match.getBallsHalf1().clear();
+        Iterator<JsonNode> iter = node.get("ball").get("half.1").elements();
+        while (iter.hasNext()) {
+          long v = iter.next().asLong();
+          match.getBallsHalf1().add(v);
+        }
+      }
 
-    if (node.get("ball").hasNonNull("half.1")) {
-      match.getBallsHalf1().clear();
-      Iterator<JsonNode> iter = node.get("half.1").elements();
-      while (iter.hasNext()) {
-        long v = iter.next().asLong();
-        match.getBallsHalf1().add(v);
+      if (node.get("ball").hasNonNull("half.2")) {
+        match.getBallsHalf2().clear();
+        Iterator<JsonNode> iter = node.get("ball").get("half.2").elements();
+        while (iter.hasNext()) {
+          long v = iter.next().asLong();
+          match.getBallsHalf2().add(v);
+        }
       }
     }
-
-    if (node.get("ball").hasNonNull("half.2")) {
-      match.getBallsHalf1().clear();
-      Iterator<JsonNode> iter = node.get("half.2").elements();
-      while (iter.hasNext()) {
-        long v = iter.next().asLong();
-        match.getBallsHalf1().add(v);
-      }
-    }
-
-
 
     if (node.hasNonNull("referee")) {
-      if (node.hasNonNull("leg.left")) {
-        long refereeLegLeft = node.get("leg.left").asLong();
+      JsonNode nReferee = node.get("referee");
+      if (nReferee.hasNonNull("leg.left")) {
+        long refereeLegLeft = nReferee.get("leg.left").asLong();
         match.getReferee().setLegLeft(refereeLegLeft);
       }
-      if (node.hasNonNull("leg.right")) {
-        long refereeLegRight = node.get("leg.right").asLong();
+      if (nReferee.hasNonNull("leg.right")) {
+        long refereeLegRight = nReferee.get("leg.right").asLong();
         match.getReferee().setLegRight(refereeLegRight);
       }
     }
 
     if (node.hasNonNull("teamA")) {
-      final String teamName = node.get("teamA").get("name").asText();
+      JsonNode nTeam = node.get("teamA");
+      final String teamName = nTeam.get("name").asText();
       Team team = new Team(teamName);
-      Iterator<JsonNode> iterPlayers = node.get("teamA").get("players").elements();
+      Iterator<JsonNode> iterPlayers = nTeam.get("players").elements();
       boolean first = true;
       while (iterPlayers.hasNext()) {
         JsonNode n = iterPlayers.next();
         final String playerName = n.get("name").asText();
-        final long legLeft = n.get("leg.left").asLong(-1);
-        final long legRight = n.get("leg.right").asLong(-1);
-        final long armLeft = n.get("arm.left").asLong(-1);
-        final long armRight = n.get("arm.right").asLong(-1);
-        Player player = new Player(playerName, legLeft, legRight, armLeft, armRight);
+        final Long legLeft = (n.get("leg.left") != null) ? n.get("leg.left").asLong() : null;
+        final Long legRight = (n.get("leg.right") != null) ? n.get("leg.right").asLong() : null;
+        final Long armLeft = (n.get("arm.left") != null) ? n.get("arm.left").asLong() : null;
+        final Long armRight = (n.get("arm.right") != null) ? n.get("arm.right").asLong() : null;
+        Person player = new Person(playerName, legLeft, legRight, armLeft, armRight);
+
         if (first) {
           team.setGoalkeeper(player);
           first = false;
         } else {
           team.getPlayers().add(player);
         }
+
       }
+
       match.setTeamA(team);
     }
 
     if (node.hasNonNull("teamB")) {
-      final String teamName = node.get("teamB").get("name").asText();
+      JsonNode nTeam = node.get("teamB");
+      final String teamName = nTeam.get("name").asText();
       Team team = new Team(teamName);
-      Iterator<JsonNode> iterPlayers = node.get("teamA").get("players").elements();
+      Iterator<JsonNode> iterPlayers = nTeam.get("players").elements();
       boolean first = true;
       while (iterPlayers.hasNext()) {
         JsonNode n = iterPlayers.next();
         final String playerName = n.get("name").asText();
-        final long legLeft = n.get("leg.left").asLong(-1);
-        final long legRight = n.get("leg.right").asLong(-1);
-        final long armLeft = n.get("arm.left").asLong(-1);
-        final long armRight = n.get("arm.right").asLong(-1);
-        Player player = new Player(playerName, legLeft, legRight, armLeft, armRight);
+        final Long legLeft = (n.get("leg.left") != null) ? n.get("leg.left").asLong() : null;
+        final Long legRight = (n.get("leg.right") != null) ? n.get("leg.right").asLong() : null;
+        final Long armLeft = (n.get("arm.left") != null) ? n.get("arm.left").asLong() : null;
+        final Long armRight = (n.get("arm.right") != null) ? n.get("arm.right").asLong() : null;
+        Person player = new Person(playerName, legLeft, legRight, armLeft, armRight);
+
         if (first) {
           team.setGoalkeeper(player);
           first = false;
         } else {
           team.getPlayers().add(player);
         }
+
       }
-      match.setTeamA(team);
+
+      match.setTeamB(team);
     }
 
     return match;

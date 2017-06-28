@@ -37,6 +37,7 @@ import java.util.Set;
 
 /**
  * A source that produces {@link SensorEvent} from a Kafka topic.
+ *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @since 1.0
  */
@@ -74,6 +75,7 @@ public class SensorEventKafkaSource extends FlinkKafkaConsumer010<SensorEvent> {
 
   /**
    * Constructs a new Kafka source for sensor events.
+   *
    * @param topic Kafka topics.
    * @param props Kafka properties.
    */
@@ -83,6 +85,7 @@ public class SensorEventKafkaSource extends FlinkKafkaConsumer010<SensorEvent> {
 
   /**
    * Constructs a new Kafka source for sensor events with ignoring features.
+   *
    * @param topic Kafka topics.
    * @param props Kafka properties.
    * @param tsStart the starting timestamp (events before this will be ignored).
@@ -105,6 +108,7 @@ public class SensorEventKafkaSource extends FlinkKafkaConsumer010<SensorEvent> {
 
   /**
    * The Kafka deserialization schema for {@link SensorEvent}.
+   *
    * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
    * @since 1.0
    */

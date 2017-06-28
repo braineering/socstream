@@ -33,7 +33,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A soccer player.
+ * A monitored person.
  *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
@@ -41,11 +41,12 @@ import java.util.Set;
  */
 @Data
 @AllArgsConstructor
-public class Player {
+public class Person {
 
   /**
-   * Player's name.
+   * Person's name.
    */
+  @NonNull
   private String name;
 
   /**
@@ -67,4 +68,8 @@ public class Player {
    * The id of the sensor placed on the right arm.
    */
   private Long armRight;
+
+  public Person(String name) {
+    this.name = name;
+  }
 }

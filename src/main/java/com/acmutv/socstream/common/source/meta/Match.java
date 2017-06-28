@@ -28,6 +28,7 @@ package com.acmutv.socstream.common.source.meta;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,27 +44,27 @@ public class Match {
   /**
    * The list of sensors on balls for the 1st half of the match.
    */
-  private List<Long> ballsHalf1;
+  private List<Long> ballsHalf1 = new ArrayList<>();
 
   /**
    * The list of sensors on balls for the 2nd half of the match.
    */
-  private List<Long> ballsHalf2;
+  private List<Long> ballsHalf2 = new ArrayList<>();
 
   /**
    * The match referee.
    */
-  private Referee referee;
+  private Person referee = new Person("referee");
 
   /**
    * The hosting team.
    */
-  private Team teamA;
+  private Team teamA = new Team("1");
 
   /**
    * The hosted team.
    */
-  private Team teamB;
+  private Team teamB = new Team("2");;
 
 
 

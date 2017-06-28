@@ -32,6 +32,7 @@ import java.util.Properties;
 
 /**
  * Collection of Kafka properties.
+ *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @since 1.0
  */

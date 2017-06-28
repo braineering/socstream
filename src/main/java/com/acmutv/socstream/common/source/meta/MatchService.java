@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -64,6 +65,19 @@ public class MatchService {
     try (Reader rd = Files.newBufferedReader(path, Charset.defaultCharset())) {
       metadata = mapper.readValue(rd, Match.class);
     }
+    return metadata;
+  }
+
+  /**
+   * Parses metadata about the match from the given file.
+   * @param in the file.
+   * @return the metadata about the match.
+   * @throws IOException when metadata cannot be read.
+   */
+  public static Match fromYamlFile(InputStream in) throws IOException {
+    final YAMLMapper mapper = new MatchMetadataYamlMapper();
+    Match metadata = null;
+    metadata = mapper.readValue(in, Match.class);
     return metadata;
   }
 

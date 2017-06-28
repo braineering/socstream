@@ -24,21 +24,22 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream.common.db;
+package com.acmutv.socstream.common.meta;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 /**
- * JUnit test suite for database services.
+ * JUnit test suite for metadata.
+ *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see RedisManagerTest
+ * @see MatchServiceTest
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    RedisManagerTest.class
+    MatchServiceTest.class
 })
-public class TestAllDb {
+public class TestAllMeta {
 }

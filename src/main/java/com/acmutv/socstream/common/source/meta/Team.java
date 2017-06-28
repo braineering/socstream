@@ -26,6 +26,7 @@
 package com.acmutv.socstream.common.source.meta;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import java.util.ArrayList;
@@ -50,10 +51,10 @@ public class Team {
   /**
    * The goalkeeper.
    */
-  private Player goalkeeper;
+  private Person goalkeeper;
 
   /**
    * The list of players.
    */
-  private List<Player> players = new ArrayList<>();
+  private List<Person> players = new ArrayList<>();
 }
