@@ -108,7 +108,7 @@ The 3rd query requires a netcat session to be started:
     
 The 3rd query can be executed running:
 
-    $socstream_home> bash socstream-query-2.sh
+    $socstream_home> bash socstream-query-3.sh
     
 The output is saved to **${FLINK_HOME}/log/\*.out**.
 
