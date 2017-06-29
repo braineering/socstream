@@ -28,6 +28,8 @@ package com.acmutv.socstream;
 
 import com.acmutv.socstream.common.ProgramDriver;
 import com.acmutv.socstream.query1.TopologyQuery1;
+import com.acmutv.socstream.query2.TopologyQuery2;
+import com.acmutv.socstream.query3.TopologyQuery3;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
