@@ -64,12 +64,12 @@ public class Driver {
     /* *********************************************************************************************
      * QUERY 2
      **********************************************************************************************/
-      driver.addClass(TopologyQuery1.PROGRAM_NAME, TopologyQuery1.class, TopologyQuery1.PROGRAM_DESCRIPTION);
+      driver.addClass(TopologyQuery1.PROGRAM_NAME, TopologyQuery2.class, TopologyQuery1.PROGRAM_DESCRIPTION);
 
     /* *********************************************************************************************
      * QUERY 3
      **********************************************************************************************/
-      driver.addClass(TopologyQuery1.PROGRAM_NAME, TopologyQuery1.class, TopologyQuery1.PROGRAM_DESCRIPTION);
+      driver.addClass(TopologyQuery1.PROGRAM_NAME, TopologyQuery3.class, TopologyQuery1.PROGRAM_DESCRIPTION);
 
       LOG.info("Running driver...");
 
