@@ -25,15 +25,9 @@
  */
 package com.acmutv.socstream.common.source.kafka;
 
+import com.acmutv.socstream.common.source.kafka.schema.SensorEventDeserializationSchema;
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
-import org.apache.flink.streaming.util.serialization.AbstractDeserializationSchema;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -45,11 +39,6 @@ import java.util.Set;
  * @since 1.0
  */
 public class RichSensorEventKafkaSource extends FlinkKafkaConsumer010<RichSensorEvent> {
-
-  /**
-   * The logger.
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(RichSensorEventKafkaSource.class);
 
   /**
    * The starting timestamp (events before this will be ignored).
@@ -99,55 +88,5 @@ public class RichSensorEventKafkaSource extends FlinkKafkaConsumer010<RichSensor
     this.tsStartIgnore = tsStartIgnore;
     this.tsEndIgnore = tsEndIgnore;
     this.ignoredSensors = ignoredSensors;
-  }
-
-  /**
-   * The Kafka deserialization schema for {@link RichSensorEvent}.
-   *
-   * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
-   * @since 1.0
-   */
-  @Data
-  @EqualsAndHashCode(callSuper=false)
-  public static final class SensorEventDeserializationSchema extends AbstractDeserializationSchema<RichSensorEvent> {
-
-    /**
-     * The logger.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(SensorEventDeserializationSchema.class);
-
-    /**
-     * The map (SID)->(PID).
-     */
-    private Map<String,String> sid2Pid;
-
-    /**
-     * Creates a new deserialization schema.
-     * @param sid2Pid the map (SID)->(PID).
-     */
-    public SensorEventDeserializationSchema(Map<String,String> sid2Pid) {
-      super();
-      this.sid2Pid = sid2Pid;
-    }
-
-    /**
-     * De-serializes the byte message.
-     *
-     * @param message The message, as a byte array.
-     * @return The de-serialized message as an object.
-     */
-    @Override
-    public RichSensorEvent deserialize(byte[] message) throws IOException {
-      RichSensorEvent event = null;
-
-      try {
-        event = RichSensorEvent.valueOf(new String(message));
-        event.setId(this.sid2Pid.get(event.getId()));
-      } catch (IllegalArgumentException exc) {
-        LOG.warn("Malformed sensor event: {}", message);
-      }
-
-      return event;
-    }
   }
 }

@@ -62,19 +62,19 @@ Stop the environment:
     
     
 ## Kafka setup
-First you need to create the Kafka topic `sample-topic-1`:
+First you need to create the Kafka topic `socstream`:
 
-    $kafka-home> bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic sample-topic-1
+    $> sudo ${KAFKA_HOME}/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic socstream
 
 Test the topic creation:
 
-    $kafka-home> bin/kafka-topics.sh --list --zookeeper localhost:2181
+    $> sudo ${KAFKA_HOME}/bin/kafka-topics.sh --list --zookeeper localhost:2181
 
 To test message publishing:
 
-    $kafka-home> bin/kafka-console-producer.sh --broker-list localhost:9092 --topic sample-topic-1
+    $> ${KAFKA_HOME}/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic socstream
 
-    $kafka-home> bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic sample-topic-1
+    $> ${KAFKA_HOME}/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic socstream
     
     
 ## Query 1

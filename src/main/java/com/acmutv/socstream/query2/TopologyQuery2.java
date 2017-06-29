@@ -74,7 +74,7 @@ public class TopologyQuery2 {
     ParameterTool parameter = ParameterTool.fromArgs(args);
     final String kafkaZookeeper = parameter.get("kafka.zookeeper", "localhost:2181");
     final String kafkaBootstrap = parameter.get("kafka.bootstrap", "localhost:9092");
-    final String kafkaTopic = parameter.get("kafka.topic", "socstream.topic.sensorEvents");
+    final String kafkaTopic = parameter.get("kafka.topic", "socstream");
     final int parallelism = parameter.getInt("parallelism", 1);
     final long matchStart = parameter.getLong("match.start", 10753295594424116L);
     final long matchEnd = parameter.getLong("match.end", 14879639146403495L);
@@ -114,7 +114,7 @@ public class TopologyQuery2 {
 
     DataStream<RichSensorEvent> out = sensorEvents.keyBy(new RichSensorEventKeyer()).flatMap(new IdentityMap<>());
 
-    out.addSink(new WriterSink<>(new PrintWriter(System.out)));
+    out.addSink(new WriterSink<>());
 
     // EXECUTION
     env.execute(PROGRAM_NAME);

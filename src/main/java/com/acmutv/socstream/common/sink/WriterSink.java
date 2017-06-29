@@ -26,19 +26,10 @@
 
 package com.acmutv.socstream.common.sink;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 
-import javax.annotation.Nonnull;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * A sink operator that writes tuples to a specific {@link java.io.Writer}.
@@ -46,15 +37,7 @@ import java.nio.file.Paths;
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-@Data
-@EqualsAndHashCode(callSuper=false)
 public class WriterSink<T> extends RichSinkFunction<T> {
-
-  /**
-   * The output writer.
-   */
-  @Nonnull
-  private Writer writer;
 
   @Override
   public void open(Configuration conf) throws IOException {
@@ -63,13 +46,13 @@ public class WriterSink<T> extends RichSinkFunction<T> {
 
   @Override
   public void close() throws IOException {
-    this.writer.flush();
-    this.writer.close();
+    //TODO
+    //this.writer.flush();
+    //this.writer.close();
   }
 
   @Override
   public void invoke(T elem) throws Exception {
-    this.writer.write(elem.toString());
-    this.writer.write('\n');
+    System.out.println(elem.toString());
   }
 }
