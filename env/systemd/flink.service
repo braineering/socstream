@@ -1,0 +1,14 @@
+[Unit]
+Description=Apache Flink service
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/opt/systemd/flink-manager.sh start
+ExecStop=/opt/systemd/flink-manager.sh stop
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=flink
+
+[Install]
+WantedBy=multi-user.target

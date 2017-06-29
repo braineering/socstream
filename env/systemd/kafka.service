@@ -1,0 +1,15 @@
+[Unit]
+Description=Kafka service
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/opt/systemd/kafka-manager.sh start
+ExecStop=/opt/systemd/kafka-manager.sh stop
+#Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=kafka
+
+[Install]
+WantedBy=multi-user.target
