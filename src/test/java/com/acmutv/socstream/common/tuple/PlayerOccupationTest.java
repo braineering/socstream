@@ -26,10 +26,9 @@
 
 package com.acmutv.socstream.common.tuple;
 
+import com.acmutv.socstream.query3.tuple.PlayerOccupation;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * JUnit test suite for {@link PlayerOccupation}.

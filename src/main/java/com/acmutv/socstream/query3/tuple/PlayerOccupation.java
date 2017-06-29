@@ -24,13 +24,12 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream.common.tuple;
+package com.acmutv.socstream.query3.tuple;
 
 import javafx.util.Pair;
 import lombok.Data;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
