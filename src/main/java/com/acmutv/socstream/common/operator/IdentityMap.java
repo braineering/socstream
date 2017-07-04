@@ -56,7 +56,6 @@ public class IdentityMap<V> implements FlatMapFunction<V,V> {
    */
   @Override
   public void flatMap(V value, Collector<V> out) throws Exception {
-    LOG.info("Received: {}", value);
     out.collect(value);
   }
 }

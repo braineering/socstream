@@ -86,12 +86,7 @@ public class FileWriterSink<T> extends RichSinkFunction<T> {
   }
 
   @Override
-  public void invoke(T elem) {
-    LOG.info("Received: {}", elem);
-    try {
-      this.writer.write(elem.toString() + "\n");
-    } catch (IOException exc) {
-      LOG.error(exc.getMessage());
-    }
+  public void invoke(T elem) throws IOException {
+    this.writer.write(elem.toString() + "\n");
   }
 }

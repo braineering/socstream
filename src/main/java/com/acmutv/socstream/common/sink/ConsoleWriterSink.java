@@ -45,7 +45,6 @@ public class ConsoleWriterSink<T> extends RichSinkFunction<T> {
 
   @Override
   public void invoke(T elem) throws Exception {
-    LOG.info("Received: {}", elem);
     System.out.println(elem.toString());
   }
 }

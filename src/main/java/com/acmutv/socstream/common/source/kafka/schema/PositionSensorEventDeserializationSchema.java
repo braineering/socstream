@@ -107,7 +107,7 @@ public class PositionSensorEventDeserializationSchema extends AbstractDeserializ
       final long ts = event.getTs();
       if (ts < this.tsStart || ts > this.tsEnd || (ts > tsStartIgnore && ts < tsEndIgnore) ||
           this.ignoredSensors.contains(event.getId())) {
-        LOG.warn("Ignored sensor event: {}", strEvent);
+        LOG.debug("Ignored sensor event: {}", strEvent);
         return null;
       }
       event.setId(this.sid2Pid.get(event.getId()));
