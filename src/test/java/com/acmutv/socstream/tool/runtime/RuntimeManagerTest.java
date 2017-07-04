@@ -28,7 +28,13 @@ package com.acmutv.socstream.tool.runtime;
 
 import org.junit.Test;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 import static org.junit.Assert.assertEquals;
 

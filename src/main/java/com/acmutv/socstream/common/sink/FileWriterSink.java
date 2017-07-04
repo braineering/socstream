@@ -39,6 +39,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 /**
  * A sink operator that writes tuples to a file.
@@ -74,11 +75,8 @@ public class FileWriterSink<T> extends RichSinkFunction<T> {
 
   @Override
   public void open(Configuration conf) throws IOException {
-    Path path = Paths.get(this.path);
-    if (!Files.exists(path)) {
-      Files.createFile(path);
-    }
-    this.writer = Files.newBufferedWriter(path, Charset.defaultCharset());
+    final Path path = Paths.get(this.path);
+    this.writer = Files.newBufferedWriter(path, Charset.defaultCharset(), StandardOpenOption.CREATE);
   }
 
   @Override
@@ -88,9 +86,12 @@ public class FileWriterSink<T> extends RichSinkFunction<T> {
   }
 
   @Override
-  public void invoke(T elem) throws Exception {
+  public void invoke(T elem) {
     LOG.info("Received: {}", elem);
-    this.writer.write(elem.toString());
-    this.writer.newLine();
+    try {
+      this.writer.write(elem.toString() + "\n");
+    } catch (IOException exc) {
+      LOG.error(exc.getMessage());
+    }
   }
 }

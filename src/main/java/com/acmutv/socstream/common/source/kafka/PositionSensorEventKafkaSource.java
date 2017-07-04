@@ -29,6 +29,9 @@ import com.acmutv.socstream.common.source.kafka.schema.PositionSensorEventDeseri
 import com.acmutv.socstream.common.source.kafka.schema.RichSensorEventDeserializationSchema;
 import com.acmutv.socstream.common.tuple.PositionSensorEvent;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -39,6 +42,11 @@ import java.util.Set;
  * @since 1.0
  */
 public class PositionSensorEventKafkaSource extends FlinkKafkaConsumer010<PositionSensorEvent> {
+
+  /**
+   * The logger.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(PositionSensorEventKafkaSource.class);
 
   /**
    * Constructs a new Kafka source for sensor events with ignoring features.

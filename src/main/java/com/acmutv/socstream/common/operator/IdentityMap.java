@@ -25,8 +25,11 @@
  */
 package com.acmutv.socstream.common.operator;
 
+import com.acmutv.socstream.common.source.kafka.schema.RichSensorEventDeserializationSchema;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.util.Collector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A flat map that emits what it receives.
@@ -36,6 +39,12 @@ import org.apache.flink.util.Collector;
  * @since 1.0
  */
 public class IdentityMap<V> implements FlatMapFunction<V,V> {
+
+  /**
+   * The logger.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(IdentityMap.class);
+
   /**
    * The core method of the FlatMapFunction. Takes an element from the input data set and transforms
    * it into zero, one, or more elements.
@@ -47,6 +56,7 @@ public class IdentityMap<V> implements FlatMapFunction<V,V> {
    */
   @Override
   public void flatMap(V value, Collector<V> out) throws Exception {
+    LOG.info("Received: {}", value);
     out.collect(value);
   }
 }

@@ -37,6 +37,7 @@ import com.acmutv.socstream.common.meta.MatchService;
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -88,7 +89,7 @@ public class TopologyQuery1 {
     // ENVIRONMENT
     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     env.setParallelism(parallelism);
-    final KafkaProperties kafkaProps = new KafkaProperties(kafkaBootstrap, kafkaZookeeper);
+    final KafkaProperties kafkaProps = new KafkaProperties(kafkaBootstrap);
 
     // CONFIGURATION RESUME
     System.out.println("############################################################################");
@@ -115,7 +116,7 @@ public class TopologyQuery1 {
 
     DataStream<RichSensorEvent> out = sensorEvents.keyBy(new RichSensorEventKeyer()).flatMap(new IdentityMap<>());
 
-    out.addSink(new FileWriterSink<>(outputPath.toString()));
+    out.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
 
     // EXECUTION
     env.execute(PROGRAM_NAME);

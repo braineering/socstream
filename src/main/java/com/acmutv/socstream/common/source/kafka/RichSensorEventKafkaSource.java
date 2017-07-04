@@ -28,6 +28,9 @@ package com.acmutv.socstream.common.source.kafka;
 import com.acmutv.socstream.common.source.kafka.schema.RichSensorEventDeserializationSchema;
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -39,6 +42,11 @@ import java.util.Set;
  * @since 1.0
  */
 public class RichSensorEventKafkaSource extends FlinkKafkaConsumer010<RichSensorEvent> {
+
+  /**
+   * The logger.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(RichSensorEventKafkaSource.class);
 
   /**
    * Constructs a new Kafka source for sensor events with ignoring features.

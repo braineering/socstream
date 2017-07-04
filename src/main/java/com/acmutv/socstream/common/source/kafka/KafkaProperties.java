@@ -42,12 +42,9 @@ public class KafkaProperties extends Properties {
 
   public static final String BOOTSTRAP_SERVERS = "bootstrap.servers";
 
-  public static final String ZOOKEEPER_CONNECT = "zookeeper.connect";
-
-  public KafkaProperties(String bootstrapServers, String zookeeperConnect) {
+  public KafkaProperties(String bootstrapServers) {
     super();
     super.put(BOOTSTRAP_SERVERS, bootstrapServers);
-    super.put(ZOOKEEPER_CONNECT, zookeeperConnect);
   }
 
   public KafkaProperties(KafkaProperties other) {
@@ -56,10 +53,6 @@ public class KafkaProperties extends Properties {
 
   public void setBootstrapServers(String bootstrapServers) {
     super.put(BOOTSTRAP_SERVERS, bootstrapServers);
-  }
-
-  public void setZookeeperConnect(String zookeeperConnect) {
-    super.put(ZOOKEEPER_CONNECT, zookeeperConnect);
   }
 
 }
