@@ -35,12 +35,12 @@ import org.junit.runners.Suite;
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  * @see RichSensorEventTest
- * @see PositionRichSensorEventTest
+ * @see PositionSensorEventTest
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
     RichSensorEventTest.class,
-    PositionRichSensorEventTest.class,
+    PositionSensorEventTest.class,
     PlayerOccupationTest.class
 })
 public class TestAllTuple {

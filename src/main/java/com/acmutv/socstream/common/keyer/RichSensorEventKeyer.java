@@ -35,7 +35,7 @@ import org.apache.flink.api.java.functions.KeySelector;
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-public class RichSensorEventKeyer implements KeySelector<RichSensorEvent,String> {
+public class RichSensorEventKeyer implements KeySelector<RichSensorEvent,Long> {
 
   /**
    * User-defined function that extracts the key from an arbitrary object.
@@ -63,7 +63,7 @@ public class RichSensorEventKeyer implements KeySelector<RichSensorEvent,String>
    *                   and trigger recovery or cancellation of the program.
    */
   @Override
-  public String getKey(RichSensorEvent value) throws Exception {
+  public Long getKey(RichSensorEvent value) throws Exception {
     return value.getId();
   }
 }

@@ -37,23 +37,28 @@ import java.util.List;
 /**
  * JUnit test suite for {@link RichSensorEvent}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
+ * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  * @see RichSensorEvent
  */
 public class RichSensorEventTest {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(RichSensorEventTest.class);
+  /**
+   * The logger.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(RichSensorEventTest.class);
 
   /**
-   * Tests serialization of {@link RichSensorEvent}.
+   * Tests serialization/deserialization of {@link RichSensorEvent}.
    */
   @Test
   public void test_serialize() throws Exception {
     List<RichSensorEvent> sensorEvents = new ArrayList<>();
-    sensorEvents.add(new RichSensorEvent("1",2,3,4,5,6,7,8,9,10,11,12,13));
+    sensorEvents.add(new RichSensorEvent(1,2,3,4,5,6,7,8,9,10,11,12,13));
+    sensorEvents.add(new RichSensorEvent(2,2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13));
 
     for (RichSensorEvent expected : sensorEvents) {
-      LOGGER.debug("RichSensorEvent serialized: " + expected);
+      LOG.debug("RichSensorEvent serialized: " + expected);
       String str = expected.toString();
       RichSensorEvent actual = RichSensorEvent.valueOf(str);
       Assert.assertEquals(expected, actual);

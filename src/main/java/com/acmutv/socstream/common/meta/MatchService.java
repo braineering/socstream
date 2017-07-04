@@ -110,27 +110,25 @@ public class MatchService {
    * @param match the metdata about the match.
    * @return the collection of sensors id to be ignored.
    */
-  public static Map<String,String> collectSid2Pid(Match match) {
-    Map<String,String> sid2Pid = new HashMap<>();
+  public static Map<Long,Long> collectSid2Pid(Match match) {
+    Map<Long,Long> sid2Pid = new HashMap<>();
 
-    int idxA = 0;
+    long pidA = 100;
     for (Person player : match.getTeamA().getPlayers()) {
-      String pid = "A" + idxA;
       for (Long sensor : player.getAllSensors()) {
         if (sensor == null) continue;
-        sid2Pid.put(sensor.toString(), pid);
+        sid2Pid.put(sensor, pidA);
       }
-      idxA++;
+      pidA++;
     }
 
-    int idxB = 0;
+    long pidB = 200;
     for (Person player : match.getTeamB().getPlayers()) {
-      String pid = "B" + idxB;
       for (Long sensor : player.getAllSensors()) {
         if (sensor == null) continue;
-        sid2Pid.put(sensor.toString(), pid);
+        sid2Pid.put(sensor, pidB);
       }
-      idxB++;
+      pidB++;
     }
 
     return sid2Pid;

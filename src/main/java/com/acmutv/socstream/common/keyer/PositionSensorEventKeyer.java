@@ -35,7 +35,7 @@ import org.apache.flink.api.java.functions.KeySelector;
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-public class PositionSensorEventKeyer implements KeySelector<PositionSensorEvent,String> {
+public class PositionSensorEventKeyer implements KeySelector<PositionSensorEvent,Long> {
 
   /**
    * User-defined function that extracts the key from an arbitrary object.
@@ -63,7 +63,7 @@ public class PositionSensorEventKeyer implements KeySelector<PositionSensorEvent
    *                   and trigger recovery or cancellation of the program.
    */
   @Override
-  public String getKey(PositionSensorEvent value) throws Exception {
+  public Long getKey(PositionSensorEvent value) throws Exception {
     return value.getId();
   }
 }

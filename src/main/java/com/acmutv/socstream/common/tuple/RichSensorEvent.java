@@ -46,7 +46,7 @@ public class RichSensorEvent extends PositionSensorEvent {
    * The regular expression
    */
   private static final String REGEXP =
-      "^([a-zA-Z0-9]+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+)$";
+      "^(\\d+),(\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+)$";
 
   /**
    * The pattern matcher used to match strings on {@code REGEXP}.
@@ -94,7 +94,7 @@ public class RichSensorEvent extends PositionSensorEvent {
   private long az;
 
 
-  public RichSensorEvent(String id, long ts,
+  public RichSensorEvent(long id, long ts,
                          long x, long y, long z,
                          long v, long a,
                          long vx, long vy, long vz,
@@ -128,7 +128,7 @@ public class RichSensorEvent extends PositionSensorEvent {
     if (string == null) throw new IllegalArgumentException();
     Matcher matcher = PATTERN.matcher(string);
     if (!matcher.matches()) throw new IllegalArgumentException(string);
-    String id = matcher.group(1);
+    long id = Long.valueOf(matcher.group(1));
     long ts = Long.valueOf(matcher.group(2));
     long x = Long.valueOf(matcher.group(3));
     long y = Long.valueOf(matcher.group(4));
@@ -146,7 +146,7 @@ public class RichSensorEvent extends PositionSensorEvent {
 
   @Override
   public String toString() {
-    return String.format("%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
+    return String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
         super.getId(), super.getTs(), super.getX(), super.getY(), super.getZ(),
         this.v, this.a,
         this.vx, this.vy, this.vz,

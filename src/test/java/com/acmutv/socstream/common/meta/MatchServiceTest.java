@@ -119,30 +119,30 @@ public class MatchServiceTest {
     Match match = MatchService.fromYamlFile(in);
     in.close();
 
-    Map<String,String> actual = MatchService.collectSid2Pid(match);
+    Map<Long,Long> actual = MatchService.collectSid2Pid(match);
 
-    Map<String,String> expected = new HashMap<>();
-    expected.put("7",  "A0");
-    expected.put("8",  "A0");
-    expected.put("9",  "A0");
-    expected.put("10", "A0");
-    expected.put("11", "A1");
-    expected.put("12", "A1");
-    expected.put("13", "A2");
-    expected.put("14", "A2");
-    expected.put("15", "A3");
-    expected.put("16", "A3");
+    Map<Long,Long> expected = new HashMap<>();
+    expected.put(7L,  100L);
+    expected.put(8L,  100L);
+    expected.put(9L,  100L);
+    expected.put(10L, 100L);
+    expected.put(11L, 101L);
+    expected.put(12L, 101L);
+    expected.put(13L, 102L);
+    expected.put(14L, 102L);
+    expected.put(15L, 103L);
+    expected.put(16L, 103L);
 
-    expected.put("17", "B0");
-    expected.put("18", "B0");
-    expected.put("19", "B0");
-    expected.put("20", "B0");
-    expected.put("21", "B1");
-    expected.put("22", "B1");
-    expected.put("23", "B2");
-    expected.put("24", "B2");
-    expected.put("25", "B3");
-    expected.put("26", "B3");
+    expected.put(17L, 200L);
+    expected.put(18L, 200L);
+    expected.put(19L, 200L);
+    expected.put(20L, 200L);
+    expected.put(21L, 201L);
+    expected.put(22L, 201L);
+    expected.put(23L, 202L);
+    expected.put(24L, 202L);
+    expected.put(25L, 203L);
+    expected.put(26L, 203L);
 
     Assert.assertEquals(expected, actual);
   }

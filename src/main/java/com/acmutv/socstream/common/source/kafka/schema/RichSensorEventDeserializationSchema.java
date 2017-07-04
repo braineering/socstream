@@ -26,6 +26,7 @@
 package com.acmutv.socstream.common.source.kafka.schema;
 
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.flink.streaming.util.serialization.AbstractDeserializationSchema;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The Kafka deserialization schema for {@link RichSensorEvent}.
@@ -42,32 +44,49 @@ import java.util.Map;
  * @since 1.0
  */
 @Data
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper=false)
-public class SensorEventDeserializationSchema extends AbstractDeserializationSchema<RichSensorEvent> {
+public class RichSensorEventDeserializationSchema extends AbstractDeserializationSchema<RichSensorEvent> {
 
   /**
    * The logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(SensorEventDeserializationSchema.class);
+  private static final Logger LOG = LoggerFactory.getLogger(RichSensorEventDeserializationSchema.class);
+
+  /**
+   * The starting timestamp (events before this will be ignored).
+   */
+  private Long tsStart;
+
+  /**
+   * The ending timestamp (events after this will be ignored).
+   */
+  private Long tsEnd;
+
+  /**
+   * The starting timestamp to ignore (events between this and {@code tsEndIgnore} will be ignored).
+   */
+  private Long tsStartIgnore;
+
+  /**
+   * The ending timestamp to ignore (events between {@code tsStartIgnore} and this will be ignored).
+   */
+  private Long tsEndIgnore;
+
+  /**
+   * The ignore list for sensors id.
+   */
+  private Set<Long> ignoredSensors;
 
   /**
    * The map (SID)->(PID).
    */
-  private Map<String,String> sid2Pid;
-
-  /**
-   * Creates a new deserialization schema.
-   * @param sid2Pid the map (SID)->(PID).
-   */
-  public SensorEventDeserializationSchema(Map<String,String> sid2Pid) {
-    super();
-    this.sid2Pid = sid2Pid;
-  }
+  private Map<Long,Long> sid2Pid;
 
   /**
    * Creates a new deserialization schema.
    */
-  public SensorEventDeserializationSchema() {
+  public RichSensorEventDeserializationSchema() {
     super();
   }
 
@@ -81,11 +100,19 @@ public class SensorEventDeserializationSchema extends AbstractDeserializationSch
   public RichSensorEvent deserialize(byte[] message) throws IOException {
     RichSensorEvent event = null;
 
+    final String strEvent = new String(message);
+
     try {
-      event = RichSensorEvent.valueOf(new String(message));
+      event = RichSensorEvent.valueOf(strEvent);
+      final long ts = event.getTs();
+      if (ts < this.tsStart || ts > this.tsEnd || (ts > tsStartIgnore && ts < tsEndIgnore) ||
+          this.ignoredSensors.contains(event.getId())) {
+        LOG.warn("Ignored sensor event: {}", strEvent);
+        return null;
+      }
       event.setId(this.sid2Pid.get(event.getId()));
     } catch (IllegalArgumentException exc) {
-      LOG.warn("Malformed sensor event: {}", message);
+      LOG.warn("Malformed sensor event: {}", strEvent);
     }
 
     return event;

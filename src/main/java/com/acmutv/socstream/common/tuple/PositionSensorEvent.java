@@ -44,7 +44,7 @@ public class PositionSensorEvent {
    * The regular expression
    */
   private static final String REGEXP =
-      "^([a-zA-Z0-9]+),(\\d+),(\\d+),(\\d+),(\\d+)$";
+      "^(\\d+),(\\d+),(-?\\d+),(-?\\d+),(-?\\d+)$";
 
   /**
    * The pattern matcher used to match strings on {@code REGEXP}.
@@ -54,7 +54,7 @@ public class PositionSensorEvent {
   /**
    * The SID or PID.
    */
-  private String id;
+  private long id;
 
   /**
    * The timestamp.
@@ -77,7 +77,7 @@ public class PositionSensorEvent {
   private long z;
 
 
-  public PositionSensorEvent(String id, long ts,
+  public PositionSensorEvent(long id, long ts,
                              long x, long y, long z) {
     this.id = id;
     this.ts = ts;
@@ -102,7 +102,7 @@ public class PositionSensorEvent {
     if (string == null) throw new IllegalArgumentException();
     Matcher matcher = PATTERN.matcher(string);
     if (!matcher.matches()) throw new IllegalArgumentException(string);
-    String id = matcher.group(1);
+    long id = Long.valueOf(matcher.group(1));
     long ts = Long.valueOf(matcher.group(2));
     long x = Long.valueOf(matcher.group(3));
     long y = Long.valueOf(matcher.group(4));
@@ -120,7 +120,7 @@ public class PositionSensorEvent {
     if (string == null) throw new IllegalArgumentException();
     Matcher matcher = RichSensorEvent.PATTERN.matcher(string);
     if (!matcher.matches()) throw new IllegalArgumentException(string);
-    String id = matcher.group(1);
+    long id = Long.valueOf(matcher.group(1));
     long ts = Long.valueOf(matcher.group(2));
     long x = Long.valueOf(matcher.group(3));
     long y = Long.valueOf(matcher.group(4));
@@ -130,7 +130,7 @@ public class PositionSensorEvent {
 
   @Override
   public String toString() {
-    return String.format("%s,%d,%d,%d,%d",
+    return String.format("%d,%d,%d,%d,%d",
         this.id, this.ts, this.x, this.y, this.z);
   }
 }

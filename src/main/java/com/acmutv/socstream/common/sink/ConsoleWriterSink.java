@@ -26,62 +26,26 @@
 
 package com.acmutv.socstream.common.sink;
 
-import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
-
-import javax.annotation.Nonnull;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * A sink operator that writes tuples to a specific file.
+ * A sink operator that writes tuples to the standard output.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-public class ToStringSink<T> extends RichSinkFunction<T> {
+public class ConsoleWriterSink<T> extends RichSinkFunction<T> {
 
   /**
-   * The output file path.
+   * The logger.
    */
-  private String path;
-
-  /**
-   * The writer to the output file.
-   */
-  private BufferedWriter writer;
-
-  /**
-   * Creates a new sink.
-   * @param path the output file path.
-   * @throws IOException when file cannot be written.
-   */
-  public ToStringSink(@Nonnull final String path) throws IOException {
-    this.path = path;
-  }
-
-  @Override
-  public void open(Configuration conf) throws IOException {
-    Path path = Paths.get(this.path);
-    if (!Files.exists(path)) {
-      Files.createFile(path);
-    }
-    this.writer = Files.newBufferedWriter(path, Charset.defaultCharset());
-  }
-
-  @Override
-  public void close() throws IOException {
-    this.writer.flush();
-    this.writer.close();
-  }
+  private static final Logger LOG = LoggerFactory.getLogger(ConsoleWriterSink.class);
 
   @Override
   public void invoke(T elem) throws Exception {
-    this.writer.write(elem.toString());
-    this.writer.newLine();
+    LOG.info("Received: {}", elem);
+    System.out.println(elem.toString());
   }
 }

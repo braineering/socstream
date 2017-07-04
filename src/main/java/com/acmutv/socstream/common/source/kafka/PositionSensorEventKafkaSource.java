@@ -26,6 +26,7 @@
 package com.acmutv.socstream.common.source.kafka;
 
 import com.acmutv.socstream.common.source.kafka.schema.PositionSensorEventDeserializationSchema;
+import com.acmutv.socstream.common.source.kafka.schema.RichSensorEventDeserializationSchema;
 import com.acmutv.socstream.common.tuple.PositionSensorEvent;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
 import java.util.Map;
@@ -38,31 +39,6 @@ import java.util.Set;
  * @since 1.0
  */
 public class PositionSensorEventKafkaSource extends FlinkKafkaConsumer010<PositionSensorEvent> {
-
-  /**
-   * The starting timestamp (events before this will be ignored).
-   */
-  private Long tsStart;
-
-  /**
-   * The ending timestamp (events after this will be ignored).
-   */
-  private Long tsEnd;
-
-  /**
-   * The starting timestamp to ignore (events between this and {@code tsEndIgnore} will be ignored).
-   */
-  private Long tsStartIgnore;
-
-  /**
-   * The ending timestamp to ignore (events between {@code tsStartIgnore} and this will be ignored).
-   */
-  private Long tsEndIgnore;
-
-  /**
-   * The ignore list for sensors id.
-   */
-  private Set<Long> ignoredSensors;
 
   /**
    * Constructs a new Kafka source for sensor events with ignoring features.
@@ -80,12 +56,9 @@ public class PositionSensorEventKafkaSource extends FlinkKafkaConsumer010<Positi
                                         long tsStart, long tsEnd,
                                         long tsStartIgnore, long tsEndIgnore,
                                         Set<Long> ignoredSensors,
-                                        Map<String,String> sid2Pid) {
-    super(topic, new PositionSensorEventDeserializationSchema(sid2Pid), props);
-    this.tsStart = tsStart;
-    this.tsEnd = tsEnd;
-    this.tsStartIgnore = tsStartIgnore;
-    this.tsEndIgnore = tsEndIgnore;
-    this.ignoredSensors = ignoredSensors;
+                                        Map<Long,Long> sid2Pid) {
+    super(topic, new PositionSensorEventDeserializationSchema(
+        tsStart, tsEnd, tsStartIgnore, tsEndIgnore, ignoredSensors, sid2Pid
+    ), props);
   }
 }

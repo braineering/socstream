@@ -26,6 +26,7 @@
 package com.acmutv.socstream.common.source.kafka.schema;
 
 import com.acmutv.socstream.common.tuple.PositionSensorEvent;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.flink.streaming.util.serialization.AbstractDeserializationSchema;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The Kafka deserialization schema for {@link PositionSensorEvent}.
@@ -42,6 +44,7 @@ import java.util.Map;
  * @since 1.0
  */
 @Data
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper=false)
 public class PositionSensorEventDeserializationSchema extends AbstractDeserializationSchema<PositionSensorEvent> {
 
@@ -51,18 +54,34 @@ public class PositionSensorEventDeserializationSchema extends AbstractDeserializ
   private static final Logger LOG = LoggerFactory.getLogger(PositionSensorEventDeserializationSchema.class);
 
   /**
-   * The map (SID)->(PID).
+   * The starting timestamp (events before this will be ignored).
    */
-  private Map<String,String> sid2Pid;
+  private Long tsStart;
 
   /**
-   * Creates a new deserialization schema.
-   * @param sid2Pid the map (SID)->(PID).
+   * The ending timestamp (events after this will be ignored).
    */
-  public PositionSensorEventDeserializationSchema(Map<String,String> sid2Pid) {
-    super();
-    this.sid2Pid = sid2Pid;
-  }
+  private Long tsEnd;
+
+  /**
+   * The starting timestamp to ignore (events between this and {@code tsEndIgnore} will be ignored).
+   */
+  private Long tsStartIgnore;
+
+  /**
+   * The ending timestamp to ignore (events between {@code tsStartIgnore} and this will be ignored).
+   */
+  private Long tsEndIgnore;
+
+  /**
+   * The ignore list for sensors id.
+   */
+  private Set<Long> ignoredSensors;
+
+  /**
+   * The map (SID)->(PID).
+   */
+  private Map<Long,Long> sid2Pid;
 
   /**
    * Creates a new deserialization schema.
@@ -81,11 +100,19 @@ public class PositionSensorEventDeserializationSchema extends AbstractDeserializ
   public PositionSensorEvent deserialize(byte[] message) throws IOException {
     PositionSensorEvent event = null;
 
+    final String strEvent = new String(message);
+
     try {
-      event = PositionSensorEvent.valueOfAsSensorEvent(new String(message));
+      event = PositionSensorEvent.valueOfAsSensorEvent(strEvent);
+      final long ts = event.getTs();
+      if (ts < this.tsStart || ts > this.tsEnd || (ts > tsStartIgnore && ts < tsEndIgnore) ||
+          this.ignoredSensors.contains(event.getId())) {
+        LOG.warn("Ignored sensor event: {}", strEvent);
+        return null;
+      }
       event.setId(this.sid2Pid.get(event.getId()));
     } catch (IllegalArgumentException exc) {
-      LOG.warn("Malformed sensor event: {}", message);
+      LOG.warn("Malformed sensor event: {}", strEvent);
     }
 
     return event;

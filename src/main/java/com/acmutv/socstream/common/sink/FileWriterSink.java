@@ -26,33 +26,71 @@
 
 package com.acmutv.socstream.common.sink;
 
+import com.acmutv.socstream.common.source.kafka.schema.PositionSensorEventDeserializationSchema;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
- * A sink operator that writes tuples to a specific {@link java.io.Writer}.
+ * A sink operator that writes tuples to a file.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-public class WriterSink<T> extends RichSinkFunction<T> {
+public class FileWriterSink<T> extends RichSinkFunction<T> {
+
+  /**
+   * The logger.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(FileWriterSink.class);
+
+  /**
+   * The output file path.
+   */
+  private String path;
+
+  /**
+   * The writer to the output file.
+   */
+  private BufferedWriter writer;
+
+  /**
+   * Creates a new sink.
+   * @param path the output file path.
+   * @throws IOException when file cannot be written.
+   */
+  public FileWriterSink(@Nonnull final String path) throws IOException {
+    this.path = path;
+  }
 
   @Override
   public void open(Configuration conf) throws IOException {
-    //TODO
+    Path path = Paths.get(this.path);
+    if (!Files.exists(path)) {
+      Files.createFile(path);
+    }
+    this.writer = Files.newBufferedWriter(path, Charset.defaultCharset());
   }
 
   @Override
   public void close() throws IOException {
-    //TODO
-    //this.writer.flush();
-    //this.writer.close();
+    this.writer.flush();
+    this.writer.close();
   }
 
   @Override
   public void invoke(T elem) throws Exception {
-    System.out.println(elem.toString());
+    LOG.info("Received: {}", elem);
+    this.writer.write(elem.toString());
+    this.writer.newLine();
   }
 }
