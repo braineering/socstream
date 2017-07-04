@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
  * @since 1.0
  */
 @Data
-public class SpeedRanking {
+public class PlayersSpeedRanking {
 
   /**
    * The regular expression
@@ -70,8 +70,8 @@ public class SpeedRanking {
   private List<Pair<Long,Double>> rank;
 
 
-  public SpeedRanking(long tsStart, long tsStop,
-                      List<Pair<Long,Double>> rank) {
+  public PlayersSpeedRanking(long tsStart, long tsStop,
+                             List<Pair<Long,Double>> rank) {
     this.tsStart = tsStart;
     this.tsStop = tsStop;
     this.rank = rank;
@@ -81,15 +81,15 @@ public class SpeedRanking {
    * Creates an empty sensor event..
    * This constructor is mandatory for Flink serialization.
    */
-  public SpeedRanking(){}
+  public PlayersSpeedRanking(){}
 
   /**
-   * Parses {@link SpeedRanking} from string.
+   * Parses {@link PlayersSpeedRanking} from string.
    * @param string the string to parse.
-   * @return the parsed {@link SpeedRanking}.
+   * @return the parsed {@link PlayersSpeedRanking}.
    * @throws IllegalArgumentException when {@code string} cannot be parsed.
    */
-  public static SpeedRanking valueOf(String string) throws IllegalArgumentException {
+  public static PlayersSpeedRanking valueOf(String string) throws IllegalArgumentException {
     if (string == null) throw new IllegalArgumentException();
     Matcher matcher = PATTERN.matcher(string);
     if (!matcher.matches()) throw new IllegalArgumentException(string);
@@ -97,7 +97,7 @@ public class SpeedRanking {
     long tsStop = Long.valueOf(matcher.group(2));
     String strRank = matcher.group(3);
     List<Pair<Long,Double>> rank = new ArrayList<>();
-    return new SpeedRanking(tsStart, tsStop, rank);
+    return new PlayersSpeedRanking(tsStart, tsStop, rank);
   }
 
   @Override

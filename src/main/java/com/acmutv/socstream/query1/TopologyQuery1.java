@@ -27,23 +27,26 @@
 package com.acmutv.socstream.query1;
 
 import com.acmutv.socstream.common.keyer.RichSensorEventKeyer;
-import com.acmutv.socstream.common.operator.IdentityMap;
-import com.acmutv.socstream.common.sink.ConsoleWriterSink;
-import com.acmutv.socstream.common.sink.FileWriterSink;
 import com.acmutv.socstream.common.source.kafka.KafkaProperties;
 import com.acmutv.socstream.common.source.kafka.RichSensorEventKafkaSource;
 import com.acmutv.socstream.common.meta.Match;
 import com.acmutv.socstream.common.meta.MatchService;
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
+import com.acmutv.socstream.query1.operator.*;
+import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.core.fs.FileSystem;
+import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.time.Time;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The topology for query-1.
@@ -75,6 +78,8 @@ public class TopologyQuery1 {
     final String kafkaZookeeper = parameter.get("kafka.zookeeper", "localhost:2181");
     final String kafkaBootstrap = parameter.get("kafka.bootstrap", "localhost:9092");
     final String kafkaTopic = parameter.get("kafka.topic", "socstream");
+    final long windowSize = parameter.getLong("windowSize", 0);
+    final TimeUnit windowUnit = TimeUnit.valueOf(parameter.get("windowUnit", "SECONDS"));
     final int parallelism = parameter.getInt("parallelism", 1);
     final long matchStart = parameter.getLong("match.start", 10753295594424116L);
     final long matchEnd = parameter.getLong("match.end", 14879639146403495L);
@@ -88,6 +93,7 @@ public class TopologyQuery1 {
 
     // ENVIRONMENT
     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
     env.setParallelism(parallelism);
     final KafkaProperties kafkaProps = new KafkaProperties(kafkaBootstrap);
 
@@ -100,6 +106,7 @@ public class TopologyQuery1 {
     System.out.println("Kafka Zookeeper: " + kafkaZookeeper);
     System.out.println("Kafka Bootstrap: " + kafkaBootstrap);
     System.out.println("Kafka Topic: " + kafkaTopic);
+    System.out.println("Window Size: " + windowSize + " " + windowUnit);
     System.out.println("Metadata: " + metadataPath);
     System.out.println("Output: " + outputPath);
     System.out.println("Parallelism: " + parallelism);
@@ -111,12 +118,22 @@ public class TopologyQuery1 {
     System.out.println("############################################################################");
 
     // TOPOLOGY
-    DataStream<RichSensorEvent> sensorEvents = env.addSource(new RichSensorEventKafkaSource(kafkaTopic, kafkaProps,
-        matchStart, matchEnd, matchIntervalStart, matchIntervalEnd, ignoredSensors, sid2Pid));
+    DataStream<RichSensorEvent> sensorEvents = env.addSource(
+        new RichSensorEventKafkaSource(kafkaTopic, kafkaProps, matchStart, matchEnd,
+            matchIntervalStart, matchIntervalEnd, ignoredSensors, sid2Pid
+        ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor())
+    );
 
-    DataStream<RichSensorEvent> out = sensorEvents.keyBy(new RichSensorEventKeyer()).flatMap(new IdentityMap<>());
+    KeyedStream<RichSensorEvent,Long> playerEvents = sensorEvents.keyBy(new RichSensorEventKeyer());
 
-    out.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
+    DataStream<PlayerRunningStatistics> statistics = null;
+    if (windowSize > 0) {
+      //statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit)).;
+    } else {
+      statistics = playerEvents.flatMap(new PlayerStatisticsCalculator());
+    }
+
+    statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
 
     // EXECUTION
     env.execute(PROGRAM_NAME);

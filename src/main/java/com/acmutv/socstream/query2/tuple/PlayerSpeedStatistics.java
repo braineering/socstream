@@ -24,7 +24,7 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream.query1.tuple;
+package com.acmutv.socstream.query2.tuple;
 
 import lombok.Data;
 
@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
  * @since 1.0
  */
 @Data
-public class RunningStatistics {
+public class PlayerSpeedStatistics {
 
   /**
    * The regular expression
@@ -77,9 +77,9 @@ public class RunningStatistics {
   private double avgSpeed;
 
 
-  public RunningStatistics(long tsStart, long tsStop,
-                           long pid,
-                           double dist, double avgSpeed) {
+  public PlayerSpeedStatistics(long tsStart, long tsStop,
+                               long pid,
+                               double dist, double avgSpeed) {
     this.tsStart = tsStart;
     this.tsStop = tsStop;
     this.pid = pid;
@@ -91,15 +91,15 @@ public class RunningStatistics {
    * Creates an empty sensor event..
    * This constructor is mandatory for Flink serialization.
    */
-  public RunningStatistics(){}
+  public PlayerSpeedStatistics(){}
 
   /**
-   * Parses {@link RunningStatistics} from string.
+   * Parses {@link PlayerSpeedStatistics} from string.
    * @param string the string to parse.
-   * @return the parsed {@link RunningStatistics}.
+   * @return the parsed {@link PlayerSpeedStatistics}.
    * @throws IllegalArgumentException when {@code string} cannot be parsed.
    */
-  public static RunningStatistics valueOf(String string) throws IllegalArgumentException {
+  public static PlayerSpeedStatistics valueOf(String string) throws IllegalArgumentException {
     if (string == null) throw new IllegalArgumentException();
     Matcher matcher = PATTERN.matcher(string);
     if (!matcher.matches()) throw new IllegalArgumentException(string);
@@ -108,7 +108,7 @@ public class RunningStatistics {
     long pid = Long.valueOf(matcher.group(3));
     long dist = Long.valueOf(matcher.group(4));
     long avgSpeed = Long.valueOf(matcher.group(5));
-    return new RunningStatistics(tsStart, tsStop, pid, dist, avgSpeed);
+    return new PlayerSpeedStatistics(tsStart, tsStop, pid, dist, avgSpeed);
   }
 
   @Override
