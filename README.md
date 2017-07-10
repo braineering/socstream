@@ -69,12 +69,17 @@ First you need to create the Kafka topic `socstream`:
 Test the topic creation:
 
     $> sudo ${KAFKA_HOME}/bin/kafka-topics.sh --list --zookeeper localhost:2181
+    
+### Data ingestion
+Push data via the Kafka producer, manually:
 
-To test message publishing:
-
-    $> ${KAFKA_HOME}/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic socstream
-
-    $> ${KAFKA_HOME}/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic socstream
+    $socstream_home> bash kafka-producer.sh
+    
+or, push bulk data via the Kafka producer:
+    
+    $socstream_home> cat [YOUR_FILE] | bash kafka-producer.sh
+    
+where *[YOUR_FILE]* is the absolute path to a file containing the dataset.
     
     
 ## Query 1    
