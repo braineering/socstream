@@ -27,20 +27,17 @@
 package com.acmutv.socstream.query2;
 
 import com.acmutv.socstream.common.keyer.RichSensorEventKeyer;
-import com.acmutv.socstream.common.operator.IdentityMap;
-import com.acmutv.socstream.common.sink.ConsoleWriterSink;
-import com.acmutv.socstream.common.sink.FileWriterSink;
 import com.acmutv.socstream.common.source.kafka.KafkaProperties;
 import com.acmutv.socstream.common.source.kafka.RichSensorEventKafkaSource;
 import com.acmutv.socstream.common.meta.Match;
 import com.acmutv.socstream.common.meta.MatchService;
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
-import com.acmutv.socstream.query1.operator.PlayerStatisticsCalculator;
+import com.acmutv.socstream.query1.operator.PlayerStatisticsCalculatorWindowed;
 import com.acmutv.socstream.query1.operator.RichSensorEventTimestampExtractor;
-import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.query2.operator.GlobalRanker;
 import com.acmutv.socstream.query2.operator.PartialRanker;
 import com.acmutv.socstream.query2.operator.PlayerAverageSpeedCalculator;
+import com.acmutv.socstream.query2.operator.PlayerAverageSpeedCalculatorWindowed;
 import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
 import com.acmutv.socstream.query2.tuple.PlayersSpeedRanking;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;
@@ -50,6 +47,7 @@ import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
 import java.nio.file.FileSystems;
@@ -140,7 +138,8 @@ public class TopologyQuery2 {
 
     DataStream<PlayerSpeedStatistics> statistics = null;
     if (windowSize > 0) {
-      //statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit)).;
+      statistics = playerEvents.window(TumblingEventTimeWindows.of(Time.of(windowSize, windowUnit)))
+          .fold(new PlayerSpeedStatistics(), new PlayerAverageSpeedCalculatorWindowed());
     } else {
       statistics = playerEvents.flatMap(new PlayerAverageSpeedCalculator());
     }
