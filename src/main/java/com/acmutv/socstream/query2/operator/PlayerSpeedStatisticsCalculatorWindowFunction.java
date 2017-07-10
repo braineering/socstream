@@ -25,31 +25,47 @@
  */
 package com.acmutv.socstream.query2.operator;
 
-import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
-import org.apache.flink.api.common.functions.RichFlatMapFunction;
+import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The operator that calculates palyers speed statistics.
+ * The operator that calculates palyers running statistics (with window).
  *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-public class PlayerAverageSpeedCalculator extends RichFlatMapFunction<RichSensorEvent,PlayerSpeedStatistics> {
+public class PlayerSpeedStatisticsCalculatorWindowFunction implements WindowFunction<PlayerSpeedStatistics,PlayerSpeedStatistics,Long,TimeWindow> {
 
   /**
    * The logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(PlayerAverageSpeedCalculator.class);
+  private static final Logger LOG = LoggerFactory.getLogger(PlayerSpeedStatisticsCalculatorWindowFunction.class);
 
-
+  /**
+   * Evaluates the window and outputs none or several elements.
+   *
+   * @param key    The key for which this window is evaluated.
+   * @param window The window that is being evaluated.
+   * @param inputs The elements in the window being evaluated.
+   * @param out    A collector for emitting elements.
+   * @throws Exception The function may throw exceptions to fail the program and trigger recovery.
+   */
   @Override
-  public void flatMap(RichSensorEvent richSensorEvent, Collector<PlayerSpeedStatistics> collector) throws Exception {
+  public void apply(Long key, TimeWindow window, Iterable<PlayerSpeedStatistics> inputs, Collector<PlayerSpeedStatistics> out) throws Exception {
+    PlayerSpeedStatistics stats = inputs.iterator().next();
 
+    stats.setPid(key);
+    stats.setTsStart(window.getStart());
+    stats.setTsStop(window.getEnd());
+
+    LOG.info("OUT: {}", stats);
+
+    out.collect(stats);
   }
 }

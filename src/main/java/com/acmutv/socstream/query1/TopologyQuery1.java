@@ -41,7 +41,6 @@ import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
 import java.nio.file.FileSystems;
@@ -127,10 +126,10 @@ public class TopologyQuery1 {
 
     KeyedStream<RichSensorEvent,Long> playerEvents = sensorEvents.keyBy(new RichSensorEventKeyer());
 
-    DataStream<PlayerRunningStatistics> statistics = null;
+    DataStream<PlayerRunningStatistics> statistics;
     if (windowSize > 0) {
-      statistics = playerEvents.window(TumblingEventTimeWindows.of(Time.of(windowSize, windowUnit)))
-      .fold(new PlayerRunningStatistics(), new PlayerStatisticsCalculatorWindowed());
+      statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
+          .fold(new PlayerRunningStatistics(), new PlayerStatisticsCalculatorFold(), new PlayerStatisticsCalculatorWindowFunction());
     } else {
       statistics = playerEvents.flatMap(new PlayerStatisticsCalculator());
     }

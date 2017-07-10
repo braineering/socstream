@@ -32,12 +32,8 @@ import com.acmutv.socstream.common.source.kafka.RichSensorEventKafkaSource;
 import com.acmutv.socstream.common.meta.Match;
 import com.acmutv.socstream.common.meta.MatchService;
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
-import com.acmutv.socstream.query1.operator.PlayerStatisticsCalculatorWindowed;
 import com.acmutv.socstream.query1.operator.RichSensorEventTimestampExtractor;
-import com.acmutv.socstream.query2.operator.GlobalRanker;
-import com.acmutv.socstream.query2.operator.PartialRanker;
-import com.acmutv.socstream.query2.operator.PlayerAverageSpeedCalculator;
-import com.acmutv.socstream.query2.operator.PlayerAverageSpeedCalculatorWindowed;
+import com.acmutv.socstream.query2.operator.*;
 import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
 import com.acmutv.socstream.query2.tuple.PlayersSpeedRanking;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;
@@ -47,7 +43,6 @@ import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
 import java.nio.file.FileSystems;
@@ -138,10 +133,10 @@ public class TopologyQuery2 {
 
     DataStream<PlayerSpeedStatistics> statistics = null;
     if (windowSize > 0) {
-      statistics = playerEvents.window(TumblingEventTimeWindows.of(Time.of(windowSize, windowUnit)))
-          .fold(new PlayerSpeedStatistics(), new PlayerAverageSpeedCalculatorWindowed());
+      statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
+          .fold(new PlayerSpeedStatistics(), new PlayerSpeedStatisticsCalculatorFold(), new PlayerSpeedStatisticsCalculatorWindowFunction());
     } else {
-      statistics = playerEvents.flatMap(new PlayerAverageSpeedCalculator());
+      statistics = playerEvents.flatMap(new PlayerSpeedStatisticsCalculator());
     }
 
     DataStream<PlayersSpeedRanking> partialRank = statistics.flatMap(new PartialRanker(rankSize));

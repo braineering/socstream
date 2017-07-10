@@ -23,27 +23,29 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
-package com.acmutv.socstream.query1.operator;
+package com.acmutv.socstream.query2.operator;
 
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
-import org.apache.flink.api.common.functions.FoldFunction;
+import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
+import org.apache.flink.api.common.functions.RichFlatMapFunction;
+import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The operator that calculates palyers running statistics (with window).
+ * The operator that calculates palyers running statistics (without window).
  *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-public class PlayerStatisticsCalculatorWindowed implements FoldFunction<RichSensorEvent,PlayerRunningStatistics> {
+public class PlayerSpeedStatisticsCalculator extends RichFlatMapFunction<RichSensorEvent,PlayerSpeedStatistics> {
 
   /**
    * The logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(PlayerStatisticsCalculatorWindowed.class);
+  private static final Logger LOG = LoggerFactory.getLogger(PlayerSpeedStatisticsCalculator.class);
 
   /**
    * Number of events for PID.
@@ -60,22 +62,10 @@ public class PlayerStatisticsCalculatorWindowed implements FoldFunction<RichSens
    */
   private static final double DELTA_T_SQUARE = Math.pow(DELTA_T, 2);
 
+
+
   @Override
-  public PlayerRunningStatistics fold(PlayerRunningStatistics stats, RichSensorEvent event) throws Exception {
-    double distX = event.getX() + (event.getVx() * DELTA_T) + (0.5 * event.getAx() * DELTA_T_SQUARE);
-    double distY = event.getY() + (event.getVy() * DELTA_T) + (0.5 * event.getAy() * DELTA_T_SQUARE);
-    double dist = Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2));
-    double newDist = stats.getDist() + dist;
+  public void flatMap(RichSensorEvent event, Collector<PlayerSpeedStatistics> out) throws Exception {
 
-    double speedX = event.getVx() + (event.getAx() * DELTA_T);
-    double speedY = event.getVy() + (event.getAy() * DELTA_T);
-    double speed = Math.sqrt(Math.pow(speedX, 2) + Math.pow(speedY, 2));
-    double newAvgSpeed = ((stats.getAvgSpeed() * (this.events++)) + speed) / this.events;
-
-    stats.setPid(event.getId());
-    stats.setDist(newDist);
-    stats.setAvgSpeed(newAvgSpeed);
-
-    return stats;
   }
 }

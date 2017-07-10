@@ -23,54 +23,48 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
-package com.acmutv.socstream.query2.operator;
+package com.acmutv.socstream.query1.operator;
 
-import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
-import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
-import org.apache.flink.api.common.functions.FoldFunction;
+import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The operator that calculates palyers speed statistics (with window).
+ * The operator that calculates palyers running statistics (with window).
  *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-public class PlayerAverageSpeedCalculatorWindowed implements FoldFunction<RichSensorEvent,PlayerSpeedStatistics> {
+public class PlayerStatisticsCalculatorWindowFunction implements WindowFunction<PlayerRunningStatistics,PlayerRunningStatistics,Long,TimeWindow> {
 
   /**
    * The logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(PlayerAverageSpeedCalculatorWindowed.class);
+  private static final Logger LOG = LoggerFactory.getLogger(PlayerStatisticsCalculatorWindowFunction.class);
 
   /**
-   * Number of events for PID.
+   * Evaluates the window and outputs none or several elements.
+   *
+   * @param key    The key for which this window is evaluated.
+   * @param window The window that is being evaluated.
+   * @param inputs The elements in the window being evaluated.
+   * @param out    A collector for emitting elements.
+   * @throws Exception The function may throw exceptions to fail the program and trigger recovery.
    */
-  private long events = 0;
-
-  /**
-   * The time interval (frequency=50Hz).
-   */
-  private static final double DELTA_T = 1.0/50.0;
-
-  /**
-   * The time interval square (frequency=50Hz).
-   */
-  private static final double DELTA_T_SQUARE = Math.pow(DELTA_T, 2);
-
   @Override
-  public PlayerSpeedStatistics fold(PlayerSpeedStatistics stats, RichSensorEvent event) throws Exception {
-    double speedX = event.getVx() + (event.getAx() * DELTA_T);
-    double speedY = event.getVy() + (event.getAy() * DELTA_T);
-    double speed = Math.sqrt(Math.pow(speedX, 2) + Math.pow(speedY, 2));
-    double newAvgSpeed = ((stats.getAvgSpeed() * (this.events++)) + speed) / this.events;
+  public void apply(Long key, TimeWindow window, Iterable<PlayerRunningStatistics> inputs, Collector<PlayerRunningStatistics> out) throws Exception {
+    PlayerRunningStatistics stats = inputs.iterator().next();
 
-    stats.setPid(event.getId());
-    stats.setAvgSpeed(newAvgSpeed);
+    stats.setPid(key);
+    stats.setTsStart(window.getStart());
+    stats.setTsStop(window.getEnd());
 
-    return stats;
+    LOG.info("OUT: {}", stats);
+
+    out.collect(stats);
   }
 }

@@ -107,7 +107,7 @@ public class RichSensorEventDeserializationSchema extends AbstractDeserializatio
       final long ts = event.getTs();
       if (ts < this.tsStart || ts > this.tsEnd || (ts > tsStartIgnore && ts < tsEndIgnore) ||
           this.ignoredSensors.contains(event.getId())) {
-        LOG.debug("Ignored sensor event: {}", strEvent);
+        LOG.info("Ignored sensor event: {}", strEvent);
         return null;
       }
       event.setId(this.sid2Pid.get(event.getId()));
