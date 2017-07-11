@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
+@Deprecated
 public class PlayerRunningStatisticsCalculatorFold implements FoldFunction<RichSensorEvent,PlayerRunningStatistics> {
 
   /**
