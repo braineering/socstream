@@ -41,6 +41,9 @@ import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.query1.operator.PlayerStatisticsCalculator;
 import com.acmutv.socstream.query1.operator.RichSensorEventTimestampExtractor;
 import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
+import com.acmutv.socstream.query3.operator.PlayerOnGridStatisticsCalculator;
+import com.acmutv.socstream.query3.operator.PositionSensorEventTimestampExtractor;
+import com.acmutv.socstream.query3.tuple.PlayerOccupation;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.core.fs.FileSystem;
@@ -50,6 +53,7 @@ import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
+import javax.swing.text.Position;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.Map;
@@ -126,19 +130,20 @@ public class TopologyQuery3 {
     System.out.println("############################################################################");
 
     // TOPOLOGY
-    DataStream<RichSensorEvent> sensorEvents = env.addSource(
-        new RichSensorEventKafkaSource(kafkaTopic, kafkaProps, matchStart, matchEnd,
+    DataStream<PositionSensorEvent> sensorEvents = env.addSource(
+        new PositionSensorEventKafkaSource(kafkaTopic, kafkaProps, matchStart, matchEnd,
             matchIntervalStart, matchIntervalEnd, ignoredSensors, sid2Pid
-        ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor())
+        ).assignTimestampsAndWatermarks(new PositionSensorEventTimestampExtractor())
     );
 
-    KeyedStream<RichSensorEvent,Long> playerEvents = sensorEvents.keyBy(new RichSensorEventKeyer());
+    KeyedStream<PositionSensorEvent,Long> playerEvents;
+    playerEvents = sensorEvents.keyBy(new PositionSensorEventKeyer());
 
-    DataStream<PlayerRunningStatistics> statistics = null;
+    DataStream<PlayerOccupation> statistics = null;
     if (windowSize > 0) {
       //statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit)).;
     } else {
-      statistics = playerEvents.flatMap(new PlayerStatisticsCalculator());
+      statistics = playerEvents.flatMap(new PlayerOnGridStatisticsCalculator());
     }
 
     statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
