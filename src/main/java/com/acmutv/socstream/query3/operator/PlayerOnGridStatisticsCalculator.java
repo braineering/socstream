@@ -63,14 +63,15 @@ public class PlayerOnGridStatisticsCalculator extends RichFlatMapFunction<Positi
   public void flatMap(PositionSensorEvent pSE, Collector<PlayerOccupation> collector) throws Exception {
 
     long pid = pSE.getId();
+    long x = pSE.getX();
+    long y = pSE.getY();
     long currentTimestamp = pSE.getTs();
 
-    Coordinate currentCenter = ComputeCenterOfGravity.computeWithCell(
-            pSE.getX(),pSE.getY(),grid.get(pid).getLastCell());
-
-    GridCoordinate currentCell = GridTool.computeCell(currentCenter);
-
     if(grid.containsKey(pid)) {
+
+      Coordinate currentCenter = ComputeCenterOfGravity.computeWithCell(x,y,grid.get(pid).getLastCell());
+
+      GridCoordinate currentCell = GridTool.computeCell(currentCenter);
 
       if(currentCell.equals(grid.get(pid).getLastCell()))
         grid.get(pid).upgradeTime(currentCell,currentTimestamp);
@@ -81,8 +82,9 @@ public class PlayerOnGridStatisticsCalculator extends RichFlatMapFunction<Positi
     }
     else {
       Map<String,Long> newStats = new HashMap<>();
-      newStats.put(currentCell.getKey(),0L);
-      grid.put(pid,new GridStatistics(pid,currentTimestamp,currentTimestamp,currentCell,newStats));
+      GridCoordinate firstCell = new GridCoordinate(x,y);
+      newStats.put(firstCell.getKey(),0L);
+      grid.put(pid,new GridStatistics(pid,currentTimestamp,currentTimestamp,firstCell,newStats));
     }
   }
 }

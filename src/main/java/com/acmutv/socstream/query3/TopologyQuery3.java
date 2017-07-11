@@ -43,6 +43,7 @@ import com.acmutv.socstream.query1.operator.RichSensorEventTimestampExtractor;
 import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.query3.operator.PlayerOnGridStatisticsCalculator;
 import com.acmutv.socstream.query3.operator.PositionSensorEventTimestampExtractor;
+import com.acmutv.socstream.query3.tuple.GridStatistics;
 import com.acmutv.socstream.query3.tuple.PlayerOccupation;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -136,18 +137,18 @@ public class TopologyQuery3 {
         ).assignTimestampsAndWatermarks(new PositionSensorEventTimestampExtractor())
     );
 
-    KeyedStream<PositionSensorEvent,Long> playerEvents;
-    playerEvents = sensorEvents.keyBy(new PositionSensorEventKeyer());
+    KeyedStream<PositionSensorEvent,Long> playerEvents = sensorEvents.keyBy(new PositionSensorEventKeyer());
 
     DataStream<PlayerOccupation> statistics = null;
     if (windowSize > 0) {
-      //statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit)).;
+      //statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
+      //.fold(new GridStatistics(), new PlayerOnGridStatisticsCalculatorFold(), new PlayerStatisticsCalculatorWindowsFunction());
+      statistics = playerEvents.flatMap(new PlayerOnGridStatisticsCalculator());
     } else {
       statistics = playerEvents.flatMap(new PlayerOnGridStatisticsCalculator());
     }
 
     statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
-
     // EXECUTION
     env.execute(PROGRAM_NAME);
   }
