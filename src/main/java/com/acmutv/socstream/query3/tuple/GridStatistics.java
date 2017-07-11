@@ -26,11 +26,11 @@
 
 package com.acmutv.socstream.query3.tuple;
 
+import com.acmutv.socstream.common.tuple.GridCoordinate;
 import lombok.Data;
-import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,7 +47,7 @@ public class GridStatistics {
    * The regular expression
    */
   private static final String REGEXP =
-      "^(\\d+),(.+)$";
+      "^(\\d+),(\\d+),(\\d+),(\\d+);(\\d+),(.+)$";
 
   /**
    * The pattern matcher used to match strings on {@code REGEXP}.
@@ -55,19 +55,36 @@ public class GridStatistics {
   private static final Pattern PATTERN = Pattern.compile(REGEXP);
 
   /**
+   * Player ID
+   */
+  private long pid;
+
+  /**
    * The timestamp (start instant).
    */
   private long tsStart;
 
   /**
+   * The timestamp (last instant).
+   */
+  private long tsLast;
+
+  /**
+   * The timestamp (last instant).
+   */
+  private GridCoordinate lastCell;
+
+  /**
    * The grid statistics.
    */
-  private List<PlayerGrid> stats;
+  private Map<String,Long> stats;
 
 
-  public GridStatistics(long tsStart,
-                        List<PlayerGrid> stats) {
+  public GridStatistics(long pid, long tsStart, long tsLast, GridCoordinate lastCell, Map<String,Long> stats) {
+    this.pid = pid;
     this.tsStart = tsStart;
+    this.tsLast = tsLast;
+    this.lastCell = lastCell;
     this.stats = stats;
   }
 
@@ -79,6 +96,7 @@ public class GridStatistics {
 
   /**
    * Parses {@link GridStatistics} from string.
+   * String input= (pid,tsStart,tsLast,x,y,stats)
    * @param string the string to parse.
    * @return the parsed {@link GridStatistics}.
    * @throws IllegalArgumentException when {@code string} cannot be parsed.
@@ -87,15 +105,55 @@ public class GridStatistics {
     if (string == null) throw new IllegalArgumentException();
     Matcher matcher = PATTERN.matcher(string);
     if (!matcher.matches()) throw new IllegalArgumentException(string);
-    long tsStart = Long.valueOf(matcher.group(1));
-    String strStats = matcher.group(2);
-    List<PlayerGrid> stats = new ArrayList<>();
-    return new GridStatistics(tsStart, stats);
+    long pid = Long.valueOf(matcher.group(1));
+    long tsStart = Long.valueOf(matcher.group(2));
+    long tsLast = Long.valueOf(matcher.group(3));
+    long x = Long.valueOf(matcher.group(4));
+    long y = Long.valueOf(matcher.group(5));
+    String strStats = matcher.group(6);
+    Map<String,Long> stats = new HashMap<>();
+    return new GridStatistics(pid,tsStart,tsLast,new GridCoordinate(x,y),stats);
   }
 
   @Override
   public String toString() {
-    return String.format("%d,%s",
-        this.tsStart, this.stats);
+    return String.format("%d,%d%s",
+            this.tsStart, this.pid, this.printCellOccupation());
+  }
+
+  public void upgradeTime(GridCoordinate newCell, Long tsCurrent){
+    long cellTime = stats.get(newCell.getKey());
+    long newCellTime = cellTime + (tsCurrent - this.tsLast);
+    stats.put(newCell.getKey(), newCellTime);
+  }
+
+  public void setLastCell(GridCoordinate newCell){
+      stats.put(newCell.getKey(), 0L);
+      this.lastCell = newCell;
+  }
+
+  public void setLastTimestamp(long lastTimestamp){
+    this.tsLast = lastTimestamp;
+  }
+
+  public String printCellOccupation(){
+    String occupation ="";
+    String data = this.stats.toString();
+
+    int length = data.length();
+    data = data.substring(1,length-1);
+
+    if(data.equals(""))
+      return occupation;
+
+    String[] cells = data.split(",");
+
+    for(int i=0; i<cells.length;i++){
+      String[] cell = cells[i].split("=");
+      String[] coordinate = cell[0].split(";");
+      occupation += "," + coordinate[0] + ";" + coordinate[1] + ","+cell[1];
+    }
+    occupation = occupation.replace(" ","");
+    return occupation;
   }
 }
