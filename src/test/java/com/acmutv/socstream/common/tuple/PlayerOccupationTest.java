@@ -30,6 +30,9 @@ import com.acmutv.socstream.query3.tuple.PlayerOccupation;
 import org.junit.Assert;
 import org.junit.Test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * JUnit test suite for {@link PlayerOccupation}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
@@ -39,13 +42,13 @@ import org.junit.Test;
  */
 public class PlayerOccupationTest {
 
-  //private static final Logger LOGGER = LoggerFactory.getLogger(PlayerOccupationTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PlayerOccupationTest.class);
 
   /**
    * Tests serialization of {@link PlayerOccupation}.
    */
   @Test
-  public void test_serialize_occupation() throws Exception {
+  public void test_serialize_grid_coordinate() throws Exception {
     String expected ="63,64,0;0,0.0,0;1,10.0,0;2,20.0";
     PlayerOccupation actual = PlayerOccupation.valueOf(expected);
     Assert.assertEquals(expected, actual.toString());
