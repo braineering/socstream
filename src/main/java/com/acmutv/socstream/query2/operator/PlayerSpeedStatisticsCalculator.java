@@ -23,30 +23,49 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
-package com.acmutv.socstream.query1.operator;
+package com.acmutv.socstream.query2.operator;
 
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
-import org.apache.flink.api.common.functions.ReduceFunction;
-import org.apache.flink.api.common.functions.RichReduceFunction;
+import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
+import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
+import org.apache.flink.api.common.functions.RichFlatMapFunction;
+import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class realizes ...
+ * The operator that calculates palyers running statistics (without window).
  *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-public class MyReduceFunction implements ReduceFunction<RichSensorEvent> {
+public class PlayerSpeedStatisticsCalculator extends RichFlatMapFunction<RichSensorEvent,PlayerSpeedStatistics> {
 
   /**
    * The logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(MyReduceFunction.class);
+  private static final Logger LOG = LoggerFactory.getLogger(PlayerSpeedStatisticsCalculator.class);
+
+  /**
+   * Number of events for PID.
+   */
+  private long events = 0;
+
+  /**
+   * The time interval (frequency=50Hz).
+   */
+  private static final double DELTA_T = 1.0/50.0;
+
+  /**
+   * The time interval square (frequency=50Hz).
+   */
+  private static final double DELTA_T_SQUARE = Math.pow(DELTA_T, 2);
+
+
 
   @Override
-  public RichSensorEvent reduce(RichSensorEvent event1, RichSensorEvent event2) throws Exception {
-    return null;
+  public void flatMap(RichSensorEvent event, Collector<PlayerSpeedStatistics> out) throws Exception {
+
   }
 }

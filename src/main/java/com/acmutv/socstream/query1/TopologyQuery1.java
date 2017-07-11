@@ -126,9 +126,10 @@ public class TopologyQuery1 {
 
     KeyedStream<RichSensorEvent,Long> playerEvents = sensorEvents.keyBy(new RichSensorEventKeyer());
 
-    DataStream<PlayerRunningStatistics> statistics = null;
+    DataStream<PlayerRunningStatistics> statistics;
     if (windowSize > 0) {
-      //statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit)).;
+      statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
+          .fold(new PlayerRunningStatistics(), new PlayerStatisticsCalculatorFold(), new PlayerStatisticsCalculatorWindowFunction());
     } else {
       statistics = playerEvents.flatMap(new PlayerStatisticsCalculator());
     }

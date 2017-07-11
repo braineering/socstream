@@ -44,7 +44,7 @@ public class PlayerSpeedStatistics {
    * The regular expression
    */
   private static final String REGEXP =
-      "^(\\d+),(\\d+),(\\d+),(\\d*\\.?\\d+),(\\d*\\.?\\d+)$";
+      "^(\\d+),(\\d+),(\\d+),(\\d*\\.?\\d+)$";
 
   /**
    * The pattern matcher used to match strings on {@code REGEXP}.
@@ -67,23 +67,16 @@ public class PlayerSpeedStatistics {
   private long pid;
 
   /**
-   * The total distance traveled by the player (m).
-   */
-  private double dist;
-
-  /**
    * The average speed of the player (m/s).
    */
   private double avgSpeed;
 
 
   public PlayerSpeedStatistics(long tsStart, long tsStop,
-                               long pid,
-                               double dist, double avgSpeed) {
+                               long pid, double avgSpeed) {
     this.tsStart = tsStart;
     this.tsStop = tsStop;
     this.pid = pid;
-    this.dist = dist;
     this.avgSpeed = avgSpeed;
   }
 
@@ -106,14 +99,13 @@ public class PlayerSpeedStatistics {
     long tsStart = Long.valueOf(matcher.group(1));
     long tsStop = Long.valueOf(matcher.group(2));
     long pid = Long.valueOf(matcher.group(3));
-    long dist = Long.valueOf(matcher.group(4));
-    long avgSpeed = Long.valueOf(matcher.group(5));
-    return new PlayerSpeedStatistics(tsStart, tsStop, pid, dist, avgSpeed);
+    long avgSpeed = Long.valueOf(matcher.group(4));
+    return new PlayerSpeedStatistics(tsStart, tsStop, pid, avgSpeed);
   }
 
   @Override
   public String toString() {
-    return String.format("%d,%d,%d,%f,%f",
-        this.tsStart, this.tsStop, this.pid, this.dist, this.avgSpeed);
+    return String.format("%d,%d,%d,%f",
+        this.tsStart, this.tsStop, this.pid, this.avgSpeed);
   }
 }
