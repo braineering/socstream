@@ -78,6 +78,4 @@ public class PositionSensorEventTest {
 
     Assert.assertEquals(expected, actual);
   }
-
-
 }
