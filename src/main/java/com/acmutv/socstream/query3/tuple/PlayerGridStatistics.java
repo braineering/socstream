@@ -41,13 +41,13 @@ import java.util.regex.Pattern;
  * @since 1.0
  */
 @Data
-public class GridStatistics {
+public class PlayerGridStatistics {
 
   /**
    * The regular expression
    */
   private static final String REGEXP =
-      "^(\\d+),(\\d+),(\\d+),(\\d+);(\\d+),(.+)$";
+      "^(\\d+),(\\d+),(\\d+),(\\d+),(\\d+);(\\d+),(.+)$";
 
   /**
    * The pattern matcher used to match strings on {@code REGEXP}.
@@ -70,6 +70,11 @@ public class GridStatistics {
   private long tsLast;
 
   /**
+   * The timestamp (stop instant).
+   */
+  private long tsStop;
+
+  /**
    * The timestamp (last instant).
    */
   private GridCoordinate lastCell;
@@ -80,10 +85,11 @@ public class GridStatistics {
   private Map<String,Long> stats;
 
 
-  public GridStatistics(long pid, long tsStart, long tsLast, GridCoordinate lastCell, Map<String,Long> stats) {
+  public PlayerGridStatistics(long pid, long tsStart, long tsLast, long tsStop, GridCoordinate lastCell, Map<String,Long> stats) {
     this.pid = pid;
     this.tsStart = tsStart;
     this.tsLast = tsLast;
+    this.tsStop= tsStop;
     this.lastCell = lastCell;
     this.stats = stats;
   }
@@ -92,27 +98,28 @@ public class GridStatistics {
    * Creates an empty sensor event..
    * This constructor is mandatory for Flink serialization.
    */
-  public GridStatistics(){}
+  public PlayerGridStatistics(){}
 
   /**
-   * Parses {@link GridStatistics} from string.
+   * Parses {@link PlayerGridStatistics} from string.
    * String input= (pid,tsStart,tsLast,x,y,stats)
    * @param string the string to parse.
-   * @return the parsed {@link GridStatistics}.
+   * @return the parsed {@link PlayerGridStatistics}.
    * @throws IllegalArgumentException when {@code string} cannot be parsed.
    */
-  public static GridStatistics valueOf(String string) throws IllegalArgumentException {
+  public static PlayerGridStatistics valueOf(String string) throws IllegalArgumentException {
     if (string == null) throw new IllegalArgumentException();
     Matcher matcher = PATTERN.matcher(string);
     if (!matcher.matches()) throw new IllegalArgumentException(string);
     long pid = Long.valueOf(matcher.group(1));
     long tsStart = Long.valueOf(matcher.group(2));
     long tsLast = Long.valueOf(matcher.group(3));
-    long x = Long.valueOf(matcher.group(4));
-    long y = Long.valueOf(matcher.group(5));
-    String strStats = matcher.group(6);
+    long tsStop = Long.valueOf(matcher.group(4));
+    long x = Long.valueOf(matcher.group(5));
+    long y = Long.valueOf(matcher.group(6));
+    String strStats = matcher.group(7);
     Map<String,Long> stats = new HashMap<>();
-    return new GridStatistics(pid,tsStart,tsLast,new GridCoordinate(x,y),stats);
+    return new PlayerGridStatistics(pid,tsStart,tsLast,tsStop,new GridCoordinate(x,y),stats);
   }
 
   @Override
@@ -137,6 +144,9 @@ public class GridStatistics {
   }
 
   public String printCellOccupation(){
+
+    long lifetime = this.stats.values().stream().mapToLong(i -> i.longValue()).sum();
+
     String occupation ="";
     String data = this.stats.toString();
 
@@ -146,12 +156,16 @@ public class GridStatistics {
     if(data.equals(""))
       return occupation;
 
+    double percentage = 0.0;
+
     String[] cells = data.split(",");
 
     for(int i=0; i<cells.length;i++){
       String[] cell = cells[i].split("=");
       String[] coordinate = cell[0].split(";");
-      occupation += "," + coordinate[0] + ";" + coordinate[1] + ","+cell[1];
+      if(lifetime!=0)
+        percentage = (Double) Double.valueOf(cell[1])/lifetime;
+      occupation += "," + coordinate[0] + ";" + coordinate[1] + ","+ Double.toString(percentage);
     }
     occupation = occupation.replace(" ","");
     return occupation;

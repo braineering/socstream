@@ -26,7 +26,6 @@
 
 package com.acmutv.socstream.common.tuple;
 
-import com.acmutv.socstream.query3.tuple.GridStatistics;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 

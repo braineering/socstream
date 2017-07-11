@@ -25,58 +25,58 @@
  */
 package com.acmutv.socstream.query3.operator;
 
+import com.acmutv.socstream.common.tool.ComputeCenterOfGravity;
+import com.acmutv.socstream.common.tool.GridTool;
+import com.acmutv.socstream.common.tuple.Coordinate;
+import com.acmutv.socstream.common.tuple.GridCoordinate;
 import com.acmutv.socstream.common.tuple.PositionSensorEvent;
+import com.acmutv.socstream.common.tuple.RichSensorEvent;
+import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
 import com.acmutv.socstream.query3.tuple.PlayerGridStatistics;
-import org.apache.flink.api.common.functions.RichFlatMapFunction;
-import org.apache.flink.util.Collector;
+import org.apache.flink.api.common.functions.FoldFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * The operator that calculates palyers running statistics.
+ * The operator that calculates palyers running statistics (with window).
  *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-public class PlayerOnGridStatisticsCalculator extends RichFlatMapFunction<PositionSensorEvent,PlayerGridStatistics> {
+public class PlayerOnGridStatisticsCalculatorFold implements FoldFunction<PositionSensorEvent,PlayerGridStatistics> {
 
   /**
    * The logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(PlayerOnGridStatisticsCalculator.class);
-
-  /**
-   * The Player Grid Map <PlayerId, PlayerGrid>
-   */
-  //private Map<Long,PlayerGridStatistics> grid;
+  private static final Logger LOG = LoggerFactory.getLogger(PlayerOnGridStatisticsCalculatorFold.class);
 
   @Override
-  public void flatMap(PositionSensorEvent event, Collector<PlayerGridStatistics> collector) throws Exception {
+  public PlayerGridStatistics fold(PlayerGridStatistics stats, PositionSensorEvent event) throws Exception {
 
-    /*long pid = pSE.getId();
-    long x = pSE.getX();
-    long y = pSE.getY();
-    long currentTimestamp = pSE.getTs();
+    LOG.info("IN: {}", event);
 
-    if(grid.containsKey(pid)) {
+    long pid = event.getId();
+    long x = event.getX();
+    long y = event.getY();
+    long currentTimestamp = event.getTs();
 
-      Coordinate currentCenter = ComputeCenterOfGravity.computeWithCell(x,y,grid.get(pid).getLastCell());
+    GridCoordinate lastCell = stats.getLastCell();
+    Coordinate currentCenter = ComputeCenterOfGravity.computeWithCell(x,y,lastCell);
+    GridCoordinate currentCell = GridTool.computeCell(currentCenter);
 
-      GridCoordinate currentCell = GridTool.computeCell(currentCenter);
+    if(currentCell.equals(stats.getLastCell()))
+      stats.upgradeTime(currentCell,currentTimestamp);
+    else
+      stats.setLastCell(currentCell);
 
-      if(currentCell.equals(grid.get(pid).getLastCell()))
-        grid.get(pid).upgradeTime(currentCell,currentTimestamp);
-      else
-        grid.get(pid).setLastCell(currentCell);
+    stats.setLastTimestamp(currentTimestamp);
 
-      grid.get(pid).setLastTimestamp(currentTimestamp);
-    }
-    else {
-      Map<String,Long> newStats = new HashMap<>();
-      GridCoordinate firstCell = new GridCoordinate(x,y);
-      newStats.put(firstCell.getKey(),0L);
-      grid.put(pid,new PlayerGridStatistics(pid,currentTimestamp,currentTimestamp,firstCell,newStats));
-    }*/
+    LOG.info("OUT: {}", stats);
+
+    return stats;
   }
 }

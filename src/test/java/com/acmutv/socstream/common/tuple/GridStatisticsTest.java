@@ -26,16 +26,13 @@
 
 package com.acmutv.socstream.common.tuple;
 
-import com.acmutv.socstream.query3.tuple.GridStatistics;
-import com.acmutv.socstream.query3.tuple.PlayerOccupation;
+import com.acmutv.socstream.query3.tuple.PlayerGridStatistics;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,22 +47,22 @@ public class GridStatisticsTest {
   private static final Logger LOGGER = LoggerFactory.getLogger(GridStatisticsTest.class);
 
   /**
-   * Tests serialization of {@link GridStatistics}.
+   * Tests serialization of {@link PlayerGridStatistics}.
    */
   @Test
   public void test_serialize_grid_statistics() throws Exception {
     //test put first element (cell for a player)
     Map<String,Long> grid = new HashMap<>();
     grid.put("2;3",0L);
-    GridStatistics test = new GridStatistics(0,1L,1L,new GridCoordinate(2L,3L),grid);
-    String expected="1,0,2;3,0";
-    LOGGER.debug("GridStatistics serialized: " + expected);
+    PlayerGridStatistics test = new PlayerGridStatistics(0,1L,1L,10L,new GridCoordinate(2L,3L),grid);
+    String expected="1,0,2;3,0.0";
+    LOGGER.debug("PlayerGridStatistics serialized: " + expected);
     String actual = test.toString();
     Assert.assertEquals(expected, actual);
 
     //test upgrade time for the first element
     test.upgradeTime(new GridCoordinate(2L,3L),2L);
-    expected ="1,0,2;3,1";
+    expected ="1,0,2;3,1.0";
     test.setLastTimestamp(2L);
     actual = test.toString();
     Assert.assertEquals(expected, actual);
@@ -73,7 +70,7 @@ public class GridStatisticsTest {
     //test change cell and upgrade time in the same cell (two consequential events)
     test.setLastCell(new GridCoordinate(2,4));
     test.upgradeTime(new GridCoordinate(2,4),3L);
-    expected ="1,0,2;3,1,2;4,1";
+    expected ="1,0,2;3,0.5,2;4,0.5";
     actual = test.toString();
     Assert.assertEquals(expected, actual);
   }
@@ -84,8 +81,8 @@ public class GridStatisticsTest {
   @Test
   public void test_valueOfAsSensorEvent() throws Exception {
 
-    String stats ="9,1,1,2;3,1;1,1,1;2,3";
-    GridStatistics gs = GridStatistics.valueOf(stats);
+    String stats ="9,1,1,10,2;3,1;1,1,1;2,3";
+    PlayerGridStatistics gs = PlayerGridStatistics.valueOf(stats);
     String expected ="1,9";
     String actual = gs.toString();
     Assert.assertEquals(expected,actual);

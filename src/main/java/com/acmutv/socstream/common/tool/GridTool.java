@@ -37,16 +37,11 @@ import com.acmutv.socstream.common.tuple.GridCoordinate;
  */
 public class GridTool {
 
-  //DA SISTEMARE!
-
   public static GridCoordinate computeCell(Coordinate position) {
 
-    long x = position.getX();
-    long y = position.getY();
+    long x = (long) Math.ceil((double) position.getX()/4037.154);
+    long y = (long) Math.ceil(((double) position.getY() +33960)/8490.625);
 
-    //DA CAMBIARE QUI;
-    x = 0;
-    y = 0;
     return new GridCoordinate(x,y);
   }
 

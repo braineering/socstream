@@ -26,7 +26,6 @@
 
 package com.acmutv.socstream.common.tuple;
 
-import com.acmutv.socstream.query3.tuple.PlayerOccupation;
 import org.junit.Assert;
 import org.junit.Test;
 

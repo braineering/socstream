@@ -25,58 +25,47 @@
  */
 package com.acmutv.socstream.query3.operator;
 
-import com.acmutv.socstream.common.tuple.PositionSensorEvent;
+import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
 import com.acmutv.socstream.query3.tuple.PlayerGridStatistics;
-import org.apache.flink.api.common.functions.RichFlatMapFunction;
+import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The operator that calculates palyers running statistics.
+ * The operator that calculates palyers running statistics (with window).
  *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-public class PlayerOnGridStatisticsCalculator extends RichFlatMapFunction<PositionSensorEvent,PlayerGridStatistics> {
+public class PlayerOnGridStatisticsCalculatorWindowFunction implements WindowFunction<PlayerGridStatistics,PlayerGridStatistics,Long,TimeWindow> {
 
   /**
    * The logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(PlayerOnGridStatisticsCalculator.class);
+  private static final Logger LOG = LoggerFactory.getLogger(PlayerOnGridStatisticsCalculatorWindowFunction.class);
 
   /**
-   * The Player Grid Map <PlayerId, PlayerGrid>
+   * Evaluates the window and outputs none or several elements.
+   *
+   * @param key    The key for which this window is evaluated.
+   * @param window The window that is being evaluated.
+   * @param inputs The elements in the window being evaluated.
+   * @param out    A collector for emitting elements.
+   * @throws Exception The function may throw exceptions to fail the program and trigger recovery.
    */
-  //private Map<Long,PlayerGridStatistics> grid;
-
   @Override
-  public void flatMap(PositionSensorEvent event, Collector<PlayerGridStatistics> collector) throws Exception {
+  public void apply(Long key, TimeWindow window, Iterable<PlayerGridStatistics> inputs, Collector<PlayerGridStatistics> out) throws Exception {
+    PlayerGridStatistics stats = inputs.iterator().next();
 
-    /*long pid = pSE.getId();
-    long x = pSE.getX();
-    long y = pSE.getY();
-    long currentTimestamp = pSE.getTs();
+    stats.setPid(key);
+    stats.setTsStart(window.getStart());
+    stats.setTsStop(window.getEnd());
 
-    if(grid.containsKey(pid)) {
+    LOG.info("OUT: {}", stats);
 
-      Coordinate currentCenter = ComputeCenterOfGravity.computeWithCell(x,y,grid.get(pid).getLastCell());
-
-      GridCoordinate currentCell = GridTool.computeCell(currentCenter);
-
-      if(currentCell.equals(grid.get(pid).getLastCell()))
-        grid.get(pid).upgradeTime(currentCell,currentTimestamp);
-      else
-        grid.get(pid).setLastCell(currentCell);
-
-      grid.get(pid).setLastTimestamp(currentTimestamp);
-    }
-    else {
-      Map<String,Long> newStats = new HashMap<>();
-      GridCoordinate firstCell = new GridCoordinate(x,y);
-      newStats.put(firstCell.getKey(),0L);
-      grid.put(pid,new PlayerGridStatistics(pid,currentTimestamp,currentTimestamp,firstCell,newStats));
-    }*/
+    out.collect(stats);
   }
 }

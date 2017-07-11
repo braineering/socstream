@@ -27,24 +27,16 @@
 package com.acmutv.socstream.query3;
 
 import com.acmutv.socstream.common.keyer.PositionSensorEventKeyer;
-import com.acmutv.socstream.common.keyer.RichSensorEventKeyer;
-import com.acmutv.socstream.common.operator.IdentityMap;
-import com.acmutv.socstream.common.sink.ConsoleWriterSink;
-import com.acmutv.socstream.common.sink.FileWriterSink;
 import com.acmutv.socstream.common.source.kafka.KafkaProperties;
 import com.acmutv.socstream.common.source.kafka.PositionSensorEventKafkaSource;
 import com.acmutv.socstream.common.meta.Match;
 import com.acmutv.socstream.common.meta.MatchService;
-import com.acmutv.socstream.common.source.kafka.RichSensorEventKafkaSource;
 import com.acmutv.socstream.common.tuple.PositionSensorEvent;
-import com.acmutv.socstream.common.tuple.RichSensorEvent;
-import com.acmutv.socstream.query1.operator.PlayerStatisticsCalculator;
-import com.acmutv.socstream.query1.operator.RichSensorEventTimestampExtractor;
-import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.query3.operator.PlayerOnGridStatisticsCalculator;
+import com.acmutv.socstream.query3.operator.PlayerOnGridStatisticsCalculatorFold;
+import com.acmutv.socstream.query3.operator.PlayerOnGridStatisticsCalculatorWindowFunction;
 import com.acmutv.socstream.query3.operator.PositionSensorEventTimestampExtractor;
-import com.acmutv.socstream.query3.tuple.GridStatistics;
-import com.acmutv.socstream.query3.tuple.PlayerOccupation;
+import com.acmutv.socstream.query3.tuple.PlayerGridStatistics;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.core.fs.FileSystem;
@@ -54,7 +46,6 @@ import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
-import javax.swing.text.Position;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.Map;
@@ -139,11 +130,9 @@ public class TopologyQuery3 {
 
     KeyedStream<PositionSensorEvent,Long> playerEvents = sensorEvents.keyBy(new PositionSensorEventKeyer());
 
-    DataStream<PlayerOccupation> statistics = null;
+    DataStream<PlayerGridStatistics> statistics = null;
     if (windowSize > 0) {
-      //statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
-      //.fold(new GridStatistics(), new PlayerOnGridStatisticsCalculatorFold(), new PlayerStatisticsCalculatorWindowsFunction());
-      statistics = playerEvents.flatMap(new PlayerOnGridStatisticsCalculator());
+      statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit)).fold(new PlayerGridStatistics(), new PlayerOnGridStatisticsCalculatorFold(), new PlayerOnGridStatisticsCalculatorWindowFunction());
     } else {
       statistics = playerEvents.flatMap(new PlayerOnGridStatisticsCalculator());
     }
