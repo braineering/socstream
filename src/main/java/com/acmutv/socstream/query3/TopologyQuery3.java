@@ -26,19 +26,13 @@
 
 package com.acmutv.socstream.query3;
 
-import com.acmutv.socstream.common.keyer.PositionSensorEventKeyer;
 import com.acmutv.socstream.common.keyer.RichSensorEventKeyer;
-import com.acmutv.socstream.common.operator.IdentityMap;
-import com.acmutv.socstream.common.sink.ConsoleWriterSink;
-import com.acmutv.socstream.common.sink.FileWriterSink;
 import com.acmutv.socstream.common.source.kafka.KafkaProperties;
-import com.acmutv.socstream.common.source.kafka.PositionSensorEventKafkaSource;
 import com.acmutv.socstream.common.meta.Match;
 import com.acmutv.socstream.common.meta.MatchService;
 import com.acmutv.socstream.common.source.kafka.RichSensorEventKafkaSource;
-import com.acmutv.socstream.common.tuple.PositionSensorEvent;
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
-import com.acmutv.socstream.query1.operator.PlayerStatisticsCalculator;
+import com.acmutv.socstream.query1.operator.PlayerRunningStatisticsCalculator;
 import com.acmutv.socstream.query1.operator.RichSensorEventTimestampExtractor;
 import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;
@@ -48,7 +42,6 @@ import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.time.Time;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -138,7 +131,7 @@ public class TopologyQuery3 {
     if (windowSize > 0) {
       //statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit)).;
     } else {
-      statistics = playerEvents.flatMap(new PlayerStatisticsCalculator());
+      statistics = playerEvents.flatMap(new PlayerRunningStatisticsCalculator());
     }
 
     statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);

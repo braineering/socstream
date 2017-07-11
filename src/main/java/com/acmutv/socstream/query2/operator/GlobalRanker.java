@@ -25,6 +25,7 @@
  */
 package com.acmutv.socstream.query2.operator;
 
+import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
 import com.acmutv.socstream.query2.tuple.PlayersSpeedRanking;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,6 +33,9 @@ import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The operator that calculates the global ranking of players by average speed.
@@ -42,7 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 @Data
 @AllArgsConstructor
-public class GlobalRanker extends RichFlatMapFunction<PlayersSpeedRanking,PlayersSpeedRanking> {
+public class GlobalRanker extends RichFlatMapFunction<PlayerSpeedStatistics,PlayersSpeedRanking> {
 
   /**
    * The logger.
@@ -50,12 +54,31 @@ public class GlobalRanker extends RichFlatMapFunction<PlayersSpeedRanking,Player
   private static final Logger LOG = LoggerFactory.getLogger(GlobalRanker.class);
 
   /**
-   * The top-k ranking size.
+   * The size of the top-K ranking.
    */
   private int rankSize;
 
-  @Override
-  public void flatMap(PlayersSpeedRanking partialRanking, Collector<PlayersSpeedRanking> collector) throws Exception {
+  /**
+   * The set of statistics.
+   */
+  private Set<PlayerSpeedStatistics> stats = new HashSet<>();
 
+  /**
+   * Creates a new {@link GlobalRanker} with the specified rank size.
+   * @param rankSize the size of the top-k ranking.
+   */
+  public GlobalRanker(int rankSize) {
+    this.rankSize = rankSize;
+  }
+
+  /**
+   *
+   * @param stats
+   * @param out
+   * @throws Exception
+   */
+  @Override
+  public void flatMap(PlayerSpeedStatistics stats, Collector<PlayersSpeedRanking> out) throws Exception {
+    //TODO
   }
 }

@@ -69,6 +69,12 @@ public class PlayersSpeedRanking {
    */
   private List<Pair<Long,Double>> rank;
 
+  public PlayersSpeedRanking(long tsStart, long tsStop) {
+    this.tsStart = tsStart;
+    this.tsStop = tsStop;
+    this.rank = new ArrayList<>();
+  }
+
 
   public PlayersSpeedRanking(long tsStart, long tsStop,
                              List<Pair<Long,Double>> rank) {

@@ -28,6 +28,7 @@ package com.acmutv.socstream.query2.operator;
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
+import com.acmutv.socstream.tool.physics.PhysicsUtil;
 import org.apache.flink.api.common.functions.FoldFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,20 +52,12 @@ public class PlayerSpeedStatisticsCalculatorFold implements FoldFunction<RichSen
    */
   private long events = 0;
 
-  /**
-   * The time interval (frequency=50Hz).
-   */
-  private static final double DELTA_T = 1.0/50.0;
-
   @Override
   public PlayerSpeedStatistics fold(PlayerSpeedStatistics stats, RichSensorEvent event) throws Exception {
-
     LOG.info("IN: {}", event);
 
-    double speedX = event.getVx() + (event.getAx() * DELTA_T);
-    double speedY = event.getVy() + (event.getAy() * DELTA_T);
-    double speed = Math.sqrt(Math.pow(speedX, 2) + Math.pow(speedY, 2));
-    double newAvgSpeed = ((stats.getAvgSpeed() * (this.events++)) + speed) / this.events;
+    final double newSpeed = PhysicsUtil.computeSpeed(event.getV(), event.getVx(), event.getVy(), event.getA(), event.getAx(), event.getAy());
+    final double newAvgSpeed = ((stats.getAvgSpeed() * (this.events++)) + newSpeed) / this.events;
 
     stats.setPid(event.getId());
     stats.setAvgSpeed(newAvgSpeed);

@@ -25,39 +25,63 @@
  */
 package com.acmutv.socstream.query2.operator;
 
-import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
 import com.acmutv.socstream.query2.tuple.PlayersSpeedRanking;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
+import org.apache.flink.streaming.api.functions.windowing.AllWindowFunction;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * The operator that calculates the partial ranking of players by average speed.
+ * The operator that calculates the global ranking of players by average speed.
  *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
 @Data
-@AllArgsConstructor
-public class PartialRanker extends RichFlatMapFunction<PlayerSpeedStatistics,PlayersSpeedRanking> {
+public class GlobalRankerWindowFunction implements AllWindowFunction<PlayerSpeedStatistics, PlayersSpeedRanking, TimeWindow> {
 
   /**
    * The logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(PartialRanker.class);
+  private static final Logger LOG = LoggerFactory.getLogger(GlobalRankerWindowFunction.class);
 
   /**
-   * The top-k ranking size.
+   * The size of the top-K ranking.
    */
   private int rankSize;
 
-  @Override
-  public void flatMap(PlayerSpeedStatistics statistics, Collector<PlayersSpeedRanking> collector) throws Exception {
+  /**
+   * Creates a new {@link GlobalRankerWindowFunction} with the specified rank size.
+   * @param rankSize the size of the top-k ranking.
+   */
+  public GlobalRankerWindowFunction(int rankSize) {
+    this.rankSize = rankSize;
+  }
 
+  /**
+   * Evaluates the window and outputs none or several elements.
+   *
+   * @param window The window that is being evaluated.
+   * @param values The elements in the window being evaluated.
+   * @param out    A collector for emitting elements.
+   * @throws Exception The function may throw exceptions to fail the program and trigger recovery.
+   */
+  @Override
+  public void apply(TimeWindow window, Iterable<PlayerSpeedStatistics> values, Collector<PlayersSpeedRanking> out) throws Exception {
+
+    PlayersSpeedRanking ranking = new PlayersSpeedRanking();
+    ranking.setTsStart(window.getStart());
+    ranking.setTsStop(window.getEnd());
+
+    out.collect(ranking);
   }
 }

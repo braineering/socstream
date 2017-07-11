@@ -25,6 +25,7 @@
  */
 package com.acmutv.socstream.common.source.kafka.schema;
 
+import com.acmutv.socstream.common.tuple.PositionSensorEvent;
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -98,23 +99,45 @@ public class RichSensorEventDeserializationSchema extends AbstractDeserializatio
    */
   @Override
   public RichSensorEvent deserialize(byte[] message) throws IOException {
-    RichSensorEvent event = null;
+    RichSensorEvent event;
 
     final String strEvent = new String(message);
 
     try {
       event = RichSensorEvent.valueOf(strEvent);
-      final long ts = event.getTs();
-      if (ts < this.tsStart || ts > this.tsEnd || (ts > tsStartIgnore && ts < tsEndIgnore) ||
-          this.ignoredSensors.contains(event.getId())) {
-        LOG.info("Ignored sensor event: {}", strEvent);
-        return null;
-      }
-      event.setId(this.sid2Pid.get(event.getId()));
     } catch (IllegalArgumentException exc) {
       LOG.warn("Malformed sensor event: {}", strEvent);
+      return null;
     }
 
+    if (this.ignoredSensors.contains(event.getId())) {
+      LOG.info("Ignored sensor event (untracked SID): {}", strEvent);
+      return null;
+    }
+
+    final long ts = event.getTs();
+
+    if (ts < this.tsStart || ts > this.tsEnd || (ts > tsStartIgnore && ts < tsEndIgnore)) {
+      LOG.info("Ignored sensor event (timestamp): {}", strEvent);
+      return null;
+    }
+
+    event.setId(this.sid2Pid.get(event.getId()));
+
     return event;
+  }
+
+  /**
+   * Checks if the end of stream has been reached.
+   * @param event the current event.
+   * @return true, if the end of stream has been reached; false, otherwise.
+   */
+  @Override
+  public boolean isEndOfStream(RichSensorEvent event) {
+    final boolean isEnd = event.getTs() > this.getTsEnd();
+    if (isEnd) {
+      LOG.info("End of stream reahed.");
+    }
+    return isEnd;
   }
 }

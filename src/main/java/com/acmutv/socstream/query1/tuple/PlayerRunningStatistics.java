@@ -52,12 +52,12 @@ public class PlayerRunningStatistics {
   private static final Pattern PATTERN = Pattern.compile(REGEXP);
 
   /**
-   * The timestamp (start instant).
+   * The timestamp (start instant) in picoseconds.
    */
   private long tsStart;
 
   /**
-   * The timestamp (stop instant).
+   * The timestamp (stop instant) in picoseconds.
    */
   private long tsStop;
 

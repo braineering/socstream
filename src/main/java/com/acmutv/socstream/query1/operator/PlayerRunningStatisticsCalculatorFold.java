@@ -27,44 +27,45 @@ package com.acmutv.socstream.query1.operator;
 
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
-import org.apache.flink.api.common.functions.RichFlatMapFunction;
-import org.apache.flink.util.Collector;
+import com.acmutv.socstream.tool.physics.PhysicsUtil;
+import org.apache.flink.api.common.functions.FoldFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The operator that calculates palyers running statistics (without window).
+ * The operator that calculates palyers running statistics (with window).
  *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-public class PlayerStatisticsCalculator extends RichFlatMapFunction<RichSensorEvent,PlayerRunningStatistics> {
+public class PlayerRunningStatisticsCalculatorFold implements FoldFunction<RichSensorEvent,PlayerRunningStatistics> {
 
   /**
    * The logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(PlayerStatisticsCalculator.class);
+  private static final Logger LOG = LoggerFactory.getLogger(PlayerRunningStatisticsCalculatorFold.class);
 
   /**
    * Number of events for PID.
    */
   private long events = 0;
 
-  /**
-   * The time interval (frequency=50Hz).
-   */
-  private static final double DELTA_T = 1.0/50.0;
-
-  /**
-   * The time interval square (frequency=50Hz).
-   */
-  private static final double DELTA_T_SQUARE = Math.pow(DELTA_T, 2);
-
-
-
   @Override
-  public void flatMap(RichSensorEvent event, Collector<PlayerRunningStatistics> out) throws Exception {
+  public PlayerRunningStatistics fold(PlayerRunningStatistics stats, RichSensorEvent event) throws Exception {
+    LOG.info("IN: {}", event);
 
+    final double speedDistance[] = PhysicsUtil.computeSpeedDistance(event.getV(), event.getVx(), event.getVy(), event.getA(), event.getAx(), event.getAy());
+
+    final double newAvgSpeed = ((stats.getAvgSpeed() * (this.events++)) + speedDistance[0]) / this.events;
+    final double newDist = stats.getDist() + speedDistance[1];
+
+    stats.setPid(event.getId());
+    stats.setAvgSpeed(newAvgSpeed);
+    stats.setDist(newDist);
+
+    LOG.info("OUT: {}", stats);
+
+    return stats;
   }
 }

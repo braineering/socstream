@@ -52,12 +52,12 @@ public class PlayerSpeedStatistics {
   private static final Pattern PATTERN = Pattern.compile(REGEXP);
 
   /**
-   * The timestamp (start instant).
+   * The timestamp (start instant) in picoseconds.
    */
   private long tsStart;
 
   /**
-   * The timestamp (stop instant).
+   * The timestamp (stop instant) in picoseconds.
    */
   private long tsStop;
 
@@ -81,7 +81,7 @@ public class PlayerSpeedStatistics {
   }
 
   /**
-   * Creates an empty sensor event..
+   * Creates an empty sensor event.
    * This constructor is mandatory for Flink serialization.
    */
   public PlayerSpeedStatistics(){}

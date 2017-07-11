@@ -19,3 +19,4 @@ ${SOCSTREAM_HOME}/env/systemd/kafka-manager.sh stop
 # ENVARS
 ##
 unset SOCSTREAM_HOME
+unset FLINK_CONF_DIR
