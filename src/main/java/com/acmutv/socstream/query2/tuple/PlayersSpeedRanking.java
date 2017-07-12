@@ -27,12 +27,10 @@
 package com.acmutv.socstream.query2.tuple;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,13 +41,14 @@ import java.util.regex.Pattern;
  * @since 1.0
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class PlayersSpeedRanking extends ArrayList<RankingElement> {
 
   /**
    * The regular expression
    */
   private static final String REGEXP =
-      "^(\\d+),(\\d+),(.+)$";
+      "^(\\d+),(\\d+),\\[(.*)\\]$";
 
   /**
    * The pattern matcher used to match strings on {@code REGEXP}.
@@ -66,6 +65,22 @@ public class PlayersSpeedRanking extends ArrayList<RankingElement> {
    */
   private long tsStop;
 
+  /**
+   * Creates a new {@link PlayersSpeedRanking} with the specified time interval.
+   * @param tsStart the timestamp for the start instant.
+   * @param tsStop the timestamp for the end instant.
+   */
+  public PlayersSpeedRanking(long tsStart, long tsStop, List<RankingElement> elems) {
+    super(elems);
+    this.tsStart = tsStart;
+    this.tsStop = tsStop;
+  }
+
+  /**
+   * Creates a new {@link PlayersSpeedRanking} with the specified time interval.
+   * @param tsStart the timestamp for the start instant.
+   * @param tsStop the timestamp for the end instant.
+   */
   public PlayersSpeedRanking(long tsStart, long tsStop) {
     super();
     this.tsStart = tsStart;
@@ -73,7 +88,7 @@ public class PlayersSpeedRanking extends ArrayList<RankingElement> {
   }
 
   /**
-   * Creates an empty sensor event..
+   * Creates an empty sensor event.
    * This constructor is mandatory for Flink serialization.
    */
   public PlayersSpeedRanking(){}
@@ -107,8 +122,12 @@ public class PlayersSpeedRanking extends ArrayList<RankingElement> {
     long tsStart = Long.valueOf(matcher.group(1));
     long tsStop = Long.valueOf(matcher.group(2));
     String strRank = matcher.group(3);
-    String strElems[] = strRank.substring(1, strRank.length() - 1).split(",");
+    String strElems[] = strRank.split(", ");
+
     PlayersSpeedRanking result = new PlayersSpeedRanking(tsStart, tsStop);
+
+    if (strRank.isEmpty()) return result;
+
     for (String strElem : strElems) {
       RankingElement elem = RankingElement.valueOf(strElem);
       result.add(elem);

@@ -46,7 +46,7 @@ public class RankingElement implements Comparable<RankingElement> {
    * The regular expression
    */
   private static final String REGEXP =
-      "^\\((\\d+),(\\d+)\\)$";
+      "^\\((\\d+);(\\d*\\.?\\d+)\\)$";
 
   /**
    * The pattern matcher used to match strings on {@code REGEXP}.
@@ -120,5 +120,11 @@ public class RankingElement implements Comparable<RankingElement> {
     double averageSpeed = Double.valueOf(matcher.group(2));
 
     return new RankingElement(pid, averageSpeed);
+  }
+
+  @Override
+  public String toString() {
+    return String.format("(%d;%f)",
+        this.pid, this.averageSpeed);
   }
 }

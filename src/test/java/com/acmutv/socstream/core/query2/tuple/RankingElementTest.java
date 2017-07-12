@@ -27,6 +27,7 @@
 package com.acmutv.socstream.core.query2.tuple;
 
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
+import com.acmutv.socstream.query2.tuple.RankingElement;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -36,11 +37,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * JUnit test suite for {@link RichSensorEvent}.
+ * JUnit test suite for {@link com.acmutv.socstream.query2.tuple.RankingElement}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see RichSensorEvent
+ * @see RankingElement
  */
 public class RankingElementTest {
 
@@ -50,18 +51,17 @@ public class RankingElementTest {
   private static final Logger LOG = LoggerFactory.getLogger(RankingElementTest.class);
 
   /**
-   * Tests serialization/deserialization of {@link RichSensorEvent}.
+   * Tests serialization/deserialization of {@link RankingElement}.
    */
   @Test
   public void test_serialize() throws Exception {
-    List<RichSensorEvent> sensorEvents = new ArrayList<>();
-    sensorEvents.add(new RichSensorEvent(1,2,3,4,5,6,7,8,9,10,11,12,13));
-    sensorEvents.add(new RichSensorEvent(2,2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13));
+    List<RankingElement> elems = new ArrayList<>();
+    elems.add(new RankingElement(1,1.0));
 
-    for (RichSensorEvent expected : sensorEvents) {
-      LOG.debug("RichSensorEvent serialized: " + expected);
+    for (RankingElement expected : elems) {
+      LOG.debug("RankingElement serialized: " + expected);
       String str = expected.toString();
-      RichSensorEvent actual = RichSensorEvent.valueOf(str);
+      RankingElement actual = RankingElement.valueOf(str);
       Assert.assertEquals(expected, actual);
     }
   }

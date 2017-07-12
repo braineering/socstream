@@ -112,8 +112,8 @@ public class PlayerRunningStatistics {
     long tsStart = Long.valueOf(matcher.group(1));
     long tsStop = Long.valueOf(matcher.group(2));
     long pid = Long.valueOf(matcher.group(3));
-    long dist = Long.valueOf(matcher.group(4));
-    long avgSpeed = Long.valueOf(matcher.group(5));
+    double dist = Double.valueOf(matcher.group(4));
+    double avgSpeed = Double.valueOf(matcher.group(5));
     return new PlayerRunningStatistics(tsStart, tsStop, pid, dist, avgSpeed);
   }
 

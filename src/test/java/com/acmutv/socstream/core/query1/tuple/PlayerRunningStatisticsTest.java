@@ -27,6 +27,7 @@
 package com.acmutv.socstream.core.query1.tuple;
 
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
+import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -36,11 +37,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * JUnit test suite for {@link RichSensorEvent}.
+ * JUnit test suite for {@link com.acmutv.socstream.query1.tuple.PlayerRunningStatistics}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see RichSensorEvent
+ * @see PlayerRunningStatistics
  */
 public class PlayerRunningStatisticsTest {
 
@@ -50,18 +51,17 @@ public class PlayerRunningStatisticsTest {
   private static final Logger LOG = LoggerFactory.getLogger(PlayerRunningStatisticsTest.class);
 
   /**
-   * Tests serialization/deserialization of {@link RichSensorEvent}.
+   * Tests serialization/deserialization of {@link PlayerRunningStatistics}.
    */
   @Test
   public void test_serialize() throws Exception {
-    List<RichSensorEvent> sensorEvents = new ArrayList<>();
-    sensorEvents.add(new RichSensorEvent(1,2,3,4,5,6,7,8,9,10,11,12,13));
-    sensorEvents.add(new RichSensorEvent(2,2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13));
+    List<PlayerRunningStatistics> elems = new ArrayList<>();
+    elems.add(new PlayerRunningStatistics(1,1,1,1.0,1.0));
 
-    for (RichSensorEvent expected : sensorEvents) {
-      LOG.debug("RichSensorEvent serialized: " + expected);
+    for (PlayerRunningStatistics expected : elems) {
+      LOG.debug("PlayerRunningStatistics serialized: " + expected);
       String str = expected.toString();
-      RichSensorEvent actual = RichSensorEvent.valueOf(str);
+      PlayerRunningStatistics actual = PlayerRunningStatistics.valueOf(str);
       Assert.assertEquals(expected, actual);
     }
   }
