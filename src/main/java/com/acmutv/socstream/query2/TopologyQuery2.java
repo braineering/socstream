@@ -135,17 +135,16 @@ public class TopologyQuery2 {
     KeyedStream<RichSensorEvent,Long> playerEvents = sensorEvents.keyBy(new RichSensorEventKeyer());
 
     DataStream<PlayerSpeedStatistics> statistics;
+    DataStream<PlayersSpeedRanking> globalRank;
     if (windowSize > 0) {
       statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
           .aggregate(new PlayerSpeedStatisticsCalculatorAggregator(), new PlayerSpeedStatisticsCalculatorWindowFunction());
-          //.fold(new PlayerSpeedStatistics(), new PlayerSpeedStatisticsCalculatorFold(), new PlayerSpeedStatisticsCalculatorWindowFunction())
-          //.windowAll(new TumblingAlignedProcessingTimeWindows())
-          //.apply(new GlobalRankerWindowFunction(rankSize));
+      globalRank = statistics.timeWindowAll(Time.of(windowSize, windowUnit))
+          .apply(new GlobalRankerWindowFunction(rankSize));
     } else {
       statistics = playerEvents.flatMap(new PlayerSpeedStatisticsCalculator());
+      globalRank = statistics.flatMap(new GlobalRanker(rankSize));
     }
-
-    DataStream<PlayersSpeedRanking> globalRank = statistics.flatMap(new GlobalRanker(rankSize));
 
     globalRank.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
 

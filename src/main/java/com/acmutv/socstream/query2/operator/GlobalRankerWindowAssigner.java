@@ -50,6 +50,7 @@ import java.util.Collection;
  * @since 1.0
  */
 @Data
+@Deprecated
 public class GlobalRankerWindowAssigner extends WindowAssigner<PlayerSpeedStatistics, TimeWindow> {
 
   /**

@@ -60,6 +60,11 @@ public class GlobalRankerWindowFunction implements AllWindowFunction<PlayerSpeed
   private int rankSize;
 
   /**
+   * The output: ranking.
+   */
+  private PlayersSpeedRanking output = new PlayersSpeedRanking();
+
+  /**
    * Creates a new {@link GlobalRankerWindowFunction} with the specified rank size.
    * @param rankSize the size of the top-k ranking.
    */

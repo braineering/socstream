@@ -76,10 +76,16 @@ public class PlayerRunningStatistics {
    */
   private double avgSpeed;
 
-
+  /**
+   * Creates a new set of runnign statistics for a player.
+   * @param tsStart the start timestamp.
+   * @param tsStop the stop timestamp.
+   * @param pid the player id (PID).
+   * @param avgSpeed the average speed (m/s).
+   * @param dist the average distance (m).
+   */
   public PlayerRunningStatistics(long tsStart, long tsStop,
-                                 long pid,
-                                 double dist, double avgSpeed) {
+                                 long pid, double dist, double avgSpeed) {
     this.tsStart = tsStart;
     this.tsStop = tsStop;
     this.pid = pid;

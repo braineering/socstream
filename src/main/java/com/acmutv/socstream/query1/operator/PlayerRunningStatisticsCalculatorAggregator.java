@@ -30,27 +30,23 @@ import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.tool.physics.PhysicsUtil;
 import org.apache.flink.api.common.functions.AggregateFunction;
 import org.apache.flink.api.common.functions.FoldFunction;
+import org.apache.flink.api.java.tuple.Tuple3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The operator that calculates palyers running statistics (with window).
+ * The operator that calculates players running statistics (with window).
  *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-public class PlayerRunningStatisticsCalculatorAggregator implements AggregateFunction<RichSensorEvent,PlayerRunningStatistics,PlayerRunningStatistics> {
+public class PlayerRunningStatisticsCalculatorAggregator implements AggregateFunction<RichSensorEvent,Tuple3<Long,Double,Double>,PlayerRunningStatistics> {
 
   /**
    * The logger.
    */
   private static final Logger LOG = LoggerFactory.getLogger(PlayerRunningStatisticsCalculatorAggregator.class);
-
-  /**
-   * Number of events for PID.
-   */
-  private long events = 0;
 
   /**
    * Creates a new accumulator, starting a new aggregate.
@@ -65,30 +61,30 @@ public class PlayerRunningStatisticsCalculatorAggregator implements AggregateFun
    * @return A new accumulator, corresponding to an empty aggregate.
    */
   @Override
-  public PlayerRunningStatistics createAccumulator() {
-    return new PlayerRunningStatistics();
+  public Tuple3<Long,Double,Double> createAccumulator() {
+    return new Tuple3<>(0L, 0.0, 0.0);
   }
 
   /**
    * Adds the given value to the given accumulator.
    *
    * @param event       The value to add
-   * @param accumulator       The accumulator to add the value to
+   * @param accumulator The accumulator (numEvents,avgSpeed)
    */
   @Override
-  public void add(RichSensorEvent event, PlayerRunningStatistics accumulator) {
-    LOG.info("IN: {}", event);
+  public void add(RichSensorEvent event, Tuple3<Long,Double,Double> accumulator) {
+    long numEvents = accumulator.f0 + 1;
+
+    LOG.debug("IN ({}): {}", numEvents, event);
 
     final double speedDistance[] = PhysicsUtil.computeSpeedDistance(event.getV(), event.getVx(), event.getVy(), event.getA(), event.getAx(), event.getAy());
 
-    final double newAvgSpeed = ((accumulator.getAvgSpeed() * (this.events++)) + speedDistance[0]) / this.events;
-    final double newDist = accumulator.getDist() + speedDistance[1];
+    final double newAvgSpeed = ((accumulator.f1 * (numEvents - 1)) + speedDistance[0]) / numEvents;
+    final double newDist = accumulator.f2 + speedDistance[1];
 
-    accumulator.setPid(event.getId());
-    accumulator.setAvgSpeed(newAvgSpeed);
-    accumulator.setDist(newDist);
+    accumulator.setFields(numEvents, newAvgSpeed, newDist);
 
-    LOG.info("ACC: {}", accumulator);
+    LOG.debug("ACC: {}", accumulator);
   }
 
   /**
@@ -98,8 +94,8 @@ public class PlayerRunningStatisticsCalculatorAggregator implements AggregateFun
    * @return The final aggregation result.
    */
   @Override
-  public PlayerRunningStatistics getResult(PlayerRunningStatistics accumulator) {
-    return accumulator;
+  public PlayerRunningStatistics getResult(Tuple3<Long,Double,Double> accumulator) {
+    return new PlayerRunningStatistics(0, 0, 0, accumulator.f2, accumulator.f1);
   }
 
   /**
@@ -114,7 +110,7 @@ public class PlayerRunningStatisticsCalculatorAggregator implements AggregateFun
    * @return The accumulator with the merged state
    */
   @Override
-  public PlayerRunningStatistics merge(PlayerRunningStatistics a, PlayerRunningStatistics b) {
+  public Tuple3<Long,Double,Double> merge(Tuple3<Long,Double,Double> a, Tuple3<Long,Double,Double> b) {
     return null;
   }
 }

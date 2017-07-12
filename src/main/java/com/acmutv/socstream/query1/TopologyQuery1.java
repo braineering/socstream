@@ -130,7 +130,6 @@ public class TopologyQuery1 {
     if (windowSize > 0) {
       statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
       .aggregate(new PlayerRunningStatisticsCalculatorAggregator(), new PlayerRunningStatisticsCalculatorWindowFunction());
-          //.fold(new PlayerRunningStatistics(), new PlayerRunningStatisticsCalculatorFold(), new PlayerRunningStatisticsCalculatorWindowFunction());
     } else {
       statistics = playerEvents.flatMap(new PlayerRunningStatisticsCalculator());
     }
