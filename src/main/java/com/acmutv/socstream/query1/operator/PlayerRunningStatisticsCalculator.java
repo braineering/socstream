@@ -27,6 +27,7 @@ package com.acmutv.socstream.query1.operator;
 
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
+import com.acmutv.socstream.tool.physics.PhysicsUtil;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
@@ -47,24 +48,50 @@ public class PlayerRunningStatisticsCalculator extends RichFlatMapFunction<RichS
   private static final Logger LOG = LoggerFactory.getLogger(PlayerRunningStatisticsCalculator.class);
 
   /**
-   * Number of events for PID.
+   * Number of events.
    */
-  private long events = 0;
+  private long numEvents = 0;
 
   /**
-   * The time interval (frequency=50Hz).
+   * Player total distance (m).
    */
-  private static final double DELTA_T = 1.0/50.0;
+  private double totalDistance = 0.0;
 
   /**
-   * The time interval square (frequency=50Hz).
+   * Player average speed (m/s).
    */
-  private static final double DELTA_T_SQUARE = Math.pow(DELTA_T, 2);
+  private double averageSpeed = 0.0;
 
+  /**
+   * The tuple signaling the end of stream.
+   */
+  private RichSensorEvent eos;
 
+  /**
+   * Creates a new operator.
+   * @param eos the tuple signaling the end of stream.
+   */
+  public PlayerRunningStatisticsCalculator(RichSensorEvent eos) {
+    this.eos = eos;
+  }
 
   @Override
   public void flatMap(RichSensorEvent event, Collector<PlayerRunningStatistics> out) throws Exception {
+    if (event.equals(this.eos)) {
+      LOG.debug("EOS RECEIVED");
+      out.collect(new PlayerRunningStatistics(0,0, event.getId(), this.totalDistance, this.averageSpeed));
+      super.close();
+    }
 
+    this.numEvents++;
+
+    LOG.debug("IN ({}): {}", numEvents, event);
+
+    final double distanceSpeed[] = PhysicsUtil.computeDistanceAndSpeed(event.getV(), event.getVx(), event.getVy(), event.getA(), event.getAx(), event.getAy());
+
+    this.totalDistance = this.totalDistance + distanceSpeed[0];;
+    this.averageSpeed = ((this.averageSpeed * (this.numEvents - 1)) + distanceSpeed[1]) / this.numEvents;
+
+    LOG.debug("ACC: {} {} {}", this.numEvents, this.totalDistance, this.averageSpeed);
   }
 }

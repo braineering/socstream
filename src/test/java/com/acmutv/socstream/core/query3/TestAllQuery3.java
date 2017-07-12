@@ -26,7 +26,6 @@
 
 package com.acmutv.socstream.core.query3;
 
-import com.acmutv.socstream.common.tuple.TestAllTuple;
 import com.acmutv.socstream.core.query3.tuple.TestAllQuery3Tuple;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

@@ -26,7 +26,6 @@
 
 package com.acmutv.socstream.core.query1.tuple;
 
-import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import org.junit.Assert;
 import org.junit.Test;

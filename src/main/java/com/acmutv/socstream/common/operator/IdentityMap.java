@@ -25,7 +25,6 @@
  */
 package com.acmutv.socstream.common.operator;
 
-import com.acmutv.socstream.common.source.kafka.schema.RichSensorEventDeserializationSchema;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;

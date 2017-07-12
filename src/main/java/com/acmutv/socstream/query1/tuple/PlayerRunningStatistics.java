@@ -69,28 +69,28 @@ public class PlayerRunningStatistics {
   /**
    * The total distance traveled by the player (m).
    */
-  private double dist;
+  private double totalDistance;
 
   /**
    * The average speed of the player (m/s).
    */
-  private double avgSpeed;
+  private double averageSpeed;
 
   /**
    * Creates a new set of runnign statistics for a player.
    * @param tsStart the start timestamp.
    * @param tsStop the stop timestamp.
    * @param pid the player id (PID).
-   * @param avgSpeed the average speed (m/s).
-   * @param dist the average distance (m).
+   * @param totalDistance the average distance (m).
+   * @param averageSpeed the average speed (m/s).
    */
   public PlayerRunningStatistics(long tsStart, long tsStop,
-                                 long pid, double dist, double avgSpeed) {
+                                 long pid, double totalDistance, double averageSpeed) {
     this.tsStart = tsStart;
     this.tsStop = tsStop;
     this.pid = pid;
-    this.dist = dist;
-    this.avgSpeed = avgSpeed;
+    this.totalDistance = totalDistance;
+    this.averageSpeed = averageSpeed;
   }
 
   /**
@@ -112,14 +112,14 @@ public class PlayerRunningStatistics {
     long tsStart = Long.valueOf(matcher.group(1));
     long tsStop = Long.valueOf(matcher.group(2));
     long pid = Long.valueOf(matcher.group(3));
-    double dist = Double.valueOf(matcher.group(4));
-    double avgSpeed = Double.valueOf(matcher.group(5));
-    return new PlayerRunningStatistics(tsStart, tsStop, pid, dist, avgSpeed);
+    double totalDistance = Double.valueOf(matcher.group(4));
+    double averageSpeed = Double.valueOf(matcher.group(5));
+    return new PlayerRunningStatistics(tsStart, tsStop, pid, totalDistance, averageSpeed);
   }
 
   @Override
   public String toString() {
     return String.format("%d,%d,%d,%f,%f",
-        this.tsStart, this.tsStop, this.pid, this.dist, this.avgSpeed);
+        this.tsStart, this.tsStop, this.pid, this.totalDistance, this.averageSpeed);
   }
 }

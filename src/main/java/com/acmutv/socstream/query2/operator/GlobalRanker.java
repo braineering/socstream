@@ -25,16 +25,21 @@
  */
 package com.acmutv.socstream.query2.operator;
 
+import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
 import com.acmutv.socstream.query2.tuple.PlayersSpeedRanking;
+import com.acmutv.socstream.query2.tuple.RankingElement;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -45,7 +50,7 @@ import java.util.Set;
  * @since 1.0
  */
 @Data
-@AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public class GlobalRanker extends RichFlatMapFunction<PlayerSpeedStatistics,PlayersSpeedRanking> {
 
   /**
@@ -59,26 +64,46 @@ public class GlobalRanker extends RichFlatMapFunction<PlayerSpeedStatistics,Play
   private int rankSize;
 
   /**
-   * The set of statistics.
+   * The tuple signaling the end of stream.
    */
-  private Set<PlayerSpeedStatistics> stats = new HashSet<>();
+  private PlayerSpeedStatistics eos;
+
+  /**
+   * The output: ranking.
+   */
+  private PlayersSpeedRanking ranking = new PlayersSpeedRanking();
 
   /**
    * Creates a new {@link GlobalRanker} with the specified rank size.
    * @param rankSize the size of the top-k ranking.
+   * @param eos the tuple signaling the end of stream.
    */
-  public GlobalRanker(int rankSize) {
+  public GlobalRanker(int rankSize, PlayerSpeedStatistics eos) {
     this.rankSize = rankSize;
+    this.eos = eos;
   }
 
-  /**
-   *
-   * @param stats
-   * @param out
-   * @throws Exception
-   */
   @Override
   public void flatMap(PlayerSpeedStatistics stats, Collector<PlayersSpeedRanking> out) throws Exception {
-    //TODO
+    /*if (stats.equals(this.eos)) {
+      LOG.debug("EOS RECEIVED");
+      out.collect(new PlayerSpeedStatistics(0,0,0, this.averageSpeed));
+      close();
+    }
+
+    LOG.debug("IN: {}", values);
+
+    List<RankingElement> tmp = new ArrayList<>();
+    for (PlayerSpeedStatistics stat : values) {
+      tmp.add(new RankingElement(stat.getPid(), stat.getAverageSpeed()));
+    }
+    tmp.sort((e1,e2) -> e2.compareTo(e1));
+
+    this.ranking.setTsStart(window.getStart());
+    this.ranking.setTsStop(window.getEnd());
+    this.ranking.setRank(tmp.subList(0, this.rankSize));
+
+    out.collect(this.ranking);
+    */
   }
 }

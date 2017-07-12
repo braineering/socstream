@@ -26,7 +26,6 @@
 
 package com.acmutv.socstream.core.query2.tuple;
 
-import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.query2.tuple.RankingElement;
 import org.junit.Assert;
 import org.junit.Test;

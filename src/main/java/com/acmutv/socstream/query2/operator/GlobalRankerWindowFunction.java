@@ -27,17 +27,16 @@ package com.acmutv.socstream.query2.operator;
 
 import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
 import com.acmutv.socstream.query2.tuple.PlayersSpeedRanking;
-import lombok.AllArgsConstructor;
+import com.acmutv.socstream.query2.tuple.RankingElement;
 import lombok.Data;
-import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.streaming.api.functions.windowing.AllWindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The operator that calculates the global ranking of players by average speed.
@@ -82,11 +81,17 @@ public class GlobalRankerWindowFunction implements AllWindowFunction<PlayerSpeed
    */
   @Override
   public void apply(TimeWindow window, Iterable<PlayerSpeedStatistics> values, Collector<PlayersSpeedRanking> out) throws Exception {
-    LOG.debug("VALUES: {}", values);
+    LOG.debug("IN: {}", values);
+
+    List<RankingElement> tmp = new ArrayList<>();
+    for (PlayerSpeedStatistics stat : values) {
+      tmp.add(new RankingElement(stat.getPid(), stat.getAverageSpeed()));
+    }
+    tmp.sort((e1,e2) -> e2.compareTo(e1));
 
     this.ranking.setTsStart(window.getStart());
     this.ranking.setTsStop(window.getEnd());
-    this.ranking.update(values);
+    this.ranking.setRank(tmp.subList(0, this.rankSize));
 
     out.collect(this.ranking);
   }

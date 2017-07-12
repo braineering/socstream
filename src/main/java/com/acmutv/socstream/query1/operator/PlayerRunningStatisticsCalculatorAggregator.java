@@ -29,7 +29,6 @@ import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.tool.physics.PhysicsUtil;
 import org.apache.flink.api.common.functions.AggregateFunction;
-import org.apache.flink.api.common.functions.FoldFunction;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,20 +68,18 @@ public class PlayerRunningStatisticsCalculatorAggregator implements AggregateFun
    * Adds the given value to the given accumulator.
    *
    * @param event       The value to add
-   * @param accumulator The accumulator (numEvents,avgSpeed)
+   * @param accumulator The accumulator (numEvents,totalDistance,averageSpeed)
    */
   @Override
   public void add(RichSensorEvent event, Tuple3<Long,Double,Double> accumulator) {
-    long numEvents = accumulator.f0 + 1;
+    long numEvents = ++accumulator.f0;
 
     LOG.debug("IN ({}): {}", numEvents, event);
 
-    final double speedDistance[] = PhysicsUtil.computeSpeedDistance(event.getV(), event.getVx(), event.getVy(), event.getA(), event.getAx(), event.getAy());
+    final double distanceSpeed[] = PhysicsUtil.computeDistanceAndSpeed(event.getV(), event.getVx(), event.getVy(), event.getA(), event.getAx(), event.getAy());
 
-    final double newAvgSpeed = ((accumulator.f1 * (numEvents - 1)) + speedDistance[0]) / numEvents;
-    final double newDist = accumulator.f2 + speedDistance[1];
-
-    accumulator.setFields(numEvents, newAvgSpeed, newDist);
+    accumulator.f1 = accumulator.f1 + distanceSpeed[0];;
+    accumulator.f2 = ((accumulator.f2 * (numEvents - 1)) + distanceSpeed[1]) / numEvents;
 
     LOG.debug("ACC: {}", accumulator);
   }
@@ -95,7 +92,7 @@ public class PlayerRunningStatisticsCalculatorAggregator implements AggregateFun
    */
   @Override
   public PlayerRunningStatistics getResult(Tuple3<Long,Double,Double> accumulator) {
-    return new PlayerRunningStatistics(0, 0, 0, accumulator.f2, accumulator.f1);
+    return new PlayerRunningStatistics(0, 0, 0, accumulator.f1, accumulator.f2);
   }
 
   /**

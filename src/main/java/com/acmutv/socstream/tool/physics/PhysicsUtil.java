@@ -106,7 +106,7 @@ public class PhysicsUtil {
    * @param ay the y-acceleration.
    * @return the pair (speed,distance).
    */
-  public static double[] computeSpeedDistance(long v, long vx, long vy, long a, long ax, long ay) {
+  public static double[] computeDistanceAndSpeed(long v, long vx, long vy, long a, long ax, long ay) {
     double results[] = new double[2];
 
     final double vX = v * vx * SPEED_CONVERSION_FACTOR;
@@ -114,15 +114,15 @@ public class PhysicsUtil {
     final double aX = a * ax * ACCELERATION_CONVERSION_FACTOR;
     final double aY = a * ay * ACCELERATION_CONVERSION_FACTOR;
 
-    final double speedX = vX + aX * DELTA_T;
-    final double speedY = vY + aY * DELTA_T;
-
-    results[0] = Math.sqrt(Math.pow(speedX, 2) + Math.pow(speedY, 2));
-
     final double distX = vX * DELTA_T + 0.5 * aX * DELTA_T_SQUARE;
     final double distY = vY * DELTA_T + 0.5 * aY * DELTA_T_SQUARE;
 
-    results[1] =  Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2));
+    results[0] =  Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2));
+
+    final double speedX = vX + aX * DELTA_T;
+    final double speedY = vY + aY * DELTA_T;
+
+    results[1] = Math.sqrt(Math.pow(speedX, 2) + Math.pow(speedY, 2));
 
     return results;
   }

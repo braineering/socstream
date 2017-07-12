@@ -57,7 +57,7 @@ public class PositionSensorEvent {
   private long id;
 
   /**
-   * The timestamp.
+   * The timestamp (picoseconds).
    */
   private long ts;
 

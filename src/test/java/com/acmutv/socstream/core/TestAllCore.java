@@ -26,7 +26,6 @@
 
 package com.acmutv.socstream.core;
 
-import com.acmutv.socstream.common.tuple.TestAllTuple;
 import com.acmutv.socstream.core.query1.TestAllQuery1;
 import com.acmutv.socstream.core.query2.TestAllQuery2;
 import com.acmutv.socstream.core.query3.TestAllQuery3;

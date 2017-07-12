@@ -32,9 +32,8 @@ import com.acmutv.socstream.common.source.kafka.RichSensorEventKafkaSource;
 import com.acmutv.socstream.common.meta.Match;
 import com.acmutv.socstream.common.meta.MatchService;
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
-import com.acmutv.socstream.query1.operator.PlayerRunningStatisticsCalculatorAggregator;
-import com.acmutv.socstream.query1.operator.PlayerRunningStatisticsCalculatorWindowFunction;
 import com.acmutv.socstream.query1.operator.RichSensorEventTimestampExtractor;
+import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.query2.operator.*;
 import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
 import com.acmutv.socstream.query2.tuple.PlayersSpeedRanking;
@@ -45,7 +44,6 @@ import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingAlignedProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
 import java.nio.file.FileSystems;
@@ -84,7 +82,7 @@ public class TopologyQuery2 {
     final String kafkaZookeeper = parameter.get("kafka.zookeeper", "localhost:2181");
     final String kafkaBootstrap = parameter.get("kafka.bootstrap", "localhost:9092");
     final String kafkaTopic = parameter.get("kafka.topic", "socstream");
-    final long windowSize = parameter.getLong("windowSize", 0);
+    final long windowSize = parameter.getLong("windowSize", 70);
     final TimeUnit windowUnit = TimeUnit.valueOf(parameter.get("windowUnit", "MINUTES"));
     final int rankSize = parameter.getInt("rankSize", 5);
     final int parallelism = parameter.getInt("parallelism", 1);
@@ -134,17 +132,11 @@ public class TopologyQuery2 {
 
     KeyedStream<RichSensorEvent,Long> playerEvents = sensorEvents.keyBy(new RichSensorEventKeyer());
 
-    DataStream<PlayerSpeedStatistics> statistics;
-    DataStream<PlayersSpeedRanking> globalRank;
-    if (windowSize > 0) {
-      statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
-          .aggregate(new PlayerSpeedStatisticsCalculatorAggregator(), new PlayerSpeedStatisticsCalculatorWindowFunction());
-      globalRank = statistics.timeWindowAll(Time.of(windowSize, windowUnit))
-          .apply(new GlobalRankerWindowFunction(rankSize));
-    } else {
-      statistics = playerEvents.flatMap(new PlayerSpeedStatisticsCalculator());
-      globalRank = statistics.flatMap(new GlobalRanker(rankSize));
-    }
+    DataStream<PlayerSpeedStatistics> statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
+        .aggregate(new PlayerSpeedStatisticsCalculatorAggregator(), new PlayerSpeedStatisticsCalculatorWindowFunction());
+
+    DataStream<PlayersSpeedRanking> globalRank = statistics.timeWindowAll(Time.of(windowSize, windowUnit))
+        .apply(new GlobalRankerWindowFunction(rankSize));
 
     globalRank.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
 

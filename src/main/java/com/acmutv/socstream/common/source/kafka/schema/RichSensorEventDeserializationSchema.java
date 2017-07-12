@@ -25,7 +25,6 @@
  */
 package com.acmutv.socstream.common.source.kafka.schema;
 
-import com.acmutv.socstream.common.tuple.PositionSensorEvent;
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -53,11 +52,6 @@ public class RichSensorEventDeserializationSchema extends AbstractDeserializatio
    * The logger.
    */
   private static final Logger LOG = LoggerFactory.getLogger(RichSensorEventDeserializationSchema.class);
-
-  /**
-   * The special tuple signaling the end of stream.
-   */
-  private static final RichSensorEvent END_OF_STREAM = new RichSensorEvent(0, Long.MAX_VALUE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
   /**
    * The starting timestamp (events before this will be ignored).
@@ -88,6 +82,11 @@ public class RichSensorEventDeserializationSchema extends AbstractDeserializatio
    * The map (SID)->(PID).
    */
   private Map<Long,Long> sid2Pid;
+
+  /**
+   * The tuple signaling the end of stream.
+   */
+  private RichSensorEvent eos;
 
   /**
    * Creates a new deserialization schema.
@@ -130,8 +129,8 @@ public class RichSensorEventDeserializationSchema extends AbstractDeserializatio
       return null;
     } else if (ts > this.tsEnd) {
       LOG.info("Ignored sensor event (after match end): {}", strEvent);
-      LOG.info("Emitting EOS tuple: {}", END_OF_STREAM);
-      return END_OF_STREAM;
+      LOG.info("Emitting EOS tuple: {}", this.eos);
+      return eos;
     }
 
     event.setId(this.sid2Pid.get(event.getId()));

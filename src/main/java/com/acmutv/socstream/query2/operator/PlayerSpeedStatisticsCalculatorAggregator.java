@@ -25,9 +25,7 @@
  */
 package com.acmutv.socstream.query2.operator;
 
-import com.acmutv.socstream.common.tuple.PositionSensorEvent;
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
-import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
 import com.acmutv.socstream.tool.physics.PhysicsUtil;
 import org.apache.flink.api.common.functions.AggregateFunction;
@@ -36,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The operator that calculates palyers speed statistics (with window).
+ * The operator that calculates players speed statistics (with window).
  *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
@@ -74,14 +72,14 @@ public class PlayerSpeedStatisticsCalculatorAggregator implements AggregateFunct
    */
   @Override
   public void add(RichSensorEvent event, Tuple2<Long,Double> accumulator) {
-    long numEvents = accumulator.f0 + 1;
+    long numEvents = ++accumulator.f0;
 
     LOG.debug("IN ({}): {}", numEvents, event);
 
-    final double newSpeed = PhysicsUtil.computeSpeed(event.getV(), event.getVx(), event.getVy(), event.getA(), event.getAx(), event.getAy());
-    final double newAvgSpeed = ((accumulator.f1 * (numEvents - 1)) + newSpeed) / numEvents;
+    final double speed = PhysicsUtil.computeSpeed(event.getV(), event.getVx(), event.getVy(), event.getA(), event.getAx(), event.getAy());
+    final double newAverageSpeed = ((accumulator.f1 * (numEvents - 1)) + speed) / numEvents;
 
-    accumulator.setFields(numEvents, newAvgSpeed);
+    accumulator.setFields(numEvents, newAverageSpeed);
 
     LOG.debug("ACC: {}", accumulator);
   }

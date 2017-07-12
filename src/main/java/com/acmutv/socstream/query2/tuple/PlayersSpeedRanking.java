@@ -28,7 +28,7 @@ package com.acmutv.socstream.query2.tuple;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.flink.shaded.com.google.common.collect.Lists;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class PlayersSpeedRanking extends ArrayList<RankingElement> {
+public class PlayersSpeedRanking {
 
   /**
    * The regular expression
@@ -66,14 +66,20 @@ public class PlayersSpeedRanking extends ArrayList<RankingElement> {
   private long tsStop;
 
   /**
+   * The ranking.
+   */
+  private List<RankingElement> rank;
+
+  /**
    * Creates a new {@link PlayersSpeedRanking} with the specified time interval.
    * @param tsStart the timestamp for the start instant.
    * @param tsStop the timestamp for the end instant.
+   * @param rank the ranking.
    */
-  public PlayersSpeedRanking(long tsStart, long tsStop, List<RankingElement> elems) {
-    super(elems);
+  public PlayersSpeedRanking(long tsStart, long tsStop, List<RankingElement> rank) {
     this.tsStart = tsStart;
     this.tsStop = tsStop;
+    this.rank = rank;
   }
 
   /**
@@ -82,9 +88,9 @@ public class PlayersSpeedRanking extends ArrayList<RankingElement> {
    * @param tsStop the timestamp for the end instant.
    */
   public PlayersSpeedRanking(long tsStart, long tsStop) {
-    super();
     this.tsStart = tsStart;
     this.tsStop = tsStop;
+    this.rank = new ArrayList<>();
   }
 
   /**
@@ -92,22 +98,6 @@ public class PlayersSpeedRanking extends ArrayList<RankingElement> {
    * This constructor is mandatory for Flink serialization.
    */
   public PlayersSpeedRanking(){}
-
-  /**
-   * Clears and updates the ranking.
-   * @param stats the list of players statistics.
-   */
-  public void update(Iterable<PlayerSpeedStatistics> stats) {
-    super.clear();
-
-    Iterator<PlayerSpeedStatistics> iter = stats.iterator();
-    while (iter.hasNext()) {
-      PlayerSpeedStatistics stat = iter.next();
-      super.add(new RankingElement(stat.getPid(), stat.getAvgSpeed()));
-    }
-
-    super.sort((e1,e2) -> e1.compareTo(e2));
-  }
 
   /**
    * Parses {@link PlayersSpeedRanking} from string.
@@ -130,7 +120,7 @@ public class PlayersSpeedRanking extends ArrayList<RankingElement> {
 
     for (String strElem : strElems) {
       RankingElement elem = RankingElement.valueOf(strElem);
-      result.add(elem);
+      result.getRank().add(elem);
     }
 
     return result;
@@ -139,6 +129,6 @@ public class PlayersSpeedRanking extends ArrayList<RankingElement> {
   @Override
   public String toString() {
     return String.format("%d,%d,%s",
-        this.tsStart, this.tsStop, super.toString());
+        this.tsStart, this.tsStop, this.rank.toString());
   }
 }

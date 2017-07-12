@@ -49,6 +49,11 @@ public class RichSensorEventKafkaSource extends FlinkKafkaConsumer010<RichSensor
   private static final Logger LOG = LoggerFactory.getLogger(RichSensorEventKafkaSource.class);
 
   /**
+   * The special tuple signaling the end of stream.
+   */
+  public static final RichSensorEvent END_OF_STREAM = new RichSensorEvent(0, Long.MAX_VALUE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+  /**
    * Constructs a new Kafka source for sensor events with ignoring features.
    *
    * @param topic Kafka topics.
@@ -66,7 +71,7 @@ public class RichSensorEventKafkaSource extends FlinkKafkaConsumer010<RichSensor
                                     Set<Long> ignoredSensors,
                                     Map<Long,Long> sid2Pid) {
     super(topic, new RichSensorEventDeserializationSchema(
-        tsStart, tsEnd, tsStartIgnore, tsEndIgnore, ignoredSensors, sid2Pid
+        tsStart, tsEnd, tsStartIgnore, tsEndIgnore, ignoredSensors, sid2Pid, END_OF_STREAM
     ), props);
 
   }
