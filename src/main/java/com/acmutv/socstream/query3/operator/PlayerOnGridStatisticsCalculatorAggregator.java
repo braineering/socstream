@@ -33,8 +33,14 @@ import com.acmutv.socstream.common.tuple.PositionSensorEvent;
 import com.acmutv.socstream.query3.tuple.PlayerGridStatistics;
 import org.apache.flink.api.common.functions.AggregateFunction;
 import org.apache.flink.api.common.functions.FoldFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.tuple.Tuple4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The operator that calculates palyers running statistics (with window).
@@ -43,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-public class PlayerOnGridStatisticsCalculatorAggregator implements AggregateFunction<PositionSensorEvent,PlayerGridStatistics,PlayerGridStatistics> {
+public class PlayerOnGridStatisticsCalculatorAggregator implements AggregateFunction<PositionSensorEvent,Tuple4<Long,Long,GridCoordinate,Map<String,Long>>,PlayerGridStatistics> {
 
   /**
    * The logger.
@@ -63,8 +69,8 @@ public class PlayerOnGridStatisticsCalculatorAggregator implements AggregateFunc
    * @return A new accumulator, corresponding to an empty aggregate.
    */
   @Override
-  public PlayerGridStatistics createAccumulator() {
-    return new PlayerGridStatistics();
+  public Tuple4<Long,Long,GridCoordinate,Map<String,Long>> createAccumulator() {
+    return new Tuple4<Long,Long,GridCoordinate,Map<String,Long>>(0L, 0L, new GridCoordinate(), new HashMap<>());
   }
 
   /**
@@ -74,14 +80,18 @@ public class PlayerOnGridStatisticsCalculatorAggregator implements AggregateFunc
    * @param accumulator The accumulator to add the value to
    */
   @Override
-  public void add(PositionSensorEvent event, PlayerGridStatistics accumulator) {
-    LOG.info("IN: {}", event);
+  public void add(PositionSensorEvent event, Tuple4<Long,Long,GridCoordinate,Map<String,Long>> accumulator) {
+    long numEvents = ++accumulator.f0;
+
+    LOG.info("IN ({}): {}", numEvents, event);
 
     long x = event.getX();
     long y = event.getY();
     long currentTimestamp = event.getTs();
 
-    GridCoordinate lastCell = accumulator.getLastCell();
+    long lastTs = accumulator.f1;
+
+    GridCoordinate lastCell = accumulator.f2;
     Coordinate currentCenter = ComputeCenterOfGravity.computeWithCell(x,y,lastCell);
     GridCoordinate currentCell = GridTool.computeCell(currentCenter);
 
@@ -102,8 +112,8 @@ public class PlayerOnGridStatisticsCalculatorAggregator implements AggregateFunc
    * @return The final aggregation result.
    */
   @Override
-  public PlayerGridStatistics getResult(PlayerGridStatistics accumulator) {
-    return accumulator;
+  public PlayerGridStatistics getResult(Tuple4<Long,Long,GridCoordinate,Map<String,Long>> accumulator) {
+    return new PlayerGridStatistics(0, 0, accumulator.f3);
   }
 
   /**
@@ -118,35 +128,8 @@ public class PlayerOnGridStatisticsCalculatorAggregator implements AggregateFunc
    * @return The accumulator with the merged state
    */
   @Override
-  public PlayerGridStatistics merge(PlayerGridStatistics a, PlayerGridStatistics b) {
+  public Tuple4<Long,Long,GridCoordinate,Map<String,Long>> merge(Tuple4<Long,Long,GridCoordinate,Map<String,Long>> a,
+                                                                 Tuple4<Long,Long,GridCoordinate,Map<String,Long>> b) {
     return null;
   }
-
-  /*
-  @Override
-  public PlayerGridStatistics fold(PlayerGridStatistics stats, PositionSensorEvent event) throws Exception {
-
-    LOG.info("IN: {}", event);
-
-    long pid = event.getId();
-    long x = event.getX();
-    long y = event.getY();
-    long currentTimestamp = event.getTs();
-
-    GridCoordinate lastCell = stats.getLastCell();
-    Coordinate currentCenter = ComputeCenterOfGravity.computeWithCell(x,y,lastCell);
-    GridCoordinate currentCell = GridTool.computeCell(currentCenter);
-
-    if(currentCell.equals(lastCell))
-      stats.upgradeTime(currentCell,currentTimestamp);
-    else
-      stats.setLastCell(currentCell);
-
-    stats.setLastTimestamp(currentTimestamp);
-
-    LOG.info("OUT: {}", stats);
-
-    return stats;
-  }
-  */
 }

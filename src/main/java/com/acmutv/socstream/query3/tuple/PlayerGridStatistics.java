@@ -66,37 +66,14 @@ public class PlayerGridStatistics {
   private long tsStart;
 
   /**
-   * The timestamp (last instant).
-   */
-  private long tsLast;
-
-  /**
-   * The timestamp (stop instant).
-   */
-  private long tsStop;
-
-  /**
-   * The timestamp (last instant).
-   */
-  private GridCoordinate lastCell = new GridCoordinate(0,0, new Coordinate(0,0));
-
-  /**
    * The grid statistics.
    */
   private Map<String,Long> stats = new HashMap<>();
 
 
-  public PlayerGridStatistics(long pid, long tsStart, long tsLast, long tsStop, GridCoordinate lastCell, Map<String,Long> stats) {
+  public PlayerGridStatistics(long pid, long tsStart, Map<String,Long> stats) {
     this.pid = pid;
     this.tsStart = tsStart;
-    this.tsLast = tsLast;
-    this.tsStop= tsStop;
-    this.lastCell = lastCell;
-    this.stats = stats;
-  }
-
-  public PlayerGridStatistics(GridCoordinate lastCell, Map<String,Long> stats){
-    this.lastCell = lastCell;
     this.stats = stats;
   }
 
@@ -119,13 +96,11 @@ public class PlayerGridStatistics {
     if (!matcher.matches()) throw new IllegalArgumentException(string);
     long pid = Long.valueOf(matcher.group(1));
     long tsStart = Long.valueOf(matcher.group(2));
-    long tsLast = Long.valueOf(matcher.group(3));
-    long tsStop = Long.valueOf(matcher.group(4));
-    long x = Long.valueOf(matcher.group(5));
-    long y = Long.valueOf(matcher.group(6));
-    String strStats = matcher.group(7);
+    long x = Long.valueOf(matcher.group(3));
+    long y = Long.valueOf(matcher.group(4));
+    String strStats = matcher.group(5);
     Map<String,Long> stats = new HashMap<>();
-    return new PlayerGridStatistics(pid,tsStart,tsLast,tsStop,new GridCoordinate(x,y,new Coordinate(x,y)),stats);
+    return new PlayerGridStatistics(pid,tsStart,new GridCoordinate(x,y,new Coordinate(x,y)),stats);
   }
 
   @Override
