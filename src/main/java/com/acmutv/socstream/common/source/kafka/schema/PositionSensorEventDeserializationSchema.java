@@ -54,6 +54,11 @@ public class PositionSensorEventDeserializationSchema extends AbstractDeserializ
   private static final Logger LOG = LoggerFactory.getLogger(PositionSensorEventDeserializationSchema.class);
 
   /**
+   * The special tuple signaling the end of stream.
+   */
+  private static final PositionSensorEvent END_OF_STREAM = new PositionSensorEvent(0, Long.MAX_VALUE, 0, 0, 0);
+
+  /**
    * The starting timestamp (events before this will be ignored).
    */
   private Long tsStart;
@@ -98,23 +103,52 @@ public class PositionSensorEventDeserializationSchema extends AbstractDeserializ
    */
   @Override
   public PositionSensorEvent deserialize(byte[] message) throws IOException {
-    PositionSensorEvent event = null;
+    PositionSensorEvent event;
 
     final String strEvent = new String(message);
 
     try {
       event = PositionSensorEvent.valueOfAsSensorEvent(strEvent);
-      final long ts = event.getTs();
-      if (ts < this.tsStart || ts > this.tsEnd || (ts > tsStartIgnore && ts < tsEndIgnore) ||
-          this.ignoredSensors.contains(event.getId())) {
-        LOG.debug("Ignored sensor event: {}", strEvent);
-        return null;
-      }
-      event.setId(this.sid2Pid.get(event.getId()));
     } catch (IllegalArgumentException exc) {
       LOG.warn("Malformed sensor event: {}", strEvent);
+      return null;
     }
 
+    if (this.ignoredSensors.contains(event.getId())) {
+      LOG.info("Ignored sensor event (untracked SID): {}", strEvent);
+      return null;
+    }
+
+    final long ts = event.getTs();
+
+    if (ts < this.tsStart) {
+      LOG.info("Ignored sensor event (before match start): {}", strEvent);
+      return null;
+    } else if (ts > tsStartIgnore && ts < tsEndIgnore) {
+      LOG.info("Ignored sensor event (within match interval): {}", strEvent);
+      return null;
+    } else if (ts > this.tsEnd) {
+      LOG.info("Ignored sensor event (after match end): {}", strEvent);
+      LOG.info("Emitting EOS tuple: {}", END_OF_STREAM);
+      return END_OF_STREAM;
+    }
+
+    event.setId(this.sid2Pid.get(event.getId()));
+
     return event;
+  }
+
+  /**
+   * Checks if the end of stream has been reached.
+   * @param event the current event.
+   * @return true, if the end of stream has been reached; false, otherwise.
+   */
+  @Override
+  public boolean isEndOfStream(PositionSensorEvent event) {
+    final boolean isEnd = event.getTs() > this.getTsEnd();
+    if (isEnd) {
+      LOG.info("End of stream reahed.");
+    }
+    return isEnd;
   }
 }

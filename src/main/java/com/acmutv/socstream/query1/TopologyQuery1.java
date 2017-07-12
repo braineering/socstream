@@ -78,8 +78,8 @@ public class TopologyQuery1 {
     final String kafkaZookeeper = parameter.get("kafka.zookeeper", "localhost:2181");
     final String kafkaBootstrap = parameter.get("kafka.bootstrap", "localhost:9092");
     final String kafkaTopic = parameter.get("kafka.topic", "socstream");
-    final long windowSize = parameter.getLong("windowSize", 0);
-    final TimeUnit windowUnit = TimeUnit.valueOf(parameter.get("windowUnit", "SECONDS"));
+    final long windowSize = parameter.getLong("windowSize", 70);
+    final TimeUnit windowUnit = TimeUnit.valueOf(parameter.get("windowUnit", "MINUTES"));
     final int parallelism = parameter.getInt("parallelism", 1);
     final long matchStart = parameter.getLong("match.start", 10753295594424116L);
     final long matchEnd = parameter.getLong("match.end", 14879639146403495L);
@@ -126,13 +126,8 @@ public class TopologyQuery1 {
 
     KeyedStream<RichSensorEvent,Long> playerEvents = sensorEvents.keyBy(new RichSensorEventKeyer());
 
-    DataStream<PlayerRunningStatistics> statistics;
-    if (windowSize > 0) {
-      statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
-          .fold(new PlayerRunningStatistics(), new PlayerStatisticsCalculatorFold(), new PlayerStatisticsCalculatorWindowFunction());
-    } else {
-      statistics = playerEvents.flatMap(new PlayerStatisticsCalculator());
-    }
+    DataStream<PlayerRunningStatistics> statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
+        .aggregate(new PlayerRunningStatisticsCalculatorAggregator(), new PlayerRunningStatisticsCalculatorWindowFunction());
 
     statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
 

@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,38 +23,23 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
-package com.acmutv.socstream.common.operator;
 
-import org.apache.flink.api.common.functions.FlatMapFunction;
-import org.apache.flink.util.Collector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package com.acmutv.socstream.core.query1;
+
+import com.acmutv.socstream.core.query1.tuple.TestAllQuery1Tuple;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 /**
- * A flat map that emits what it receives.
- *
+ * JUnit test suite for classes related to query1.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
+ * @see TestAllQuery1Tuple
  */
-public class IdentityMap<V> implements FlatMapFunction<V,V> {
-
-  /**
-   * The logger.
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(IdentityMap.class);
-
-  /**
-   * The core method of the FlatMapFunction. Takes an element from the input data set and transforms
-   * it into zero, one, or more elements.
-   *
-   * @param value The input value.
-   * @param out   The collector for returning result values.
-   * @throws Exception This method may throw exceptions. Throwing an exception will cause the operation
-   *                   to fail and may trigger recovery.
-   */
-  @Override
-  public void flatMap(V value, Collector<V> out) throws Exception {
-    out.collect(value);
-  }
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+    TestAllQuery1Tuple.class
+})
+public class TestAllQuery1 {
 }

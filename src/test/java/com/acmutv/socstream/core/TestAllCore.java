@@ -26,7 +26,9 @@
 
 package com.acmutv.socstream.core;
 
-import com.acmutv.socstream.common.tuple.TestAllTuple;
+import com.acmutv.socstream.core.query1.TestAllQuery1;
+import com.acmutv.socstream.core.query2.TestAllQuery2;
+import com.acmutv.socstream.core.query3.TestAllQuery3;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -35,11 +37,15 @@ import org.junit.runners.Suite;
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see TestAllTuple
+ * @see com.acmutv.socstream.core.query1.TestAllQuery1
+ * @see com.acmutv.socstream.core.query2.TestAllQuery2
+ * @see com.acmutv.socstream.core.query3.TestAllQuery3
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    TestAllTuple.class
+    TestAllQuery1.class,
+    TestAllQuery2.class,
+    TestAllQuery3.class
 })
 public class TestAllCore {
 }

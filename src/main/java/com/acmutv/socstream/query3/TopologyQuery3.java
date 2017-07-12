@@ -27,17 +27,16 @@
 package com.acmutv.socstream.query3;
 
 import com.acmutv.socstream.common.keyer.PositionSensorEventKeyer;
-import com.acmutv.socstream.common.source.kafka.KafkaProperties;
-import com.acmutv.socstream.common.source.kafka.PositionSensorEventKafkaSource;
 import com.acmutv.socstream.common.meta.Match;
 import com.acmutv.socstream.common.meta.MatchService;
+import com.acmutv.socstream.common.source.kafka.KafkaProperties;
+import com.acmutv.socstream.common.source.kafka.PositionSensorEventKafkaSource;
 import com.acmutv.socstream.common.tuple.PositionSensorEvent;
 import com.acmutv.socstream.query3.operator.PlayerOnGridStatisticsCalculator;
 import com.acmutv.socstream.query3.operator.PlayerOnGridStatisticsCalculatorFold;
 import com.acmutv.socstream.query3.operator.PlayerOnGridStatisticsCalculatorWindowFunction;
 import com.acmutv.socstream.query3.operator.PositionSensorEventTimestampExtractor;
 import com.acmutv.socstream.query3.tuple.PlayerGridStatistics;
-import com.acmutv.socstream.tool.runtime.RuntimeManager;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.TimeCharacteristic;
@@ -57,7 +56,6 @@ import java.util.concurrent.TimeUnit;
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see RuntimeManager
  */
 public class TopologyQuery3 {
 
@@ -132,12 +130,14 @@ public class TopologyQuery3 {
 
     DataStream<PlayerGridStatistics> statistics = null;
     if (windowSize > 0) {
-      statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit)).fold(new PlayerGridStatistics(), new PlayerOnGridStatisticsCalculatorFold(), new PlayerOnGridStatisticsCalculatorWindowFunction());
+      statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
+          .fold(new PlayerGridStatistics(), new PlayerOnGridStatisticsCalculatorFold(), new PlayerOnGridStatisticsCalculatorWindowFunction());
     } else {
       statistics = playerEvents.flatMap(new PlayerOnGridStatisticsCalculator());
     }
 
     statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
+
     // EXECUTION
     env.execute(PROGRAM_NAME);
   }

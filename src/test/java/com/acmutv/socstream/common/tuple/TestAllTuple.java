@@ -41,7 +41,6 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     RichSensorEventTest.class,
     PositionSensorEventTest.class,
-    PlayerOccupationTest.class,
     GridCoordinateTest.class,
     GridStatisticsTest.class
 })

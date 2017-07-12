@@ -25,22 +25,18 @@
  */
 package com.acmutv.socstream.query2.operator;
 
-import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
 import com.acmutv.socstream.query2.tuple.PlayersSpeedRanking;
 import com.acmutv.socstream.query2.tuple.RankingElement;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.apache.flink.api.common.functions.RichFlatMapFunction;
+import org.apache.flink.streaming.api.functions.windowing.AllWindowFunction;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * The operator that calculates the global ranking of players by average speed.
@@ -50,13 +46,12 @@ import java.util.Set;
  * @since 1.0
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-public class GlobalRanker extends RichFlatMapFunction<PlayerSpeedStatistics,PlayersSpeedRanking> {
+public class GlobalRankerWindowFunction implements AllWindowFunction<PlayerSpeedStatistics, PlayersSpeedRanking, TimeWindow> {
 
   /**
    * The logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(GlobalRanker.class);
+  private static final Logger LOG = LoggerFactory.getLogger(GlobalRankerWindowFunction.class);
 
   /**
    * The size of the top-K ranking.
@@ -64,33 +59,28 @@ public class GlobalRanker extends RichFlatMapFunction<PlayerSpeedStatistics,Play
   private int rankSize;
 
   /**
-   * The tuple signaling the end of stream.
-   */
-  private PlayerSpeedStatistics eos;
-
-  /**
    * The output: ranking.
    */
   private PlayersSpeedRanking ranking = new PlayersSpeedRanking();
 
   /**
-   * Creates a new {@link GlobalRanker} with the specified rank size.
+   * Creates a new {@link GlobalRankerWindowFunction} with the specified rank size.
    * @param rankSize the size of the top-k ranking.
-   * @param eos the tuple signaling the end of stream.
    */
-  public GlobalRanker(int rankSize, PlayerSpeedStatistics eos) {
+  public GlobalRankerWindowFunction(int rankSize) {
     this.rankSize = rankSize;
-    this.eos = eos;
   }
 
+  /**
+   * Evaluates the window and outputs none or several elements.
+   *
+   * @param window The window that is being evaluated.
+   * @param values The elements in the window being evaluated.
+   * @param out    A collector for emitting elements.
+   * @throws Exception The function may throw exceptions to fail the program and trigger recovery.
+   */
   @Override
-  public void flatMap(PlayerSpeedStatistics stats, Collector<PlayersSpeedRanking> out) throws Exception {
-    /*if (stats.equals(this.eos)) {
-      LOG.debug("EOS RECEIVED");
-      out.collect(new PlayerSpeedStatistics(0,0,0, this.averageSpeed));
-      close();
-    }
-
+  public void apply(TimeWindow window, Iterable<PlayerSpeedStatistics> values, Collector<PlayersSpeedRanking> out) throws Exception {
     LOG.debug("IN: {}", values);
 
     List<RankingElement> tmp = new ArrayList<>();
@@ -104,6 +94,5 @@ public class GlobalRanker extends RichFlatMapFunction<PlayerSpeedStatistics,Play
     this.ranking.setRank(tmp.subList(0, this.rankSize));
 
     out.collect(this.ranking);
-    */
   }
 }

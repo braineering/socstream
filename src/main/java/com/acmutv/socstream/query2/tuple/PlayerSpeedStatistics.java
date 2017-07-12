@@ -52,12 +52,12 @@ public class PlayerSpeedStatistics {
   private static final Pattern PATTERN = Pattern.compile(REGEXP);
 
   /**
-   * The timestamp (start instant).
+   * The timestamp (start instant) in picoseconds.
    */
   private long tsStart;
 
   /**
-   * The timestamp (stop instant).
+   * The timestamp (stop instant) in picoseconds.
    */
   private long tsStop;
 
@@ -69,19 +69,25 @@ public class PlayerSpeedStatistics {
   /**
    * The average speed of the player (m/s).
    */
-  private double avgSpeed;
+  private double averageSpeed;
 
-
+  /**
+   * Creates a new {@link PlayerSpeedStatistics}.
+   * @param tsStart the start timestamp.
+   * @param tsStop the end timestamp
+   * @param pid player ID.
+   * @param averageSpeed player average speed (m/s).
+   */
   public PlayerSpeedStatistics(long tsStart, long tsStop,
-                               long pid, double avgSpeed) {
+                               long pid, double averageSpeed) {
     this.tsStart = tsStart;
     this.tsStop = tsStop;
     this.pid = pid;
-    this.avgSpeed = avgSpeed;
+    this.averageSpeed = averageSpeed;
   }
 
   /**
-   * Creates an empty sensor event..
+   * Creates an empty sensor event.
    * This constructor is mandatory for Flink serialization.
    */
   public PlayerSpeedStatistics(){}
@@ -99,13 +105,13 @@ public class PlayerSpeedStatistics {
     long tsStart = Long.valueOf(matcher.group(1));
     long tsStop = Long.valueOf(matcher.group(2));
     long pid = Long.valueOf(matcher.group(3));
-    long avgSpeed = Long.valueOf(matcher.group(4));
-    return new PlayerSpeedStatistics(tsStart, tsStop, pid, avgSpeed);
+    long averageSpeed = Long.valueOf(matcher.group(4));
+    return new PlayerSpeedStatistics(tsStart, tsStop, pid, averageSpeed);
   }
 
   @Override
   public String toString() {
     return String.format("%d,%d,%d,%f",
-        this.tsStart, this.tsStop, this.pid, this.avgSpeed);
+        this.tsStart, this.tsStop, this.pid, this.averageSpeed);
   }
 }

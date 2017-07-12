@@ -33,6 +33,7 @@ import com.acmutv.socstream.common.meta.Match;
 import com.acmutv.socstream.common.meta.MatchService;
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.query1.operator.RichSensorEventTimestampExtractor;
+import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.query2.operator.*;
 import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
 import com.acmutv.socstream.query2.tuple.PlayersSpeedRanking;
@@ -81,7 +82,7 @@ public class TopologyQuery2 {
     final String kafkaZookeeper = parameter.get("kafka.zookeeper", "localhost:2181");
     final String kafkaBootstrap = parameter.get("kafka.bootstrap", "localhost:9092");
     final String kafkaTopic = parameter.get("kafka.topic", "socstream");
-    final long windowSize = parameter.getLong("windowSize", 0);
+    final long windowSize = parameter.getLong("windowSize", 70);
     final TimeUnit windowUnit = TimeUnit.valueOf(parameter.get("windowUnit", "MINUTES"));
     final int rankSize = parameter.getInt("rankSize", 5);
     final int parallelism = parameter.getInt("parallelism", 1);
@@ -131,17 +132,11 @@ public class TopologyQuery2 {
 
     KeyedStream<RichSensorEvent,Long> playerEvents = sensorEvents.keyBy(new RichSensorEventKeyer());
 
-    DataStream<PlayerSpeedStatistics> statistics = null;
-    if (windowSize > 0) {
-      statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
-          .fold(new PlayerSpeedStatistics(), new PlayerSpeedStatisticsCalculatorFold(), new PlayerSpeedStatisticsCalculatorWindowFunction());
-    } else {
-      statistics = playerEvents.flatMap(new PlayerSpeedStatisticsCalculator());
-    }
+    DataStream<PlayerSpeedStatistics> statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
+        .aggregate(new PlayerSpeedStatisticsCalculatorAggregator(), new PlayerSpeedStatisticsCalculatorWindowFunction());
 
-    DataStream<PlayersSpeedRanking> partialRank = statistics.flatMap(new PartialRanker(rankSize));
-
-    DataStream<PlayersSpeedRanking> globalRank = partialRank.flatMap(new GlobalRanker(rankSize));
+    DataStream<PlayersSpeedRanking> globalRank = statistics.timeWindowAll(Time.of(windowSize, windowUnit))
+        .apply(new GlobalRankerWindowFunction(rankSize));
 
     globalRank.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
 

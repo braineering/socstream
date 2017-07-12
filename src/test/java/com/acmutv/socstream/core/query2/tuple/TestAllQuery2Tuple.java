@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,41 +23,24 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
-package com.acmutv.socstream.query2.operator;
 
-import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
-import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
-import com.acmutv.socstream.query2.tuple.PlayersSpeedRanking;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import org.apache.flink.api.common.functions.RichFlatMapFunction;
-import org.apache.flink.util.Collector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package com.acmutv.socstream.core.query2.tuple;
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 /**
- * The operator that calculates the partial ranking of players by average speed.
- *
+ * JUnit test suite for tuples related to query1.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
+ * @see PlayersSpeedRankingTest
+ * @see RankingElementTest
  */
-@Data
-@AllArgsConstructor
-public class PartialRanker extends RichFlatMapFunction<PlayerSpeedStatistics,PlayersSpeedRanking> {
-
-  /**
-   * The logger.
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(PartialRanker.class);
-
-  /**
-   * The top-k ranking size.
-   */
-  private int rankSize;
-
-  @Override
-  public void flatMap(PlayerSpeedStatistics statistics, Collector<PlayersSpeedRanking> collector) throws Exception {
-
-  }
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+    PlayersSpeedRankingTest.class,
+    RankingElementTest.class
+})
+public class TestAllQuery2Tuple {
 }

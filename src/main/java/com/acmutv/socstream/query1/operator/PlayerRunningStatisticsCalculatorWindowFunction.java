@@ -39,12 +39,12 @@ import org.slf4j.LoggerFactory;
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-public class PlayerStatisticsCalculatorWindowFunction implements WindowFunction<PlayerRunningStatistics,PlayerRunningStatistics,Long,TimeWindow> {
+public class PlayerRunningStatisticsCalculatorWindowFunction implements WindowFunction<PlayerRunningStatistics,PlayerRunningStatistics,Long,TimeWindow> {
 
   /**
    * The logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(PlayerStatisticsCalculatorWindowFunction.class);
+  private static final Logger LOG = LoggerFactory.getLogger(PlayerRunningStatisticsCalculatorWindowFunction.class);
 
   /**
    * Evaluates the window and outputs none or several elements.

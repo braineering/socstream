@@ -26,7 +26,6 @@
 
 package com.acmutv.socstream.common.sink;
 
-import com.acmutv.socstream.common.source.kafka.schema.PositionSensorEventDeserializationSchema;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.slf4j.Logger;
