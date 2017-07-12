@@ -115,25 +115,27 @@ public class RichSensorEventDeserializationSchema extends AbstractDeserializatio
     }
 
     if (this.ignoredSensors.contains(event.getId())) {
-      LOG.info("Ignored sensor event (untracked SID): {}", strEvent);
+      LOG.debug("Ignored sensor event (untracked SID): {}", strEvent);
       return null;
     }
 
     final long ts = event.getTs();
 
     if (ts < this.tsStart) {
-      LOG.info("Ignored sensor event (before match start): {}", strEvent);
+      LOG.debug("Ignored sensor event (before match start): {}", strEvent);
       return null;
     } else if (ts > tsStartIgnore && ts < tsEndIgnore) {
-      LOG.info("Ignored sensor event (within match interval): {}", strEvent);
+      LOG.debug("Ignored sensor event (within match interval): {}", strEvent);
       return null;
     } else if (ts > this.tsEnd) {
-      LOG.info("Ignored sensor event (after match end): {}", strEvent);
-      LOG.info("Emitting EOS tuple: {}", this.eos);
+      LOG.debug("Ignored sensor event (after match end): {}", strEvent);
+      LOG.debug("Emitting EOS tuple: {}", this.eos);
       return eos;
     }
 
     event.setId(this.sid2Pid.get(event.getId()));
+
+    LOG.info("Emitting event: {}", event);
 
     return event;
   }

@@ -2,7 +2,7 @@
 
 case "$1" in
 start)  echo "[flink-manager] starting Apache Flink"
-        sudo ${FLINK_HOME}/bin/start-local.sh
+        ${FLINK_HOME}/bin/start-local.sh
         echo "[flink-manager] waiting Apache Flink to warm up (max: 60 seconds)"
         end="$(( SECONDS + 60 ))"
         while true; do
