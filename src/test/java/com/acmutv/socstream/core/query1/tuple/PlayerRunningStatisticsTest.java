@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,54 +23,45 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
-package com.acmutv.socstream.query2.operator;
 
-import com.acmutv.socstream.common.tuple.RichSensorEvent;
+package com.acmutv.socstream.core.query1.tuple;
+
 import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
-import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
-import org.apache.flink.api.common.functions.FoldFunction;
+import org.junit.Assert;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * The operator that calculates palyers running statistics (with window).
- *
+ * JUnit test suite for {@link com.acmutv.socstream.query1.tuple.PlayerRunningStatistics}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
+ * @see PlayerRunningStatistics
  */
-public class PlayerSpeedStatisticsCalculatorFold implements FoldFunction<RichSensorEvent,PlayerSpeedStatistics> {
+public class PlayerRunningStatisticsTest {
 
   /**
    * The logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(PlayerSpeedStatisticsCalculatorFold.class);
+  private static final Logger LOG = LoggerFactory.getLogger(PlayerRunningStatisticsTest.class);
 
   /**
-   * Number of events for PID.
+   * Tests serialization/deserialization of {@link PlayerRunningStatistics}.
    */
-  private long events = 0;
+  @Test
+  public void test_serialize() throws Exception {
+    List<PlayerRunningStatistics> elems = new ArrayList<>();
+    elems.add(new PlayerRunningStatistics(1,1,1,1.0,1.0));
 
-  /**
-   * The time interval (frequency=50Hz).
-   */
-  private static final double DELTA_T = 1.0/50.0;
-
-  @Override
-  public PlayerSpeedStatistics fold(PlayerSpeedStatistics stats, RichSensorEvent event) throws Exception {
-
-    LOG.info("IN: {}", event);
-
-    double speedX = event.getVx() + (event.getAx() * DELTA_T);
-    double speedY = event.getVy() + (event.getAy() * DELTA_T);
-    double speed = Math.sqrt(Math.pow(speedX, 2) + Math.pow(speedY, 2));
-    double newAvgSpeed = ((stats.getAvgSpeed() * (this.events++)) + speed) / this.events;
-
-    stats.setPid(event.getId());
-    stats.setAvgSpeed(newAvgSpeed);
-
-    LOG.info("OUT: {}", stats);
-
-    return stats;
+    for (PlayerRunningStatistics expected : elems) {
+      LOG.debug("PlayerRunningStatistics serialized: " + expected);
+      String str = expected.toString();
+      PlayerRunningStatistics actual = PlayerRunningStatistics.valueOf(str);
+      Assert.assertEquals(expected, actual);
+    }
   }
 }

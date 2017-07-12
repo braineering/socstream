@@ -28,7 +28,6 @@ package com.acmutv.socstream.common.meta;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
-import org.apache.avro.generic.GenericData;
 
 import java.util.ArrayList;
 import java.util.List;

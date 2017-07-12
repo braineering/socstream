@@ -27,7 +27,6 @@
 package com.acmutv.socstream.common.tuple;
 
 import lombok.Data;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

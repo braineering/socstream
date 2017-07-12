@@ -26,7 +26,6 @@
 package com.acmutv.socstream.common.source.kafka;
 
 import com.acmutv.socstream.common.source.kafka.schema.PositionSensorEventDeserializationSchema;
-import com.acmutv.socstream.common.source.kafka.schema.RichSensorEventDeserializationSchema;
 import com.acmutv.socstream.common.tuple.PositionSensorEvent;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
 import org.slf4j.Logger;

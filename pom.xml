@@ -509,7 +509,7 @@
             <configuration>
               <artifactSet>
                 <excludes>
-                  <!-- This list contains all dependencies of flink-dist
+                  <!-- This list contains all dependencies of fltotalDistancedist
                   Everything else will be packaged into the fat-jar
                   -->
                   <exclude>org.apache.flink:flink-annotations</exclude>

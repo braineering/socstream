@@ -84,6 +84,11 @@ public class RichSensorEventDeserializationSchema extends AbstractDeserializatio
   private Map<Long,Long> sid2Pid;
 
   /**
+   * The tuple signaling the end of stream.
+   */
+  private RichSensorEvent eos;
+
+  /**
    * Creates a new deserialization schema.
    */
   public RichSensorEventDeserializationSchema() {
@@ -98,23 +103,52 @@ public class RichSensorEventDeserializationSchema extends AbstractDeserializatio
    */
   @Override
   public RichSensorEvent deserialize(byte[] message) throws IOException {
-    RichSensorEvent event = null;
+    RichSensorEvent event;
 
     final String strEvent = new String(message);
 
     try {
       event = RichSensorEvent.valueOf(strEvent);
-      final long ts = event.getTs();
-      if (ts < this.tsStart || ts > this.tsEnd || (ts > tsStartIgnore && ts < tsEndIgnore) ||
-          this.ignoredSensors.contains(event.getId())) {
-        LOG.info("Ignored sensor event: {}", strEvent);
-        return null;
-      }
-      event.setId(this.sid2Pid.get(event.getId()));
     } catch (IllegalArgumentException exc) {
       LOG.warn("Malformed sensor event: {}", strEvent);
+      return null;
     }
 
+    if (this.ignoredSensors.contains(event.getId())) {
+      LOG.info("Ignored sensor event (untracked SID): {}", strEvent);
+      return null;
+    }
+
+    final long ts = event.getTs();
+
+    if (ts < this.tsStart) {
+      LOG.info("Ignored sensor event (before match start): {}", strEvent);
+      return null;
+    } else if (ts > tsStartIgnore && ts < tsEndIgnore) {
+      LOG.info("Ignored sensor event (within match interval): {}", strEvent);
+      return null;
+    } else if (ts > this.tsEnd) {
+      LOG.info("Ignored sensor event (after match end): {}", strEvent);
+      LOG.info("Emitting EOS tuple: {}", this.eos);
+      return eos;
+    }
+
+    event.setId(this.sid2Pid.get(event.getId()));
+
     return event;
+  }
+
+  /**
+   * Checks if the end of stream has been reached.
+   * @param event the current event.
+   * @return true, if the end of stream has been reached; false, otherwise.
+   */
+  @Override
+  public boolean isEndOfStream(RichSensorEvent event) {
+    final boolean isEnd = event.getTs() > this.getTsEnd();
+    if (isEnd) {
+      LOG.info("End of stream reahed.");
+    }
+    return isEnd;
   }
 }

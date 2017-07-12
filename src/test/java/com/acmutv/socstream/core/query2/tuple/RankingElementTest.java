@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,38 +23,45 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
-package com.acmutv.socstream.common.operator;
 
-import org.apache.flink.api.common.functions.FlatMapFunction;
-import org.apache.flink.util.Collector;
+package com.acmutv.socstream.core.query2.tuple;
+
+import com.acmutv.socstream.query2.tuple.RankingElement;
+import org.junit.Assert;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * A flat map that emits what it receives.
- *
+ * JUnit test suite for {@link com.acmutv.socstream.query2.tuple.RankingElement}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
+ * @see RankingElement
  */
-public class IdentityMap<V> implements FlatMapFunction<V,V> {
+public class RankingElementTest {
 
   /**
    * The logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(IdentityMap.class);
+  private static final Logger LOG = LoggerFactory.getLogger(RankingElementTest.class);
 
   /**
-   * The core method of the FlatMapFunction. Takes an element from the input data set and transforms
-   * it into zero, one, or more elements.
-   *
-   * @param value The input value.
-   * @param out   The collector for returning result values.
-   * @throws Exception This method may throw exceptions. Throwing an exception will cause the operation
-   *                   to fail and may trigger recovery.
+   * Tests serialization/deserialization of {@link RankingElement}.
    */
-  @Override
-  public void flatMap(V value, Collector<V> out) throws Exception {
-    out.collect(value);
+  @Test
+  public void test_serialize() throws Exception {
+    List<RankingElement> elems = new ArrayList<>();
+    elems.add(new RankingElement(1,1.0));
+
+    for (RankingElement expected : elems) {
+      LOG.debug("RankingElement serialized: " + expected);
+      String str = expected.toString();
+      RankingElement actual = RankingElement.valueOf(str);
+      Assert.assertEquals(expected, actual);
+    }
   }
 }

@@ -4,11 +4,12 @@
 # ENVARS
 ##
 export SOCSTREAM_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export FLINK_CONF_DIR="${SOCSTREAM_HOME}/env/flink/conf"
 
 ##
 # DIRECTORIES
 ##
-OUTDIR="${SOCSTREAM_HOME}/output"
+OUTDIR="${SOCSTREAM_HOME}/out"
 OUTDIR_QUERY1="${OUTDIR}/query-1"
 OUTDIR_QUERY2="${OUTDIR}/query-2"
 OUTDIR_QUERY3="${OUTDIR}/query-3"

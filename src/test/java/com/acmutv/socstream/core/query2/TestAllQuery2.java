@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,48 +23,23 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
-package com.acmutv.socstream.query1.operator;
 
-import com.acmutv.socstream.common.tuple.RichSensorEvent;
-import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
-import org.apache.flink.api.common.functions.RichFlatMapFunction;
-import org.apache.flink.util.Collector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package com.acmutv.socstream.core.query2;
+
+import com.acmutv.socstream.core.query2.tuple.TestAllQuery2Tuple;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 /**
- * The operator that calculates palyers running statistics (without window).
- *
+ * JUnit test suite for classes related to query2.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
+ * @see com.acmutv.socstream.core.query2.tuple.TestAllQuery2Tuple
  */
-public class PlayerStatisticsCalculator extends RichFlatMapFunction<RichSensorEvent,PlayerRunningStatistics> {
-
-  /**
-   * The logger.
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(PlayerStatisticsCalculator.class);
-
-  /**
-   * Number of events for PID.
-   */
-  private long events = 0;
-
-  /**
-   * The time interval (frequency=50Hz).
-   */
-  private static final double DELTA_T = 1.0/50.0;
-
-  /**
-   * The time interval square (frequency=50Hz).
-   */
-  private static final double DELTA_T_SQUARE = Math.pow(DELTA_T, 2);
-
-
-
-  @Override
-  public void flatMap(RichSensorEvent event, Collector<PlayerRunningStatistics> out) throws Exception {
-
-  }
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+    TestAllQuery2Tuple.class
+})
+public class TestAllQuery2 {
 }

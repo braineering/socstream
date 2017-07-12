@@ -27,10 +27,10 @@
 package com.acmutv.socstream.query2.tuple;
 
 import lombok.Data;
-import org.apache.commons.lang3.tuple.Pair;
+import lombok.EqualsAndHashCode;
+import org.apache.flink.shaded.com.google.common.collect.Lists;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,13 +41,14 @@ import java.util.regex.Pattern;
  * @since 1.0
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class PlayersSpeedRanking {
 
   /**
    * The regular expression
    */
   private static final String REGEXP =
-      "^(\\d+),(\\d+),(.+)$";
+      "^(\\d+),(\\d+),\\[(.*)\\]$";
 
   /**
    * The pattern matcher used to match strings on {@code REGEXP}.
@@ -65,20 +66,35 @@ public class PlayersSpeedRanking {
   private long tsStop;
 
   /**
-   * The top-k ranking.
+   * The ranking.
    */
-  private List<Pair<Long,Double>> rank;
+  private List<RankingElement> rank;
 
-
-  public PlayersSpeedRanking(long tsStart, long tsStop,
-                             List<Pair<Long,Double>> rank) {
+  /**
+   * Creates a new {@link PlayersSpeedRanking} with the specified time interval.
+   * @param tsStart the timestamp for the start instant.
+   * @param tsStop the timestamp for the end instant.
+   * @param rank the ranking.
+   */
+  public PlayersSpeedRanking(long tsStart, long tsStop, List<RankingElement> rank) {
     this.tsStart = tsStart;
     this.tsStop = tsStop;
     this.rank = rank;
   }
 
   /**
-   * Creates an empty sensor event..
+   * Creates a new {@link PlayersSpeedRanking} with the specified time interval.
+   * @param tsStart the timestamp for the start instant.
+   * @param tsStop the timestamp for the end instant.
+   */
+  public PlayersSpeedRanking(long tsStart, long tsStop) {
+    this.tsStart = tsStart;
+    this.tsStop = tsStop;
+    this.rank = new ArrayList<>();
+  }
+
+  /**
+   * Creates an empty sensor event.
    * This constructor is mandatory for Flink serialization.
    */
   public PlayersSpeedRanking(){}
@@ -96,13 +112,23 @@ public class PlayersSpeedRanking {
     long tsStart = Long.valueOf(matcher.group(1));
     long tsStop = Long.valueOf(matcher.group(2));
     String strRank = matcher.group(3);
-    List<Pair<Long,Double>> rank = new ArrayList<>();
-    return new PlayersSpeedRanking(tsStart, tsStop, rank);
+    String strElems[] = strRank.split(", ");
+
+    PlayersSpeedRanking result = new PlayersSpeedRanking(tsStart, tsStop);
+
+    if (strRank.isEmpty()) return result;
+
+    for (String strElem : strElems) {
+      RankingElement elem = RankingElement.valueOf(strElem);
+      result.getRank().add(elem);
+    }
+
+    return result;
   }
 
   @Override
   public String toString() {
     return String.format("%d,%d,%s",
-        this.tsStart, this.tsStop, this.rank);
+        this.tsStart, this.tsStop, this.rank.toString());
   }
 }

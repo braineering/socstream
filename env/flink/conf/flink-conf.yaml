@@ -39,17 +39,17 @@ jobmanager.rpc.port: 6123
 
 # The heap size for the JobManager JVM
 
-jobmanager.heap.mb: 1024
+jobmanager.heap.mb: 512
 
 
 # The heap size for the TaskManager JVM
 
-taskmanager.heap.mb: 1024
+taskmanager.heap.mb: 2048
 
 
 # The number of task slots that each TaskManager offers. Each slot runs one parallel pipeline.
 
-taskmanager.numberOfTaskSlots: 1
+taskmanager.numberOfTaskSlots: 2
 
 # Specify whether TaskManager memory should be allocated when starting up (true) or when
 # memory is required in the memory manager (false)
