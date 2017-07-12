@@ -32,10 +32,7 @@ import com.acmutv.socstream.common.meta.MatchService;
 import com.acmutv.socstream.common.source.kafka.KafkaProperties;
 import com.acmutv.socstream.common.source.kafka.PositionSensorEventKafkaSource;
 import com.acmutv.socstream.common.tuple.PositionSensorEvent;
-import com.acmutv.socstream.query3.operator.PlayerOnGridStatisticsCalculator;
-import com.acmutv.socstream.query3.operator.PlayerOnGridStatisticsCalculatorFold;
-import com.acmutv.socstream.query3.operator.PlayerOnGridStatisticsCalculatorWindowFunction;
-import com.acmutv.socstream.query3.operator.PositionSensorEventTimestampExtractor;
+import com.acmutv.socstream.query3.operator.*;
 import com.acmutv.socstream.query3.tuple.PlayerGridStatistics;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.core.fs.FileSystem;
@@ -80,8 +77,8 @@ public class TopologyQuery3 {
     final String kafkaZookeeper = parameter.get("kafka.zookeeper", "localhost:2181");
     final String kafkaBootstrap = parameter.get("kafka.bootstrap", "localhost:9092");
     final String kafkaTopic = parameter.get("kafka.topic", "socstream");
-    final long windowSize = parameter.getLong("windowSize", 0);
-    final TimeUnit windowUnit = TimeUnit.valueOf(parameter.get("windowUnit", "SECONDS"));
+    final long windowSize = parameter.getLong("windowSize", 70);
+    final TimeUnit windowUnit = TimeUnit.valueOf(parameter.get("windowUnit", "MINUTES"));
     final int parallelism = parameter.getInt("parallelism", 1);
     final long matchStart = parameter.getLong("match.start", 10753295594424116L);
     final long matchEnd = parameter.getLong("match.end", 14879639146403495L);
@@ -128,13 +125,8 @@ public class TopologyQuery3 {
 
     KeyedStream<PositionSensorEvent,Long> playerEvents = sensorEvents.keyBy(new PositionSensorEventKeyer());
 
-    DataStream<PlayerGridStatistics> statistics = null;
-    if (windowSize > 0) {
-      statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
-          .fold(new PlayerGridStatistics(), new PlayerOnGridStatisticsCalculatorFold(), new PlayerOnGridStatisticsCalculatorWindowFunction());
-    } else {
-      statistics = playerEvents.flatMap(new PlayerOnGridStatisticsCalculator());
-    }
+    DataStream<PlayerGridStatistics> statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
+        .aggregate(new PlayerOnGridStatisticsCalculatorAggregator(), new PlayerOnGridStatisticsCalculatorWindowFunction());
 
     statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
 
