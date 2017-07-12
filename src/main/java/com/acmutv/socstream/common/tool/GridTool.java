@@ -39,10 +39,10 @@ public class GridTool {
 
   public static GridCoordinate computeCell(Coordinate position) {
 
-    long x = (long) Math.ceil((double) position.getX()/4037.154);
-    long y = (long) Math.ceil(((double) position.getY() +33960)/8490.625);
+    long x = (long)  (position.getX()/4037.154);
+    long y = (long)  ((position.getY()+33960)/8490.625);
 
-    return new GridCoordinate(x,y);
+    return new GridCoordinate(x,y,position);
   }
 
 }

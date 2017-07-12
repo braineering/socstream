@@ -26,26 +26,49 @@
 
 package com.acmutv.socstream.common.tuple;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import com.acmutv.socstream.common.tool.ComputeCenterOfGravity;
+import com.acmutv.socstream.common.tool.GridTool;
+import org.junit.Assert;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * JUnit test suite for tuples.
+ * JUnit test suite for {@link ComputeCenterOfGravity} and {@link GridTool}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see RichSensorEventTest
- * @see PositionSensorEventTest
- * @see GridCoordinateTest
- * @see PlayerGridStatisticsTest
+ * @see ComputeCenterOfGravity
+ * @see GridTool
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    RichSensorEventTest.class,
-    PositionSensorEventTest.class,
-    GridCoordinateTest.class,
-    PlayerGridStatisticsTest.class,
-    ComputeCellTest.class
-})
-public class TestAllTuple {
+public class ComputeCellTest {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ComputeCellTest.class);
+
+  /**
+   * Tests serialization of {@link ComputeCenterOfGravity} and {@link GridTool}.
+   */
+  @Test
+  public void test_compute_cell() throws Exception {
+    List<Coordinate> coordinates = new ArrayList<>();
+    coordinates.add(new Coordinate(36736,5529));
+
+    Coordinate base = coordinates.get(0);
+    GridCoordinate gc = GridTool.computeCell(base);
+    Assert.assertEquals(gc.getX(),9);
+    Assert.assertEquals(gc.getY(),4);
+
+    base = ComputeCenterOfGravity.computeWithCell(36861,5572, gc);
+    gc = GridTool.computeCell(base);
+    Assert.assertEquals(gc.getX(),9);
+    Assert.assertEquals(gc.getY(),4);
+
+    base = ComputeCenterOfGravity.computeWithCell(36737,5528, gc);
+    gc = GridTool.computeCell(base);
+    Assert.assertEquals(gc.getX(),9);
+    Assert.assertEquals(gc.getY(),4);
+  }
 }

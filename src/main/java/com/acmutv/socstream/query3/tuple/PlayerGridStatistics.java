@@ -26,6 +26,7 @@
 
 package com.acmutv.socstream.query3.tuple;
 
+import com.acmutv.socstream.common.tuple.Coordinate;
 import com.acmutv.socstream.common.tuple.GridCoordinate;
 import lombok.Data;
 
@@ -77,12 +78,12 @@ public class PlayerGridStatistics {
   /**
    * The timestamp (last instant).
    */
-  private GridCoordinate lastCell;
+  private GridCoordinate lastCell = new GridCoordinate(0,0, new Coordinate(0,0));
 
   /**
    * The grid statistics.
    */
-  private Map<String,Long> stats;
+  private Map<String,Long> stats = new HashMap<>();
 
 
   public PlayerGridStatistics(long pid, long tsStart, long tsLast, long tsStop, GridCoordinate lastCell, Map<String,Long> stats) {
@@ -90,6 +91,11 @@ public class PlayerGridStatistics {
     this.tsStart = tsStart;
     this.tsLast = tsLast;
     this.tsStop= tsStop;
+    this.lastCell = lastCell;
+    this.stats = stats;
+  }
+
+  public PlayerGridStatistics(GridCoordinate lastCell, Map<String,Long> stats){
     this.lastCell = lastCell;
     this.stats = stats;
   }
@@ -119,7 +125,7 @@ public class PlayerGridStatistics {
     long y = Long.valueOf(matcher.group(6));
     String strStats = matcher.group(7);
     Map<String,Long> stats = new HashMap<>();
-    return new PlayerGridStatistics(pid,tsStart,tsLast,tsStop,new GridCoordinate(x,y),stats);
+    return new PlayerGridStatistics(pid,tsStart,tsLast,tsStop,new GridCoordinate(x,y,new Coordinate(x,y)),stats);
   }
 
   @Override
@@ -129,13 +135,13 @@ public class PlayerGridStatistics {
   }
 
   public void upgradeTime(GridCoordinate newCell, Long tsCurrent){
-    long cellTime = stats.get(newCell.getKey());
-    long newCellTime = cellTime + (tsCurrent - this.tsLast);
-    stats.put(newCell.getKey(), newCellTime);
+    long cellLifeTime = this.stats.get(newCell.getKey());
+    long newCellLifeTime = cellLifeTime + (tsCurrent - this.tsLast);
+    this.stats.put(newCell.getKey(), newCellLifeTime);
   }
 
   public void setLastCell(GridCoordinate newCell){
-      stats.put(newCell.getKey(), 0L);
+      this.stats.put(newCell.getKey(), 0L);
       this.lastCell = newCell;
   }
 

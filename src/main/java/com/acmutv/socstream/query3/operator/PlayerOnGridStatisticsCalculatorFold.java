@@ -68,7 +68,7 @@ public class PlayerOnGridStatisticsCalculatorFold implements FoldFunction<Positi
     Coordinate currentCenter = ComputeCenterOfGravity.computeWithCell(x,y,lastCell);
     GridCoordinate currentCell = GridTool.computeCell(currentCenter);
 
-    if(currentCell.equals(stats.getLastCell()))
+    if(currentCell.equals(lastCell))
       stats.upgradeTime(currentCell,currentTimestamp);
     else
       stats.setLastCell(currentCell);

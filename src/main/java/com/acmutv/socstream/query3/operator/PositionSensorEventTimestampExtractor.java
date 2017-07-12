@@ -45,8 +45,14 @@ public class PositionSensorEventTimestampExtractor extends AscendingTimestampExt
    */
   private static final Logger LOG = LoggerFactory.getLogger(PositionSensorEventTimestampExtractor.class);
 
+  /**
+   * The factor for pico to milli conversion.
+   */
+  private static final double PICO_TO_MILLI = Math.pow(10, -9);
+
+
   @Override
   public long extractAscendingTimestamp(PositionSensorEvent positionSensorEvent) {
-    return positionSensorEvent.getTs();
+    return Math.round(positionSensorEvent.getTs() * PICO_TO_MILLI);
   }
 }

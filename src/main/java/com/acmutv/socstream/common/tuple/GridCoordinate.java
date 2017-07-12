@@ -44,7 +44,7 @@ public class GridCoordinate {
    * The regular expression
    */
   private static final String REGEXP =
-      "^(\\d+);(\\d+)$";
+      "^(\\d+);(\\d+),(\\d+),(\\d+)$";
 
   /**
    * The pattern matcher used to match strings on {@code REGEXP}.
@@ -62,14 +62,20 @@ public class GridCoordinate {
   private long y;
 
   /**
+   *
+   */
+  private Coordinate xy;
+
+  /**
    * The coordinateID
    */
   private String ID;
 
 
-  public GridCoordinate(long x, long y) {
+  public GridCoordinate(long x, long y, Coordinate xy) {
     this.x = x;
     this.y = y;
+    this.xy = xy;
     this.ID = Long.toString(x)+";"+Long.toString(y);
   }
 
@@ -95,7 +101,8 @@ public class GridCoordinate {
     if (!matcher.matches()) throw new IllegalArgumentException(string);
     long x = Long.valueOf(matcher.group(1));
     long y = Long.valueOf(matcher.group(2));
-    return new GridCoordinate(x, y);
+    Coordinate xy = Coordinate.valueOf(matcher.group(3)+","+matcher.group(4));
+    return new GridCoordinate(x, y, xy);
   }
 
   @Override

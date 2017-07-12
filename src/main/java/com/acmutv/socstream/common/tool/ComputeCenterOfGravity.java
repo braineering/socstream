@@ -44,21 +44,6 @@ import java.util.Properties;
 public class ComputeCenterOfGravity {
 
   /**
-   * Compute Center of Gravity between a point (x,y) and a Coordinate
-   * @param currentX
-   * @param currentY
-   * @param last
-   * @return
-   */
-  public static Coordinate compute(long currentX, long currentY, Coordinate last) {
-
-    long x = (currentX + last.getX())/2;
-    long y = (currentX + last.getY())/2;
-
-    return new Coordinate(x,y);
-  }
-
-  /**
    * Compute Center of Gravity between a point (x,y) and a GridCoordinate
    * @param currentX
    * @param currentY
@@ -67,8 +52,11 @@ public class ComputeCenterOfGravity {
    */
   public static Coordinate computeWithCell(long currentX, long currentY, GridCoordinate last) {
 
-    long x = (currentX + last.getX())/2;
-    long y = (currentX + last.getY())/2;
+    long previusx = last.getXy().getX();
+    long previusy = last.getXy().getY();
+
+    long x = (currentX + previusx)/2;
+    long y = (currentY + previusy)/2;
 
     return new Coordinate(x,y);
   }
