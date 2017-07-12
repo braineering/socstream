@@ -20,10 +20,14 @@ chmod 777 ${OUTDIR_QUERY1}
 chmod 777 ${OUTDIR_QUERY2}
 chmod 777 ${OUTDIR_QUERY3}
 
+sudo rm ${OUTDIR_QUERY1}/*
+sudo rm ${OUTDIR_QUERY2}/*
+sudo rm ${OUTDIR_QUERY3}/*
+
 ##
 # FLINK
 ##
-rm ${FLINK_HOME}/log/*
+sudo rm ${FLINK_HOME}/log/*
 ${SOCSTREAM_HOME}/env/systemd/flink-manager.sh start
 
 ##

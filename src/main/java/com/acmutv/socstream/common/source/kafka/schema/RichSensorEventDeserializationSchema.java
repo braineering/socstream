@@ -145,10 +145,13 @@ public class RichSensorEventDeserializationSchema extends AbstractDeserializatio
    */
   @Override
   public boolean isEndOfStream(RichSensorEvent event) {
+    /*
     final boolean isEnd = event.getTs() > this.getTsEnd();
     if (isEnd) {
-      LOG.info("End of stream reahed.");
+      LOG.info("End of stream reached.");
     }
     return isEnd;
+    */
+    return false;
   }
 }

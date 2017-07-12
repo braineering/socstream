@@ -151,10 +151,13 @@ public class PositionSensorEventDeserializationSchema extends AbstractDeserializ
    */
   @Override
   public boolean isEndOfStream(PositionSensorEvent event) {
+    /*
     final boolean isEnd = event.getTs() > this.getTsEnd();
     if (isEnd) {
-      LOG.info("End of stream reahed.");
+      LOG.info("End of stream reached.");
     }
     return isEnd;
+    */
+    return false;
   }
 }
