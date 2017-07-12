@@ -61,12 +61,12 @@ public class ComputeCellTest {
     Assert.assertEquals(gc.getX(),9);
     Assert.assertEquals(gc.getY(),4);
 
-    base = ComputeCenterOfGravity.computeWithCell(36861,5572, gc);
+    base = ComputeCenterOfGravity.computeWithCell(2,36861,5572, gc);
     gc = GridTool.computeCell(base);
     Assert.assertEquals(gc.getX(),9);
     Assert.assertEquals(gc.getY(),4);
 
-    base = ComputeCenterOfGravity.computeWithCell(36737,5528, gc);
+    base = ComputeCenterOfGravity.computeWithCell(3, 36737,5528, gc);
     gc = GridTool.computeCell(base);
     Assert.assertEquals(gc.getX(),9);
     Assert.assertEquals(gc.getY(),4);

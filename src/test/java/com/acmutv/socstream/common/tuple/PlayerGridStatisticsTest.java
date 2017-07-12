@@ -54,24 +54,10 @@ public class PlayerGridStatisticsTest {
     //test put first element (cell for a player)
     Map<String,Long> grid = new HashMap<>();
     grid.put("2;3",0L);
-    PlayerGridStatistics test = new PlayerGridStatistics(0,1L,1L,10L,new GridCoordinate(2L,3L,new Coordinate(0,0)),grid);
+    PlayerGridStatistics test = new PlayerGridStatistics(0,1L,grid);
     String expected="1,0,2;3,0.0";
     LOGGER.debug("PlayerGridStatistics serialized: " + expected);
     String actual = test.toString();
-    Assert.assertEquals(expected, actual);
-
-    //test upgrade time for the first element
-    test.upgradeTime(new GridCoordinate(2L,3L,new Coordinate(0,0)),2L);
-    expected ="1,0,2;3,1.0";
-    test.setLastTimestamp(2L);
-    actual = test.toString();
-    Assert.assertEquals(expected, actual);
-
-    //test change cell and upgrade time in the same cell (two consequential events)
-    test.setLastCell(new GridCoordinate(2,4,new Coordinate(0,0)));
-    test.upgradeTime(new GridCoordinate(2,4,new Coordinate(0,0)),3L);
-    expected ="1,0,2;3,0.5,2;4,0.5";
-    actual = test.toString();
     Assert.assertEquals(expected, actual);
   }
 
