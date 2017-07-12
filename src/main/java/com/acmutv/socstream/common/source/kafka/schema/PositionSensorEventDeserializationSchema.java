@@ -26,6 +26,7 @@
 package com.acmutv.socstream.common.source.kafka.schema;
 
 import com.acmutv.socstream.common.tuple.PositionSensorEvent;
+import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -89,6 +90,11 @@ public class PositionSensorEventDeserializationSchema extends AbstractDeserializ
   private Map<Long,Long> sid2Pid;
 
   /**
+   * The tuple signaling the end of stream.
+   */
+  private PositionSensorEvent eos;
+
+  /**
    * Creates a new deserialization schema.
    */
   public PositionSensorEventDeserializationSchema() {
@@ -108,7 +114,7 @@ public class PositionSensorEventDeserializationSchema extends AbstractDeserializ
     final String strEvent = new String(message);
 
     try {
-      event = PositionSensorEvent.valueOfAsSensorEvent(strEvent);
+      event = PositionSensorEvent.valueOf(strEvent);
     } catch (IllegalArgumentException exc) {
       LOG.warn("Malformed sensor event: {}", strEvent);
       return null;
@@ -129,8 +135,8 @@ public class PositionSensorEventDeserializationSchema extends AbstractDeserializ
       return null;
     } else if (ts > this.tsEnd) {
       LOG.info("Ignored sensor event (after match end): {}", strEvent);
-      LOG.info("Emitting EOS tuple: {}", END_OF_STREAM);
-      return END_OF_STREAM;
+      LOG.info("Emitting EOS tuple: {}", this.eos);
+      return eos;
     }
 
     event.setId(this.sid2Pid.get(event.getId()));

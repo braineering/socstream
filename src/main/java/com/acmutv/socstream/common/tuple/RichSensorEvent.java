@@ -29,6 +29,7 @@ package com.acmutv.socstream.common.tuple;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,7 +41,7 @@ import java.util.regex.Pattern;
  */
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class RichSensorEvent extends PositionSensorEvent {
+public class RichSensorEvent extends PositionSensorEvent implements Serializable {
 
   /**
    * The regular expression

@@ -27,6 +27,7 @@ package com.acmutv.socstream.common.source.kafka;
 
 import com.acmutv.socstream.common.source.kafka.schema.PositionSensorEventDeserializationSchema;
 import com.acmutv.socstream.common.tuple.PositionSensorEvent;
+import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,11 @@ public class PositionSensorEventKafkaSource extends FlinkKafkaConsumer010<Positi
   private static final Logger LOG = LoggerFactory.getLogger(PositionSensorEventKafkaSource.class);
 
   /**
+   * The special tuple signaling the end of stream.
+   */
+  public static final PositionSensorEvent END_OF_STREAM = new PositionSensorEvent(0, Long.MAX_VALUE, 0, 0, 0);
+
+  /**
    * Constructs a new Kafka source for sensor events with ignoring features.
    *
    * @param topic Kafka topics.
@@ -65,7 +71,7 @@ public class PositionSensorEventKafkaSource extends FlinkKafkaConsumer010<Positi
                                         Set<Long> ignoredSensors,
                                         Map<Long,Long> sid2Pid) {
     super(topic, new PositionSensorEventDeserializationSchema(
-        tsStart, tsEnd, tsStartIgnore, tsEndIgnore, ignoredSensors, sid2Pid
+        tsStart, tsEnd, tsStartIgnore, tsEndIgnore, ignoredSensors, sid2Pid, END_OF_STREAM
     ), props);
   }
 }

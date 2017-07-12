@@ -45,7 +45,7 @@ import java.util.Set;
  */
 @Data
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class RichSensorEventDeserializationSchema extends AbstractDeserializationSchema<RichSensorEvent> {
 
   /**

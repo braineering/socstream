@@ -28,6 +28,7 @@ package com.acmutv.socstream.common.tuple;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,7 +39,7 @@ import java.util.regex.Pattern;
  * @since 1.0
  */
 @Data
-public class PositionSensorEvent {
+public class PositionSensorEvent implements Serializable {
 
   /**
    * The regular expression
