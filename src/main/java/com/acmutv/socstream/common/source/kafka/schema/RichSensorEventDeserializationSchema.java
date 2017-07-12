@@ -55,6 +55,11 @@ public class RichSensorEventDeserializationSchema extends AbstractDeserializatio
   private static final Logger LOG = LoggerFactory.getLogger(RichSensorEventDeserializationSchema.class);
 
   /**
+   * The special tuple signaling the end of stream.
+   */
+  private static final RichSensorEvent END_OF_STREAM = new RichSensorEvent(0, Long.MAX_VALUE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+  /**
    * The starting timestamp (events before this will be ignored).
    */
   private Long tsStart;
@@ -117,9 +122,16 @@ public class RichSensorEventDeserializationSchema extends AbstractDeserializatio
 
     final long ts = event.getTs();
 
-    if (ts < this.tsStart || ts > this.tsEnd || (ts > tsStartIgnore && ts < tsEndIgnore)) {
-      LOG.info("Ignored sensor event (timestamp): {}", strEvent);
+    if (ts < this.tsStart) {
+      LOG.info("Ignored sensor event (before match start): {}", strEvent);
       return null;
+    } else if (ts > tsStartIgnore && ts < tsEndIgnore) {
+      LOG.info("Ignored sensor event (within match interval): {}", strEvent);
+      return null;
+    } else if (ts > this.tsEnd) {
+      LOG.info("Ignored sensor event (after match end): {}", strEvent);
+      LOG.info("Emitting EOS tuple: {}", END_OF_STREAM);
+      return END_OF_STREAM;
     }
 
     event.setId(this.sid2Pid.get(event.getId()));

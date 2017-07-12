@@ -24,29 +24,45 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream.core;
+package com.acmutv.socstream.core.query2.tuple;
 
-import com.acmutv.socstream.common.tuple.TestAllTuple;
-import com.acmutv.socstream.core.query1.TestAllQuery1;
-import com.acmutv.socstream.core.query2.TestAllQuery2;
-import com.acmutv.socstream.core.query3.TestAllQuery3;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import com.acmutv.socstream.common.tuple.RichSensorEvent;
+import org.junit.Assert;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * JUnit test suite for all tuples.
+ * JUnit test suite for {@link RichSensorEvent}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see com.acmutv.socstream.core.query1.TestAllQuery1
- * @see com.acmutv.socstream.core.query2.TestAllQuery2
- * @see com.acmutv.socstream.core.query3.TestAllQuery3
+ * @see RichSensorEvent
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-    TestAllQuery1.class,
-    TestAllQuery2.class,
-    TestAllQuery3.class
-})
-public class TestAllCore {
+public class RankingElementTest {
+
+  /**
+   * The logger.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(RankingElementTest.class);
+
+  /**
+   * Tests serialization/deserialization of {@link RichSensorEvent}.
+   */
+  @Test
+  public void test_serialize() throws Exception {
+    List<RichSensorEvent> sensorEvents = new ArrayList<>();
+    sensorEvents.add(new RichSensorEvent(1,2,3,4,5,6,7,8,9,10,11,12,13));
+    sensorEvents.add(new RichSensorEvent(2,2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13));
+
+    for (RichSensorEvent expected : sensorEvents) {
+      LOG.debug("RichSensorEvent serialized: " + expected);
+      String str = expected.toString();
+      RichSensorEvent actual = RichSensorEvent.valueOf(str);
+      Assert.assertEquals(expected, actual);
+    }
+  }
 }

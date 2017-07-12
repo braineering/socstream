@@ -30,6 +30,8 @@ import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,7 +43,7 @@ import java.util.regex.Pattern;
  * @since 1.0
  */
 @Data
-public class PlayersSpeedRanking {
+public class PlayersSpeedRanking extends ArrayList<RankingElement> {
 
   /**
    * The regular expression
@@ -64,23 +66,10 @@ public class PlayersSpeedRanking {
    */
   private long tsStop;
 
-  /**
-   * The top-k ranking.
-   */
-  private List<Pair<Long,Double>> rank;
-
   public PlayersSpeedRanking(long tsStart, long tsStop) {
+    super();
     this.tsStart = tsStart;
     this.tsStop = tsStop;
-    this.rank = new ArrayList<>();
-  }
-
-
-  public PlayersSpeedRanking(long tsStart, long tsStop,
-                             List<Pair<Long,Double>> rank) {
-    this.tsStart = tsStart;
-    this.tsStop = tsStop;
-    this.rank = rank;
   }
 
   /**
@@ -88,6 +77,22 @@ public class PlayersSpeedRanking {
    * This constructor is mandatory for Flink serialization.
    */
   public PlayersSpeedRanking(){}
+
+  /**
+   * Clears and updates the ranking.
+   * @param stats the list of players statistics.
+   */
+  public void update(Iterable<PlayerSpeedStatistics> stats) {
+    super.clear();
+
+    Iterator<PlayerSpeedStatistics> iter = stats.iterator();
+    while (iter.hasNext()) {
+      PlayerSpeedStatistics stat = iter.next();
+      super.add(new RankingElement(stat.getPid(), stat.getAvgSpeed()));
+    }
+
+    super.sort((e1,e2) -> e1.compareTo(e2));
+  }
 
   /**
    * Parses {@link PlayersSpeedRanking} from string.
@@ -102,13 +107,19 @@ public class PlayersSpeedRanking {
     long tsStart = Long.valueOf(matcher.group(1));
     long tsStop = Long.valueOf(matcher.group(2));
     String strRank = matcher.group(3);
-    List<Pair<Long,Double>> rank = new ArrayList<>();
-    return new PlayersSpeedRanking(tsStart, tsStop, rank);
+    String strElems[] = strRank.substring(1, strRank.length() - 1).split(",");
+    PlayersSpeedRanking result = new PlayersSpeedRanking(tsStart, tsStop);
+    for (String strElem : strElems) {
+      RankingElement elem = RankingElement.valueOf(strElem);
+      result.add(elem);
+    }
+
+    return result;
   }
 
   @Override
   public String toString() {
     return String.format("%d,%d,%s",
-        this.tsStart, this.tsStop, this.rank);
+        this.tsStart, this.tsStop, super.toString());
   }
 }

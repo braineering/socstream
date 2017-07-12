@@ -62,7 +62,7 @@ public class GlobalRankerWindowFunction implements AllWindowFunction<PlayerSpeed
   /**
    * The output: ranking.
    */
-  private PlayersSpeedRanking output = new PlayersSpeedRanking();
+  private PlayersSpeedRanking ranking = new PlayersSpeedRanking();
 
   /**
    * Creates a new {@link GlobalRankerWindowFunction} with the specified rank size.
@@ -82,11 +82,12 @@ public class GlobalRankerWindowFunction implements AllWindowFunction<PlayerSpeed
    */
   @Override
   public void apply(TimeWindow window, Iterable<PlayerSpeedStatistics> values, Collector<PlayersSpeedRanking> out) throws Exception {
+    LOG.debug("VALUES: {}", values);
 
-    PlayersSpeedRanking ranking = new PlayersSpeedRanking();
-    ranking.setTsStart(window.getStart());
-    ranking.setTsStop(window.getEnd());
+    this.ranking.setTsStart(window.getStart());
+    this.ranking.setTsStop(window.getEnd());
+    this.ranking.update(values);
 
-    out.collect(ranking);
+    out.collect(this.ranking);
   }
 }
