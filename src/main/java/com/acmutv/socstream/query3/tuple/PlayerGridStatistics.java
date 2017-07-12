@@ -47,8 +47,8 @@ public class PlayerGridStatistics {
   /**
    * The regular expression
    */
-  private static final String REGEXP =
-      "^(\\d+),(\\d+),(\\d+),(\\d+),(\\d+);(\\d+),(.+)$";
+  //private static final String REGEXP = "^(\\d+),(\\d+),(\\d+),(\\d+),(\\d+);(\\d+),(.+)$";
+  private static final String REGEXP = "^(\\d+),(\\d+),(.+)$";
 
   /**
    * The pattern matcher used to match strings on {@code REGEXP}.
@@ -96,32 +96,15 @@ public class PlayerGridStatistics {
     if (!matcher.matches()) throw new IllegalArgumentException(string);
     long pid = Long.valueOf(matcher.group(1));
     long tsStart = Long.valueOf(matcher.group(2));
-    long x = Long.valueOf(matcher.group(3));
-    long y = Long.valueOf(matcher.group(4));
-    String strStats = matcher.group(5);
-    Map<String,Long> stats = new HashMap<>();
-    return new PlayerGridStatistics(pid,tsStart,new GridCoordinate(x,y,new Coordinate(x,y)),stats);
+    String strStats = matcher.group(3);
+    Map<String,Long> stats = new HashMap<>(); //TODO
+    return new PlayerGridStatistics(pid,tsStart,stats);
   }
 
   @Override
   public String toString() {
     return String.format("%d,%d%s",
             this.tsStart, this.pid, this.printCellOccupation());
-  }
-
-  public void upgradeTime(GridCoordinate newCell, Long tsCurrent){
-    long cellLifeTime = this.stats.get(newCell.getKey());
-    long newCellLifeTime = cellLifeTime + (tsCurrent - this.tsLast);
-    this.stats.put(newCell.getKey(), newCellLifeTime);
-  }
-
-  public void setLastCell(GridCoordinate newCell){
-      this.stats.put(newCell.getKey(), 0L);
-      this.lastCell = newCell;
-  }
-
-  public void setLastTimestamp(long lastTimestamp){
-    this.tsLast = lastTimestamp;
   }
 
   public String printCellOccupation(){

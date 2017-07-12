@@ -50,13 +50,10 @@ public class ComputeCenterOfGravity {
    * @param last
    * @return
    */
-  public static Coordinate computeWithCell(long currentX, long currentY, GridCoordinate last) {
+  public static Coordinate computeWithCell(long numEvents, long currentX, long currentY, GridCoordinate last) {
 
-    long previusx = last.getXy().getX();
-    long previusy = last.getXy().getY();
-
-    long x = (currentX + previusx)/2;
-    long y = (currentY + previusy)/2;
+    long x = ((last.getXy().getX()*(numEvents-1)) + currentX)/numEvents;
+    long y = ((last.getXy().getY()*(numEvents-1)) + currentY)/numEvents;
 
     return new Coordinate(x,y);
   }
