@@ -37,6 +37,9 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        GridCoordinateTest.class,
+        PlayerGridStatisticsTest.class,
+        ComputeCellTest.class
 })
 public class TestAllQuery3Tuple {
 }

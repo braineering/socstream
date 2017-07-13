@@ -128,7 +128,7 @@ public class TopologyQuery3 {
     DataStream<PlayerGridStatistics> statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
         .aggregate(new PlayerOnGridStatisticsCalculatorAggregator(), new PlayerOnGridStatisticsCalculatorWindowFunction());
 
-    statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
+    statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
 
     // EXECUTION
     env.execute(PROGRAM_NAME);

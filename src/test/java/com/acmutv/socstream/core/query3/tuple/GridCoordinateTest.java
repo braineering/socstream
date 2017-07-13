@@ -24,8 +24,10 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream.common.tuple;
+package com.acmutv.socstream.core.query3.tuple;
 
+import com.acmutv.socstream.common.tuple.Coordinate;
+import com.acmutv.socstream.common.tuple.GridCoordinate;
 import org.junit.Assert;
 import org.junit.Test;
 

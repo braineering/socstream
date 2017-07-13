@@ -24,51 +24,54 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream.common.tuple;
+package com.acmutv.socstream.core.query3.tuple;
 
-import com.acmutv.socstream.common.tool.ComputeCenterOfGravity;
-import com.acmutv.socstream.common.tool.GridTool;
+import com.acmutv.socstream.common.tuple.GridCoordinate;
+import com.acmutv.socstream.query3.tuple.PlayerGridStatistics;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * JUnit test suite for {@link ComputeCenterOfGravity} and {@link GridTool}.
+ * JUnit test suite for {@link PlayerGridStatistics}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see ComputeCenterOfGravity
- * @see GridTool
+ * @see PlayerGridStatistics
  */
-public class ComputeCellTest {
+public class PlayerGridStatisticsTest {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ComputeCellTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PlayerGridStatisticsTest.class);
 
   /**
-   * Tests serialization of {@link ComputeCenterOfGravity} and {@link GridTool}.
+   * Tests serialization of {@link PlayerGridStatistics}.
    */
   @Test
-  public void test_compute_cell() throws Exception {
-    List<Coordinate> coordinates = new ArrayList<>();
-    coordinates.add(new Coordinate(36736,5529));
+  public void test_serialize_grid_statistics() throws Exception {
+    //test put first element (cell for a player)
+    Map<String,Long> grid = new HashMap<>();
+    grid.put("2;3",0L);
+    PlayerGridStatistics test = new PlayerGridStatistics(0,1L,grid);
+    String expected="1,0, NOT AVAILABLE";
+    LOGGER.debug("PlayerGridStatistics serialized: " + expected);
+    String actual = test.toString();
+    Assert.assertEquals(expected, actual);
+  }
 
-    Coordinate base = coordinates.get(0);
-    GridCoordinate gc = GridTool.computeCell(base);
-    Assert.assertEquals(gc.getX(),9);
-    Assert.assertEquals(gc.getY(),4);
+  /**
+   * Tests deserialization of {@link GridCoordinate} from a string representing an gridID
+   */
+  @Test
+  public void test_valueOfAsSensorEvent() throws Exception {
 
-    base = ComputeCenterOfGravity.computeWithCell(2,36861,5572, gc);
-    gc = GridTool.computeCell(base);
-    Assert.assertEquals(gc.getX(),9);
-    Assert.assertEquals(gc.getY(),4);
-
-    base = ComputeCenterOfGravity.computeWithCell(3, 36737,5528, gc);
-    gc = GridTool.computeCell(base);
-    Assert.assertEquals(gc.getX(),9);
-    Assert.assertEquals(gc.getY(),4);
+    String stats ="9,1,1,10,2;3,1;1,1,1;2,3";
+    PlayerGridStatistics gs = PlayerGridStatistics.valueOf(stats);
+    String expected ="1,9";
+    String actual = gs.toString();
+    Assert.assertEquals(expected,actual);
   }
 }

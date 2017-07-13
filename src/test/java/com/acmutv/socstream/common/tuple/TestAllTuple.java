@@ -26,6 +26,9 @@
 
 package com.acmutv.socstream.common.tuple;
 
+import com.acmutv.socstream.core.query3.tuple.ComputeCellTest;
+import com.acmutv.socstream.core.query3.tuple.GridCoordinateTest;
+import com.acmutv.socstream.core.query3.tuple.PlayerGridStatisticsTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -42,10 +45,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
     RichSensorEventTest.class,
-    PositionSensorEventTest.class,
-    GridCoordinateTest.class,
-    PlayerGridStatisticsTest.class,
-    ComputeCellTest.class
+    PositionSensorEventTest.class
 })
 public class TestAllTuple {
 }

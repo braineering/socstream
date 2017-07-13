@@ -94,7 +94,6 @@ public class MatchServiceTest {
     in.close();
 
     Set<Long> actual = MatchService.collectIgnoredSensors(match);
-
     Set<Long> expected = new HashSet<>();
     expected.add(1L);
     expected.add(2L);

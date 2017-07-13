@@ -30,6 +30,7 @@ import com.acmutv.socstream.common.tuple.Coordinate;
 import com.acmutv.socstream.common.tuple.GridCoordinate;
 import lombok.Data;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -121,15 +122,22 @@ public class PlayerGridStatistics {
       return occupation;
 
     double percentage = 0.0;
+    DecimalFormat df2 = new DecimalFormat(".##");
 
     String[] cells = data.split(",");
+
+    if(lifetime == 0)
+      return ", NOT AVAILABLE";
 
     for(int i=0; i<cells.length;i++){
       String[] cell = cells[i].split("=");
       String[] coordinate = cell[0].split(";");
-      if(lifetime!=0)
-        percentage = (Double) Double.valueOf(cell[1])/lifetime;
-      occupation += "," + coordinate[0] + ";" + coordinate[1] + ","+ Double.toString(percentage);
+      percentage = (Double) Double.valueOf(cell[1])/lifetime;
+
+      if(percentage != 0.0)
+        occupation += "," + coordinate[0] + ";" + coordinate[1] + ","+ String.format("%.2f", percentage);
+      else
+        occupation +="";
     }
     occupation = occupation.replace(" ","");
     return occupation;

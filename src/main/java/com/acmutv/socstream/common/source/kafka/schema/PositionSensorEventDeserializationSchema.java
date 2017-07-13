@@ -114,7 +114,7 @@ public class PositionSensorEventDeserializationSchema extends AbstractDeserializ
     final String strEvent = new String(message);
 
     try {
-      event = PositionSensorEvent.valueOf(strEvent);
+      event = PositionSensorEvent.valueOfAsSensorEvent(strEvent);
     } catch (IllegalArgumentException exc) {
       LOG.warn("Malformed sensor event: {}", strEvent);
       return null;
@@ -139,7 +139,12 @@ public class PositionSensorEventDeserializationSchema extends AbstractDeserializ
       return eos;
     }
 
-    event.setId(this.sid2Pid.get(event.getId()));
+    try {
+      event.setId(this.sid2Pid.get(event.getId()));
+    }catch(NullPointerException exc){
+      LOG.warn("Null pointer exception at sid2Pid + : {}",strEvent);
+      return null;
+    }
 
     LOG.info("Emitting event: {}", event);
 

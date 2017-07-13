@@ -70,7 +70,7 @@ public class PlayerOnGridStatisticsCalculatorAggregator implements AggregateFunc
    */
   @Override
   public Tuple4<Long,Long,GridCoordinate,Map<String,Long>> createAccumulator() {
-    return new Tuple4<Long,Long,GridCoordinate,Map<String,Long>>(0L, 0L, new GridCoordinate(), new HashMap<>());
+    return new Tuple4<Long,Long,GridCoordinate,Map<String,Long>>(0L, 0L, new GridCoordinate(0,0,new Coordinate(0,0)), new HashMap<>());
   }
 
   /**
@@ -90,17 +90,22 @@ public class PlayerOnGridStatisticsCalculatorAggregator implements AggregateFunc
     long currentTimestamp = event.getTs();
 
     long lastTs = accumulator.f1;
+    long cellLifeTime = 0L;
+    long newCellLifeTime = 0L;
 
     GridCoordinate lastCell = accumulator.f2;
     Coordinate currentCenter = ComputeCenterOfGravity.computeWithCell(numEvents,x,y,lastCell);
     GridCoordinate currentCell = GridTool.computeCell(currentCenter);
+    String cellkey = currentCell.getKey();
 
     if(currentCell.equals(lastCell)){
-      long cellLifeTime = accumulator.f3.get(currentCell.getKey());
-      long newCellLifeTime = cellLifeTime + (currentTimestamp - lastTs);
-      accumulator.f3.put(currentCell.getKey(),newCellLifeTime);
+      if(accumulator.f3.containsKey(cellkey)) {
+        cellLifeTime = accumulator.f3.get(cellkey);
+        newCellLifeTime = cellLifeTime + (currentTimestamp - lastTs);
+      }
+      accumulator.f3.put(cellkey,newCellLifeTime);
     } else {
-      accumulator.f3.put(currentCell.getKey(), 0L);
+      accumulator.f3.put(cellkey, 0L);
       accumulator.f2 = currentCell;
     }
 
