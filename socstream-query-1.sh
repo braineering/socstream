@@ -24,12 +24,12 @@ SOCSTREAM_OPTS=""
 SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --kafka.zookeeper localhost:2181"
 SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --kafka.bootstrap localhost:9092"
 SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --kafka.topic socstream"
+SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --output ${SOCSTREAM_HOME}/out/query-1/main.out"
+SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --metadata ${SOCSTREAM_HOME}/data/test/metadata.yml"
 SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --windowSize 5"
 SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --windowUnit MINUTES"
-SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --metadata ${SOCSTREAM_HOME}/data/test/metadata.yml"
-SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --parallelism 1"
-SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --metadata ${SOCSTREAM_HOME}/data/test/metadata.yml"
-SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --output ${SOCSTREAM_HOME}/out/query-1/socstream-query-1.out"
+SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --parallelism 3"
+
 
 ##
 # EXECUTION
