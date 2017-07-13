@@ -29,7 +29,7 @@ SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --windowUnit MINUTES"
 SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --metadata ${SOCSTREAM_HOME}/data/test/metadata.yml"
 SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --parallelism 1"
 SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --metadata ${SOCSTREAM_HOME}/data/test/metadata.yml"
-SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --output ${SOCSTREAM_HOME}/output/query-1/socstream-query-1.out"
+SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --output ${SOCSTREAM_HOME}/out/query-1/socstream-query-1.out"
 
 ##
 # EXECUTION
