@@ -64,7 +64,7 @@ public class Match {
   /**
    * The hosted team.
    */
-  private Team teamB = new Team("2");;
+  private Team teamB = new Team("2");
 
 
 

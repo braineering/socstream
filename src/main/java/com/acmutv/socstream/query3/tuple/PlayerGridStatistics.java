@@ -26,8 +26,6 @@
 
 package com.acmutv.socstream.query3.tuple;
 
-import com.acmutv.socstream.common.tuple.Coordinate;
-import com.acmutv.socstream.common.tuple.GridCoordinate;
 import lombok.Data;
 
 import java.text.DecimalFormat;

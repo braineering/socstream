@@ -28,8 +28,8 @@ package com.acmutv.socstream.query2.tuple;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.apache.flink.shaded.com.google.common.collect.Lists;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class PlayersSpeedRanking {
+public class PlayersSpeedRanking implements Serializable {
 
   /**
    * The regular expression
@@ -94,10 +94,14 @@ public class PlayersSpeedRanking {
   }
 
   /**
-   * Creates an empty sensor event.
+   * Empty constructor.
    * This constructor is mandatory for Flink serialization.
    */
-  public PlayersSpeedRanking(){}
+  public PlayersSpeedRanking() {
+    this.tsStart = 0;
+    this.tsStop = 0;
+    this.rank = new ArrayList<>();
+  }
 
   /**
    * Parses {@link PlayersSpeedRanking} from string.

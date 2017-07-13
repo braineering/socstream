@@ -137,7 +137,7 @@ public class ProgramDriver {
      */
     public void invoke(String[] args) throws Throwable {
       try {
-        this.main.invoke((Object)null, new Object[]{args});
+        this.main.invoke(null, new Object[]{args});
       } catch (InvocationTargetException exc) {
         throw exc.getCause();
       }

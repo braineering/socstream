@@ -26,8 +26,6 @@
 package com.acmutv.socstream.query2.operator;
 
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
-import com.acmutv.socstream.query1.operator.PlayerRunningStatisticsCalculator;
-import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
 import com.acmutv.socstream.tool.physics.PhysicsUtil;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;

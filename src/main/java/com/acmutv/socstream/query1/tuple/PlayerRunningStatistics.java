@@ -28,6 +28,7 @@ package com.acmutv.socstream.query1.tuple;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,7 +39,7 @@ import java.util.regex.Pattern;
  * @since 1.0
  */
 @Data
-public class PlayerRunningStatistics {
+public class PlayerRunningStatistics implements Serializable {
 
   /**
    * The regular expression

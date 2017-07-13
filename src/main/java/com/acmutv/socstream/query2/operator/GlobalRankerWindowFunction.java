@@ -35,7 +35,7 @@ import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -81,17 +81,18 @@ public class GlobalRankerWindowFunction implements AllWindowFunction<PlayerSpeed
    */
   @Override
   public void apply(TimeWindow window, Iterable<PlayerSpeedStatistics> values, Collector<PlayersSpeedRanking> out) throws Exception {
-    LOG.debug("IN: {}", values);
-
-    List<RankingElement> tmp = new ArrayList<>();
-    for (PlayerSpeedStatistics stat : values) {
-      tmp.add(new RankingElement(stat.getPid(), stat.getAverageSpeed()));
-    }
-    tmp.sort((e1,e2) -> e2.compareTo(e1));
-
     this.ranking.setTsStart(window.getStart());
     this.ranking.setTsStop(window.getEnd());
-    this.ranking.setRank(tmp.subList(0, this.rankSize));
+
+    List<RankingElement> rank = this.ranking.getRank();
+
+    rank.clear();
+    values.forEach(e -> rank.add(new RankingElement(e.getPid(), e.getAverageSpeed())));
+    rank.sort(Comparator.reverseOrder());
+    int size = rank.size();
+    rank.subList(Math.min(this.rankSize, size), size).clear();
+
+    LOG.debug("WOUT: {}", this.ranking);
 
     out.collect(this.ranking);
   }

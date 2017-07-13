@@ -28,6 +28,8 @@ package com.acmutv.socstream.query2.tuple;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import javax.annotation.Nonnull;
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,7 +42,7 @@ import java.util.regex.Pattern;
  */
 @Data
 @AllArgsConstructor
-public class RankingElement implements Comparable<RankingElement> {
+public class RankingElement implements Comparable<RankingElement>,Serializable {
 
   /**
    * The regular expression
@@ -62,6 +64,12 @@ public class RankingElement implements Comparable<RankingElement> {
    * Player average speed.
    */
   private double averageSpeed;
+
+  /**
+   * Empty constructor.
+   * This constructor is mandatory for Flink serialization.
+   */
+  public RankingElement() { }
 
   /**
    * Compares this object with the specified object for order.  Returns a
@@ -102,7 +110,7 @@ public class RankingElement implements Comparable<RankingElement> {
    *                              from being compared to this object.
    */
   @Override
-  public int compareTo(RankingElement o) {
+  public int compareTo(@Nonnull RankingElement o) {
     return Double.compare(this.averageSpeed, o.getAverageSpeed());
   }
 

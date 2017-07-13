@@ -49,7 +49,7 @@ taskmanager.heap.mb: 2048
 
 # The number of task slots that each TaskManager offers. Each slot runs one parallel pipeline.
 
-taskmanager.numberOfTaskSlots: 2
+taskmanager.numberOfTaskSlots: 16
 
 # Specify whether TaskManager memory should be allocated when starting up (true) or when
 # memory is required in the memory manager (false)

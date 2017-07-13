@@ -78,7 +78,7 @@ public class PlayerRunningStatisticsCalculatorAggregator implements AggregateFun
 
     final double distanceSpeed[] = PhysicsUtil.computeDistanceAndSpeed(event.getV(), event.getVx(), event.getVy(), event.getA(), event.getAx(), event.getAy());
 
-    accumulator.f1 = accumulator.f1 + distanceSpeed[0];;
+    accumulator.f1 = accumulator.f1 + distanceSpeed[0];
     accumulator.f2 = ((accumulator.f2 * (numEvents - 1)) + distanceSpeed[1]) / numEvents;
 
     LOG.debug("ACC: {}", accumulator);

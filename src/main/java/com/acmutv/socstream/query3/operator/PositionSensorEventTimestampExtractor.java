@@ -26,7 +26,6 @@
 package com.acmutv.socstream.query3.operator;
 
 import com.acmutv.socstream.common.tuple.PositionSensorEvent;
-import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import org.apache.flink.streaming.api.functions.timestamps.AscendingTimestampExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
