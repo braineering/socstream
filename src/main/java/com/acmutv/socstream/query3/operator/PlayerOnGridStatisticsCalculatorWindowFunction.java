@@ -25,7 +25,6 @@
  */
 package com.acmutv.socstream.query3.operator;
 
-import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
 import com.acmutv.socstream.query3.tuple.PlayerGridStatistics;
 import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;

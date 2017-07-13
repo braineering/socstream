@@ -63,7 +63,7 @@ public class MatchService {
    */
   public static Match fromYamlFile(Path path) throws IOException {
     final YAMLMapper mapper = new MatchMetadataYamlMapper();
-    Match metadata = null;
+    Match metadata;
     try (Reader rd = Files.newBufferedReader(path, Charset.defaultCharset())) {
       metadata = mapper.readValue(rd, Match.class);
     }
@@ -78,7 +78,7 @@ public class MatchService {
    */
   public static Match fromYamlFile(InputStream in) throws IOException {
     final YAMLMapper mapper = new MatchMetadataYamlMapper();
-    Match metadata = null;
+    Match metadata;
     metadata = mapper.readValue(in, Match.class);
     return metadata;
   }

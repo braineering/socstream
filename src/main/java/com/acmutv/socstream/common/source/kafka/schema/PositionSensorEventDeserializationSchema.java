@@ -26,7 +26,6 @@
 package com.acmutv.socstream.common.source.kafka.schema;
 
 import com.acmutv.socstream.common.tuple.PositionSensorEvent;
-import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -153,13 +152,10 @@ public class PositionSensorEventDeserializationSchema extends AbstractDeserializ
    */
   @Override
   public boolean isEndOfStream(PositionSensorEvent event) {
-    /*
-    final boolean isEnd = event.getTs() > this.getTsEnd();
+    final boolean isEnd = (event != null) && event.getTs() > this.getTsEnd();
     if (isEnd) {
-      LOG.info("End of stream reached.");
+      LOG.debug("EOS RECEIVED: SHUTTING DOWN");
     }
     return isEnd;
-    */
-    return false;
   }
 }

@@ -33,7 +33,6 @@ import com.acmutv.socstream.common.meta.Match;
 import com.acmutv.socstream.common.meta.MatchService;
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.query1.operator.RichSensorEventTimestampExtractor;
-import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.query2.operator.*;
 import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
 import com.acmutv.socstream.query2.tuple.PlayersSpeedRanking;
@@ -111,24 +110,24 @@ public class TopologyQuery2 {
     System.out.println("Kafka Zookeeper: " + kafkaZookeeper);
     System.out.println("Kafka Bootstrap: " + kafkaBootstrap);
     System.out.println("Kafka Topic: " + kafkaTopic);
-    System.out.println("Window Size: " + windowSize + " " + windowUnit);
-    System.out.println("Rank Size: " + rankSize);
     System.out.println("Metadata: " + metadataPath);
     System.out.println("Output: " + outputPath);
-    System.out.println("Parallelism: " + parallelism);
+    System.out.println("Window Size: " + windowSize + " " + windowUnit);
+    System.out.println("Rank Size: " + rankSize);
     System.out.println("Match Start: " + matchStart);
     System.out.println("Match End: " + matchEnd);
     System.out.println("Match Interval Start: " + matchIntervalStart);
     System.out.println("Match Interval End: " + matchIntervalEnd);
     System.out.println("Ignored Sensors: " + ignoredSensors);
+    System.out.println("Parallelism: " + parallelism);
     System.out.println("############################################################################");
 
     // TOPOLOGY
     DataStream<RichSensorEvent> sensorEvents = env.addSource(
         new RichSensorEventKafkaSource(kafkaTopic, kafkaProps, matchStart, matchEnd,
             matchIntervalStart, matchIntervalEnd, ignoredSensors, sid2Pid
-        ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor())
-    );
+        )
+    ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor());
 
     KeyedStream<RichSensorEvent,Long> playerEvents = sensorEvents.keyBy(new RichSensorEventKeyer());
 

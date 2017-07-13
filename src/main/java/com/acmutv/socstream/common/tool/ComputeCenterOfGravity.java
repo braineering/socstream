@@ -27,12 +27,6 @@ package com.acmutv.socstream.common.tool;
 
 import com.acmutv.socstream.common.tuple.Coordinate;
 import com.acmutv.socstream.common.tuple.GridCoordinate;
-import com.acmutv.socstream.common.tuple.RichSensorEvent;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-
-import java.util.Properties;
 
 /**
  * This class gives the center of gravity between 2 points with their coordinates.

@@ -94,7 +94,6 @@ public class TopologyQuery1 {
     // ENVIRONMENT
     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-    env.setParallelism(parallelism);
     final KafkaProperties kafkaProps = new KafkaProperties(kafkaBootstrap);
 
     // CONFIGURATION RESUME
@@ -106,23 +105,23 @@ public class TopologyQuery1 {
     System.out.println("Kafka Zookeeper: " + kafkaZookeeper);
     System.out.println("Kafka Bootstrap: " + kafkaBootstrap);
     System.out.println("Kafka Topic: " + kafkaTopic);
-    System.out.println("Window Size: " + windowSize + " " + windowUnit);
     System.out.println("Metadata: " + metadataPath);
     System.out.println("Output: " + outputPath);
-    System.out.println("Parallelism: " + parallelism);
+    System.out.println("Window Size: " + windowSize + " " + windowUnit);
     System.out.println("Match Start: " + matchStart);
     System.out.println("Match End: " + matchEnd);
     System.out.println("Match Interval Start: " + matchIntervalStart);
     System.out.println("Match Interval End: " + matchIntervalEnd);
     System.out.println("Ignored Sensors: " + ignoredSensors);
+    System.out.println("Parallelism: " + parallelism);
     System.out.println("############################################################################");
 
     // TOPOLOGY
     DataStream<RichSensorEvent> sensorEvents = env.addSource(
         new RichSensorEventKafkaSource(kafkaTopic, kafkaProps, matchStart, matchEnd,
             matchIntervalStart, matchIntervalEnd, ignoredSensors, sid2Pid
-        ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor())
-    );
+        )
+    ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor());
 
     KeyedStream<RichSensorEvent,Long> playerEvents = sensorEvents.keyBy(new RichSensorEventKeyer());
 
