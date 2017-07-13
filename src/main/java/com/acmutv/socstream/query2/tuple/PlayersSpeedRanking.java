@@ -29,6 +29,7 @@ package com.acmutv.socstream.query2.tuple;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,7 +42,7 @@ import java.util.regex.Pattern;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class PlayersSpeedRanking {
+public class PlayersSpeedRanking implements Serializable {
 
   /**
    * The regular expression

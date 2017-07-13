@@ -123,10 +123,10 @@ public class TopologyQuery1 {
         )
     ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor());
 
-    KeyedStream<RichSensorEvent,Long> playerEvents = sensorEvents.keyBy(new RichSensorEventKeyer());
-
-    DataStream<PlayerRunningStatistics> statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
-        .aggregate(new PlayerRunningStatisticsCalculatorAggregator(), new PlayerRunningStatisticsCalculatorWindowFunction());
+    DataStream<PlayerRunningStatistics> statistics = sensorEvents.keyBy(new RichSensorEventKeyer())
+        .timeWindow(Time.of(windowSize, windowUnit))
+        .aggregate(new PlayerRunningStatisticsCalculatorAggregator(), new PlayerRunningStatisticsCalculatorWindowFunction())
+        .setParallelism(parallelism);
 
     statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
 

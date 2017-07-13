@@ -29,6 +29,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.annotation.Nonnull;
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,7 +42,7 @@ import java.util.regex.Pattern;
  */
 @Data
 @AllArgsConstructor
-public class RankingElement implements Comparable<RankingElement> {
+public class RankingElement implements Comparable<RankingElement>,Serializable {
 
   /**
    * The regular expression

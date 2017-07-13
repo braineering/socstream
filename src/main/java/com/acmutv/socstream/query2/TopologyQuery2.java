@@ -81,24 +81,23 @@ public class TopologyQuery2 {
     final String kafkaZookeeper = parameter.get("kafka.zookeeper", "localhost:2181");
     final String kafkaBootstrap = parameter.get("kafka.bootstrap", "localhost:9092");
     final String kafkaTopic = parameter.get("kafka.topic", "socstream");
+    final Path outputPath = FileSystems.getDefault().getPath(parameter.get("output", PROGRAM_NAME + ".out"));
     final long windowSize = parameter.getLong("windowSize", 70);
     final TimeUnit windowUnit = TimeUnit.valueOf(parameter.get("windowUnit", "MINUTES"));
     final int rankSize = parameter.getInt("rankSize", 5);
-    final int parallelism = parameter.getInt("parallelism", 1);
     final long matchStart = parameter.getLong("match.start", 10753295594424116L);
     final long matchEnd = parameter.getLong("match.end", 14879639146403495L);
     final long matchIntervalStart = parameter.getLong("match.interval.start", 12557295594424116L);
     final long matchIntervalEnd = parameter.getLong("match.interval.end", 13086639146403495L);
     final Path metadataPath = FileSystems.getDefault().getPath(parameter.get("metadata", "./metadata.yml"));
-    final Path outputPath = FileSystems.getDefault().getPath(parameter.get("output", PROGRAM_NAME + ".out"));
     final Match match = MatchService.fromYamlFile(metadataPath);
     final Set<Long> ignoredSensors = MatchService.collectIgnoredSensors(match);
     final Map<Long,Long> sid2Pid = MatchService.collectSid2Pid(match);
+    final int parallelism = parameter.getInt("parallelism", 1);
 
     // ENVIRONMENT
     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-    env.setParallelism(parallelism);
     final KafkaProperties kafkaProps = new KafkaProperties(kafkaBootstrap);
 
     // CONFIGURATION RESUME
@@ -129,10 +128,10 @@ public class TopologyQuery2 {
         )
     ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor());
 
-    KeyedStream<RichSensorEvent,Long> playerEvents = sensorEvents.keyBy(new RichSensorEventKeyer());
-
-    DataStream<PlayerSpeedStatistics> statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
-        .aggregate(new PlayerSpeedStatisticsCalculatorAggregator(), new PlayerSpeedStatisticsCalculatorWindowFunction());
+    DataStream<PlayerSpeedStatistics> statistics = sensorEvents.keyBy(new RichSensorEventKeyer())
+        .timeWindow(Time.of(windowSize, windowUnit))
+        .aggregate(new PlayerSpeedStatisticsCalculatorAggregator(), new PlayerSpeedStatisticsCalculatorWindowFunction())
+        .setParallelism(parallelism);
 
     DataStream<PlayersSpeedRanking> globalRank = statistics.timeWindowAll(Time.of(windowSize, windowUnit))
         .apply(new GlobalRankerWindowFunction(rankSize));

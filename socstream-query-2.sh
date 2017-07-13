@@ -13,7 +13,9 @@ FLINK_RUN="${FLINK_HOME}/bin/flink run"
 ##
 # SETUP
 ##
-mkdir -p "${SOCSTREAM_HOME}/output/query-2"
+OUTDIR="${SOCSTREAM_HOME}/out/query-2"
+mkdir -p "${OUTDIR}"
+rm -f ${OUTDIR}/*
 
 ##
 # SOCSTREAM
@@ -24,7 +26,7 @@ SOCSTREAM_OPTS=""
 SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --kafka.zookeeper localhost:2181"
 SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --kafka.bootstrap localhost:9092"
 SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --kafka.topic socstream"
-SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --output ${SOCSTREAM_HOME}/out/query-2/main.out"
+SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --output ${OUTDIR}/main.out"
 SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --metadata ${SOCSTREAM_HOME}/data/test/metadata.yml"
 SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --windowSize 5"
 SOCSTREAM_OPTS="${SOCSTREAM_OPTS} --windowUnit MINUTES"
