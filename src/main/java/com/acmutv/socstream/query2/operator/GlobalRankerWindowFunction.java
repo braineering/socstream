@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * The operator that calculates the global ranking of players by average speed.
@@ -82,10 +83,14 @@ public class GlobalRankerWindowFunction implements AllWindowFunction<PlayerSpeed
   public void apply(TimeWindow window, Iterable<PlayerSpeedStatistics> values, Collector<PlayersSpeedRanking> out) throws Exception {
     this.ranking.setTsStart(window.getStart());
     this.ranking.setTsStop(window.getEnd());
-    this.ranking.getRank().clear();
 
-    values.forEach(e -> this.ranking.getRank().add(new RankingElement(e.getPid(),e.getAverageSpeed())));
-    this.ranking.getRank().sort(Comparator.reverseOrder());
+    List<RankingElement> rank = this.ranking.getRank();
+
+    rank.clear();
+    values.forEach(e -> rank.add(new RankingElement(e.getPid(), e.getAverageSpeed())));
+    rank.sort(Comparator.reverseOrder());
+    int size = rank.size();
+    rank.subList(Math.min(this.rankSize, size), size).clear();
 
     LOG.debug("WOUT: {}", this.ranking);
 
