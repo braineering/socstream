@@ -85,7 +85,7 @@ where *[YOUR_FILE]* is the absolute path to a file containing the dataset.
 
 ## Elasticsearch setup
 The name of the Elasticsearch cluster must be: `my-es-cluster`.
-You can find [here](https://documenter.getpostman.com/collection/view/813057-d70af924-d7bd-3bb6-c1b4-73741afa1e5c) the Postman documentation with all
+You can find [here](https://documenter.getpostman.com/view/813057/socstream/6fZxP7m) the Postman documentation with all
 of the REST calls to setup and query the Elasticsearch cluster.
 
 ### Query 1
