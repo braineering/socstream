@@ -89,23 +89,18 @@ public class PlayerOnGridStatisticsCalculatorAggregator implements AggregateFunc
     long lastTs = accumulator.f1;
     long cellLifeTime = 0L;
     long newCellLifeTime = 0L;
-    //LOG.info("IN_2: mappa pre computazione: {}",accumulator.f3);
 
     GridCoordinate lastCell = accumulator.f2;
     Coordinate currentCenter = ComputeCenterOfGravity.computeWithCell(numEvents,x,y,lastCell);
     GridCoordinate currentCell = GridTool.computeCell(currentCenter);
     String cellkey = currentCell.getKey();
 
-    //LOG.info("IN_3 lastCell: {}, lastCoordinate: {}, currenctCenter: {}, currentCell: {}, cellKey:{} ",lastCell,lastCell.getXy(), currentCenter,currentCell,cellkey);
-
     if(currentCell.equals(lastCell)){
       cellLifeTime = accumulator.f3.get(cellkey);
       newCellLifeTime = cellLifeTime + (currentTimestamp - lastTs);
       accumulator.f3.put(cellkey,newCellLifeTime);
-      //LOG.info("IN_4 ULTIMA CELLA UGUALE, new life time = : {} , mappa attuale: {} ",newCellLifeTime,accumulator.f3);
     } else {
       accumulator.f3.put(cellkey, 0L);
-      //LOG.info("IN_4 ULTIMA CELLA DIVERSA, mappa attuale = : {} ",accumulator.f3);
     }
 
     accumulator.f2 = currentCell;
