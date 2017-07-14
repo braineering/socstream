@@ -115,37 +115,32 @@ public class PositionSensorEventDeserializationSchema extends AbstractDeserializ
     try {
       event = PositionSensorEvent.valueOfAsSensorEvent(strEvent);
     } catch (IllegalArgumentException exc) {
-      LOG.warn("Malformed sensor event: {}", strEvent);
+      //LOG.warn("Malformed sensor event: {}", strEvent);
       return null;
     }
 
     if (this.ignoredSensors.contains(event.getId())) {
-      LOG.debug("Ignored sensor event (untracked SID): {}", strEvent);
+      //LOG.debug("Ignored sensor event (untracked SID): {}", strEvent);
       return null;
     }
 
     final long ts = event.getTs();
 
     if (ts < this.tsStart) {
-      LOG.debug("Ignored sensor event (before match start): {}", strEvent);
+      //LOG.debug("Ignored sensor event (before match start): {}", strEvent);
       return null;
     } else if (ts > tsStartIgnore && ts < tsEndIgnore) {
-      LOG.debug("Ignored sensor event (within match interval): {}", strEvent);
+      //LOG.debug("Ignored sensor event (within match interval): {}", strEvent);
       return null;
     } else if (ts > this.tsEnd) {
-      LOG.debug("Ignored sensor event (after match end): {}", strEvent);
-      LOG.debug("Emitting EOS tuple: {}", this.eos);
+      //LOG.debug("Ignored sensor event (after match end): {}", strEvent);
+      //LOG.debug("Emitting EOS tuple: {}", this.eos);
       return eos;
     }
 
-    try {
-      event.setId(this.sid2Pid.get(event.getId()));
-    }catch(NullPointerException exc){
-      LOG.warn("Null pointer exception at sid2Pid + : {}",strEvent);
-      return null;
-    }
+    event.setId(this.sid2Pid.get(event.getId()));
 
-    LOG.info("Emitting event: {}", event);
+    //LOG.info("Emitting event: {}", event);
 
     return event;
   }
@@ -157,10 +152,6 @@ public class PositionSensorEventDeserializationSchema extends AbstractDeserializ
    */
   @Override
   public boolean isEndOfStream(PositionSensorEvent event) {
-    final boolean isEnd = (event != null) && event.getTs() > this.getTsEnd();
-    if (isEnd) {
-      LOG.debug("EOS RECEIVED: SHUTTING DOWN");
-    }
-    return isEnd;
+    return (event != null) && event.getTs() > this.getTsEnd();
   }
 }

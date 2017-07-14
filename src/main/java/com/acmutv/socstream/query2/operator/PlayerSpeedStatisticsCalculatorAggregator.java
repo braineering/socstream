@@ -74,14 +74,14 @@ public class PlayerSpeedStatisticsCalculatorAggregator implements AggregateFunct
   public void add(RichSensorEvent event, Tuple2<Long,Double> accumulator) {
     long numEvents = ++accumulator.f0;
 
-    LOG.debug("IN ({}): {}", numEvents, event);
+    //LOG.debug("IN ({}): {}", numEvents, event);
 
     final double speed = PhysicsUtil.computeSpeed(event.getV(), event.getVx(), event.getVy(), event.getA(), event.getAx(), event.getAy());
     final double newAverageSpeed = ((accumulator.f1 * (numEvents - 1)) + speed) / numEvents;
 
     accumulator.setFields(numEvents, newAverageSpeed);
 
-    LOG.debug("ACC: {}", accumulator);
+    //LOG.debug("ACC: {}", accumulator);
   }
 
   /**

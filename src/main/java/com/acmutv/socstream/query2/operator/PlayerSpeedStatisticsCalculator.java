@@ -78,7 +78,7 @@ public class PlayerSpeedStatisticsCalculator extends RichFlatMapFunction<RichSen
   @Override
   public void flatMap(RichSensorEvent event, Collector<PlayerSpeedStatistics> out) throws Exception {
     if (event.equals(this.eos)) {
-      LOG.debug("EOS RECEIVED");
+      //LOG.debug("EOS RECEIVED");
       out.collect(new PlayerSpeedStatistics(0,0,0, this.averageSpeed));
       out.collect(END_OF_STREAM);
       super.close();
@@ -86,12 +86,12 @@ public class PlayerSpeedStatisticsCalculator extends RichFlatMapFunction<RichSen
 
     this.numEvents++;
 
-    LOG.debug("IN ({}): {}", this.numEvents, event);
+    //LOG.debug("IN ({}): {}", this.numEvents, event);
 
     final double speed = PhysicsUtil.computeSpeed(event.getV(), event.getVx(), event.getVy(), event.getA(), event.getAx(), event.getAy());
 
     this.averageSpeed = ((this.averageSpeed * (this.numEvents - 1)) + speed) / this.numEvents;
 
-    LOG.debug("ACC: {} {}", this.numEvents, this.averageSpeed);
+    //LOG.debug("ACC: {} {}", this.numEvents, this.averageSpeed);
   }
 }

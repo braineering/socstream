@@ -63,7 +63,7 @@ public class PlayerSpeedStatisticsCalculatorWindowFunction implements WindowFunc
     stats.setTsStart(window.getStart());
     stats.setTsStop(window.getEnd());
 
-    LOG.info("OUT: {}", stats);
+    //LOG.info("OUT: {}", stats);
 
     out.collect(stats);
   }

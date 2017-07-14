@@ -92,7 +92,7 @@ public class GlobalRankerWindowFunction implements AllWindowFunction<PlayerSpeed
     int size = rank.size();
     rank.subList(Math.min(this.rankSize, size), size).clear();
 
-    LOG.debug("WOUT: {}", this.ranking);
+    //LOG.debug("WOUT: {}", this.ranking);
 
     out.collect(this.ranking);
   }

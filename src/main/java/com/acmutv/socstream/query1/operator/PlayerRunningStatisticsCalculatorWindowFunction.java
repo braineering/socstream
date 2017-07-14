@@ -63,7 +63,7 @@ public class PlayerRunningStatisticsCalculatorWindowFunction implements WindowFu
     stats.setTsStart(window.getStart());
     stats.setTsStop(window.getEnd());
 
-    LOG.debug("OUT: {}", stats);
+    //LOG.debug("OUT: {}", stats);
 
     out.collect(stats);
   }
