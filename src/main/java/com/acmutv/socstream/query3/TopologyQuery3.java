@@ -93,7 +93,6 @@ public class TopologyQuery3 {
     // ENVIRONMENT
     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-    env.setParallelism(parallelism);
     final KafkaProperties kafkaProps = new KafkaProperties(kafkaBootstrap);
 
     // CONFIGURATION RESUME
@@ -105,30 +104,29 @@ public class TopologyQuery3 {
     System.out.println("Kafka Zookeeper: " + kafkaZookeeper);
     System.out.println("Kafka Bootstrap: " + kafkaBootstrap);
     System.out.println("Kafka Topic: " + kafkaTopic);
-    System.out.println("Window Size: " + windowSize + " " + windowUnit);
+    System.out.println("Window: " + windowSize + " " + windowUnit);
     System.out.println("Metadata: " + metadataPath);
     System.out.println("Output: " + outputPath);
-    System.out.println("Parallelism: " + parallelism);
     System.out.println("Match Start: " + matchStart);
     System.out.println("Match End: " + matchEnd);
     System.out.println("Match Interval Start: " + matchIntervalStart);
     System.out.println("Match Interval End: " + matchIntervalEnd);
     System.out.println("Ignored Sensors: " + ignoredSensors);
+    System.out.println("Parallelism: " + parallelism);
     System.out.println("############################################################################");
 
     // TOPOLOGY
     DataStream<PositionSensorEvent> sensorEvents = env.addSource(
         new PositionSensorEventKafkaSource(kafkaTopic, kafkaProps, matchStart, matchEnd,
             matchIntervalStart, matchIntervalEnd, ignoredSensors, sid2Pid
-        ).assignTimestampsAndWatermarks(new PositionSensorEventTimestampExtractor())
-    );
+        ).assignTimestampsAndWatermarks(new PositionSensorEventTimestampExtractor()));
 
-    KeyedStream<PositionSensorEvent,Long> playerEvents = sensorEvents.keyBy(new PositionSensorEventKeyer());
+    DataStream<PlayerGridStatistics> statistics = sensorEvents.keyBy(new PositionSensorEventKeyer())
+        .timeWindow(Time.of(windowSize, windowUnit))
+        .aggregate(new PlayerOnGridStatisticsCalculatorAggregator(), new PlayerOnGridStatisticsCalculatorWindowFunction())
+        .setParallelism(parallelism);
 
-    DataStream<PlayerGridStatistics> statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
-        .aggregate(new PlayerOnGridStatisticsCalculatorAggregator(), new PlayerOnGridStatisticsCalculatorWindowFunction());
-
-    statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
+    statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
 
     // EXECUTION
     env.execute(PROGRAM_NAME);

@@ -111,7 +111,8 @@ public class GridCoordinate {
         this.x, this.y);
   }
 
-  public boolean equals(GridCoordinate gc){
+  @Override
+  public boolean equals(Object obj){
     if(this.x == gc.getX() && this.y == getY())
       return true;
     else

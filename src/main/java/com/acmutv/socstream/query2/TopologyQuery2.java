@@ -111,7 +111,7 @@ public class TopologyQuery2 {
     System.out.println("Kafka Topic: " + kafkaTopic);
     System.out.println("Metadata: " + metadataPath);
     System.out.println("Output: " + outputPath);
-    System.out.println("Window Size: " + windowSize + " " + windowUnit);
+    System.out.println("Window: " + windowSize + " " + windowUnit);
     System.out.println("Rank Size: " + rankSize);
     System.out.println("Match Start: " + matchStart);
     System.out.println("Match End: " + matchEnd);

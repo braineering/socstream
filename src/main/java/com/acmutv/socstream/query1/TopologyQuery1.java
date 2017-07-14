@@ -107,7 +107,7 @@ public class TopologyQuery1 {
     System.out.println("Kafka Topic: " + kafkaTopic);
     System.out.println("Metadata: " + metadataPath);
     System.out.println("Output: " + outputPath);
-    System.out.println("Window Size: " + windowSize + " " + windowUnit);
+    System.out.println("Window: " + windowSize + " " + windowUnit);
     System.out.println("Match Start: " + matchStart);
     System.out.println("Match End: " + matchEnd);
     System.out.println("Match Interval Start: " + matchIntervalStart);
