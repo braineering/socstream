@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A sink that writes {@link PlayerGridStatistics} to Elasticsearch.
@@ -86,8 +87,10 @@ public class PlayerGridStatisticsESSinkFunction implements ElasticsearchSinkFunc
     json.put("wStart", String.valueOf(value.getTsStart()));
     json.put("pid", String.valueOf(value.getPid()));
 
-    String cellsJson = "";
-    json.put("cells", cellsJson);
+    String cellsJson = value.getStats().entrySet().stream()
+        .map(e -> "{" + "\"cid\":\"" + e.getKey() + "\",\"presence\":" + e.getValue() + "}")
+        .collect(Collectors.joining(","));
+    json.put("rank", "[" + cellsJson + "]");
 
     LOG.debug("JSON: {}", json);
 

@@ -27,6 +27,7 @@ package com.acmutv.socstream.query2.operator;
 
 import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.query2.tuple.PlayersSpeedRanking;
+import com.acmutv.socstream.query2.tuple.RankingElement;
 import org.apache.flink.api.common.functions.RuntimeContext;
 import org.apache.flink.streaming.connectors.elasticsearch.ElasticsearchSinkFunction;
 import org.apache.flink.streaming.connectors.elasticsearch.RequestIndexer;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A sink that writes {@link PlayersSpeedRanking} to Elasticsearch.
@@ -86,8 +88,10 @@ public class PlayerSpeedRankingESSinkFunction implements ElasticsearchSinkFuncti
     json.put("wStart", String.valueOf(value.getTsStart()));
     json.put("wEnd", String.valueOf(value.getTsStop()));
 
-    String rankJson = "";
-    json.put("rank", rankJson);
+    String rankJson = value.getRank().stream()
+        .map(e -> "{" + "\"pid\":" + e.getPid() + ",\"averageSpeed\":" + e.getAverageSpeed() + "}")
+        .collect(Collectors.joining(","));
+    json.put("rank", "[" + rankJson + "]");
 
     LOG.debug("JSON: {}", json);
 
