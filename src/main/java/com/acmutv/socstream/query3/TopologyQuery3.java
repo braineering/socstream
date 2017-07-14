@@ -93,7 +93,6 @@ public class TopologyQuery3 {
     // ENVIRONMENT
     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-    env.setParallelism(parallelism);
     final KafkaProperties kafkaProps = new KafkaProperties(kafkaBootstrap);
 
     // CONFIGURATION RESUME
@@ -126,9 +125,10 @@ public class TopologyQuery3 {
     KeyedStream<PositionSensorEvent,Long> playerEvents = sensorEvents.keyBy(new PositionSensorEventKeyer());
 
     DataStream<PlayerGridStatistics> statistics = playerEvents.timeWindow(Time.of(windowSize, windowUnit))
-        .aggregate(new PlayerOnGridStatisticsCalculatorAggregator(), new PlayerOnGridStatisticsCalculatorWindowFunction());
+        .aggregate(new PlayerOnGridStatisticsCalculatorAggregator(), new PlayerOnGridStatisticsCalculatorWindowFunction())
+        .setParallelism(parallelism);
 
-    statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
+    statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
 
     // EXECUTION
     env.execute(PROGRAM_NAME);
