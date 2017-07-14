@@ -33,6 +33,7 @@ import org.apache.flink.streaming.connectors.elasticsearch.ElasticsearchSinkFunc
 import org.apache.flink.streaming.connectors.elasticsearch.RequestIndexer;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Requests;
+import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,14 +85,14 @@ public class PlayerSpeedRankingESSinkFunction implements ElasticsearchSinkFuncti
    * @return the Elasticsearch request.
    */
   private IndexRequest createWindowWordRanking(PlayersSpeedRanking value) {
-    Map<String,String> json = new HashMap<>();
-    json.put("tsStart", String.valueOf(value.getTsStart()));
-    json.put("tsStop", String.valueOf(value.getTsStop()));
-
     String rankJson = value.getRank().stream()
         .map(e -> "{" + "\"pid\":" + e.getPid() + ",\"averageSpeed\":" + e.getAverageSpeed() + "}")
         .collect(Collectors.joining(","));
-    json.put("rank", "[" + rankJson + "]");
+
+    String json =
+        "{\"tsStart\":" + value.getTsStart() +
+        ",\"tsStop\":" + value.getTsStop() +
+        ",\"rank\":[" + rankJson + "]}";
 
     LOG.debug("JSON: {}", json);
 

@@ -81,12 +81,12 @@ public class PlayerRunningStatisticsESSinkFunction implements ElasticsearchSinkF
    * @return the Elasticsearch request.
    */
   private IndexRequest createWindowWordRanking(PlayerRunningStatistics value) {
-    Map<String,String> json = new HashMap<>();
-    json.put("tsStart", String.valueOf(value.getTsStart()));
-    json.put("tsStop", String.valueOf(value.getTsStop()));
-    json.put("pid", String.valueOf(value.getPid()));
-    json.put("totalDistance", String.valueOf(value.getTotalDistance()));
-    json.put("averageSpeed", String.valueOf(value.getAverageSpeed()));
+    String json =
+        "{\"tsStart\":" + value.getTsStart() +
+            ",\"tsStop\":" + value.getTsStop() +
+            ",\"pid\":" + value.getPid() +
+            ",\"totalDistance\":" + value.getTotalDistance() +
+            ",\"averageSpeed\":" + value.getAverageSpeed() + "}";
 
     LOG.debug("JSON: {}", json);
 

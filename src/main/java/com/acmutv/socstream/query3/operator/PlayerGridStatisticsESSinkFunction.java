@@ -83,14 +83,13 @@ public class PlayerGridStatisticsESSinkFunction implements ElasticsearchSinkFunc
    * @return the Elasticsearch request.
    */
   private IndexRequest createWindowWordRanking(PlayerGridStatistics value) {
-    Map<String,String> json = new HashMap<>();
-    json.put("ts", String.valueOf(value.getTsStart()));
-    json.put("pid", String.valueOf(value.getPid()));
-
     String cellsJson = value.getStats().entrySet().stream()
         .map(e -> "{" + "\"cid\":\"" + e.getKey() + "\",\"presence\":" + e.getValue() + "}")
         .collect(Collectors.joining(","));
-    json.put("rank", "[" + cellsJson + "]");
+    String json =
+        "{\"ts\":" + value.getTsStart() +
+        ",\"pid\":" + value.getPid() +
+        ",\"cells\":[" + cellsJson + "]}";
 
     LOG.debug("JSON: {}", json);
 
