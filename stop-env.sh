@@ -16,7 +16,14 @@ ${SOCSTREAM_HOME}/env/systemd/flink-manager.sh stop
 ${SOCSTREAM_HOME}/env/systemd/kafka-manager.sh stop
 
 ##
+# ELASTICSEARCH
+##
+${SOCSTREAM_HOME}/env/systemd/elasticsearch-manager.sh stop
+
+##
 # ENVARS
 ##
 unset SOCSTREAM_HOME
 unset FLINK_CONF_DIR
+
+exit 0

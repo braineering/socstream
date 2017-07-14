@@ -120,8 +120,6 @@ public class PlayerGridStatistics {
       return occupation;
 
     double percentage = 0.0;
-    DecimalFormat df2 = new DecimalFormat(".##");
-
     String[] cells = data.split(",");
 
     if(lifetime == 0)

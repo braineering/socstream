@@ -70,6 +70,7 @@ Test the topic creation:
 
     $> sudo ${KAFKA_HOME}/bin/kafka-topics.sh --list --zookeeper localhost:2181
     
+    
 ### Data ingestion
 Push data via the Kafka producer, manually:
 
@@ -80,7 +81,56 @@ or, push bulk data via the Kafka producer:
     $socstream_home> cat [YOUR_FILE] | bash kafka-producer.sh
     
 where *[YOUR_FILE]* is the absolute path to a file containing the dataset.
+
+
+## Elasticsearch setup
+The name of the Elasticsearch cluster must be: `my-es-cluster`.
+
+### Query 1
+Create the Elasticsearch index `socstream` with mapping `query-1` and mapping schema
+
+    {
+        "properties": {
+            "wStart":        {"type": "date"},
+            "wEnd":          {"type": "date"},
+            "pid":           {"type": "long"},
+            "totalDistance": {"type": "double"},
+            "averageSpeed":  {"type": "double"}
+        }
+    }
+
+### Query 2
+Create the Elasticsearch index `socstream` with mapping `query-2` and mapping schema
+
+    {
+        "properties": {
+            "wStart": {"type": "date"},
+            "wEnd":   {"type": "date"},
+            "rank":   {
+                "properties": {
+                    "pid":          {"type": "long"},
+                    "averageSpeed": {"type": "double"}
+                }
+            }
+        }
+    }
     
+ ### Query 3
+ Create the Elasticsearch index `socstream` with mapping `query-3` and mapping schema
+ 
+    {
+        "properties": {
+            "wStart": {"type": "date"},
+            "wEnd":   {"type": "date"},
+            "pid":    {"type": "long"},
+            "cells":  {
+                "properties": {
+                    "cid":      {"type": "text"},
+                    "presence": {"type": "double"}
+                }
+            }
+        }
+    }
     
 ## Query 1    
 The 1st query can be executed running:

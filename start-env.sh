@@ -34,3 +34,10 @@ ${SOCSTREAM_HOME}/env/systemd/flink-manager.sh start
 # KAFKA
 ##
 ${SOCSTREAM_HOME}/env/systemd/kafka-manager.sh start
+
+##
+# ELASTICSEARCH
+##
+${SOCSTREAM_HOME}/env/systemd/elasticsearch-manager.sh start
+
+exit 0

@@ -16,3 +16,5 @@ TOPIC_LIST="socstream"
 ##
 ${KAFKA_CONSUMER} --bootstrap-server ${BOOTSTRAP_SERVER} --topic ${TOPIC_LIST}
 
+exit 0
+

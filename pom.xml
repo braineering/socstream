@@ -197,6 +197,11 @@
       <artifactId>kafka-clients</artifactId>
       <version>${kafka.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.flink</groupId>
+      <artifactId>flink-connector-elasticsearch5_2.11</artifactId>
+      <version>${flink.version}</version>
+    </dependency>
 
     <!-- GUI/CLI -->
     <dependency>

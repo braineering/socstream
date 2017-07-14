@@ -1,0 +1,14 @@
+[Unit]
+Description=ElasticSearch
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/opt/systemd/elasticsearch-manager.sh start
+ExecStop=/opt/systemd/elasticsearch-manager.sh stop
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=elasticsearch
+
+[Install]
+WantedBy=multi-user.target

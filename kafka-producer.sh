@@ -15,3 +15,5 @@ TOPIC_LIST="socstream"
 # KAFKA PRODUCER
 ##
 ${KAFKA_PRODUCER} --broker-list ${BROKER_LIST} --topic ${TOPIC_LIST}
+
+exit 0

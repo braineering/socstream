@@ -27,6 +27,8 @@
 package com.acmutv.socstream.query2;
 
 import com.acmutv.socstream.common.keyer.RichSensorEventKeyer;
+import com.acmutv.socstream.common.sink.es.ESProperties;
+import com.acmutv.socstream.common.sink.es.ESSink;
 import com.acmutv.socstream.common.source.kafka.KafkaProperties;
 import com.acmutv.socstream.common.source.kafka.RichSensorEventKafkaSource;
 import com.acmutv.socstream.common.meta.Match;
@@ -82,6 +84,8 @@ public class TopologyQuery2 {
     final String kafkaBootstrap = parameter.get("kafka.bootstrap", "localhost:9092");
     final String kafkaTopic = parameter.get("kafka.topic", "socstream");
     final Path outputPath = FileSystems.getDefault().getPath(parameter.get("output", PROGRAM_NAME + ".out"));
+    final String elasticsearch = parameter.get("elasticsearch", null);
+    final Path metadataPath = FileSystems.getDefault().getPath(parameter.get("metadata", "./metadata.yml"));
     final long windowSize = parameter.getLong("windowSize", 70);
     final TimeUnit windowUnit = TimeUnit.valueOf(parameter.get("windowUnit", "MINUTES"));
     final int rankSize = parameter.getInt("rankSize", 5);
@@ -89,16 +93,17 @@ public class TopologyQuery2 {
     final long matchEnd = parameter.getLong("match.end", 14879639146403495L);
     final long matchIntervalStart = parameter.getLong("match.interval.start", 12557295594424116L);
     final long matchIntervalEnd = parameter.getLong("match.interval.end", 13086639146403495L);
-    final Path metadataPath = FileSystems.getDefault().getPath(parameter.get("metadata", "./metadata.yml"));
+    final int parallelism = parameter.getInt("parallelism", 1);
+
     final Match match = MatchService.fromYamlFile(metadataPath);
     final Set<Long> ignoredSensors = MatchService.collectIgnoredSensors(match);
     final Map<Long,Long> sid2Pid = MatchService.collectSid2Pid(match);
-    final int parallelism = parameter.getInt("parallelism", 1);
 
     // ENVIRONMENT
     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
     final KafkaProperties kafkaProps = new KafkaProperties(kafkaBootstrap);
+    final ESProperties elasticsearchProps = ESProperties.fromPropString(elasticsearch);
 
     // CONFIGURATION RESUME
     System.out.println("############################################################################");
@@ -109,8 +114,9 @@ public class TopologyQuery2 {
     System.out.println("Kafka Zookeeper: " + kafkaZookeeper);
     System.out.println("Kafka Bootstrap: " + kafkaBootstrap);
     System.out.println("Kafka Topic: " + kafkaTopic);
-    System.out.println("Metadata: " + metadataPath);
     System.out.println("Output: " + outputPath);
+    System.out.println("Elasticsearch: " + elasticsearch);
+    System.out.println("Metadata: " + metadataPath);
     System.out.println("Window: " + windowSize + " " + windowUnit);
     System.out.println("Rank Size: " + rankSize);
     System.out.println("Match Start: " + matchStart);
@@ -133,10 +139,16 @@ public class TopologyQuery2 {
         .aggregate(new PlayerSpeedStatisticsCalculatorAggregator(), new PlayerSpeedStatisticsCalculatorWindowFunction())
         .setParallelism(parallelism);
 
-    DataStream<PlayersSpeedRanking> globalRank = statistics.timeWindowAll(Time.of(windowSize, windowUnit))
+    DataStream<PlayersSpeedRanking> ranking = statistics.timeWindowAll(Time.of(windowSize, windowUnit))
         .apply(new GlobalRankerWindowFunction(rankSize));
 
-    globalRank.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
+    ranking.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
+
+    if (elasticsearch != null) {
+      ranking.addSink(new ESSink<>(elasticsearchProps,
+          new PlayerSpeedRankingESSinkFunction(elasticsearchProps.getIndexName(), elasticsearchProps.getTypeName()))
+      );
+    }
 
     // EXECUTION
     env.execute(PROGRAM_NAME);

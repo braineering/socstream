@@ -80,7 +80,7 @@ public class PlayerOnGridStatisticsCalculatorAggregator implements AggregateFunc
   public void add(PositionSensorEvent event, Tuple4<Long,Long,GridCoordinate,Map<String,Long>> accumulator) {
     long numEvents = ++accumulator.f0;
 
-    LOG.info("IN ({}): {}", numEvents, event);
+    LOG.info("IN_1 ({}): {}", numEvents, event);
 
     long x = event.getX();
     long y = event.getY();
@@ -96,16 +96,14 @@ public class PlayerOnGridStatisticsCalculatorAggregator implements AggregateFunc
     String cellkey = currentCell.getKey();
 
     if(currentCell.equals(lastCell)){
-      if(accumulator.f3.containsKey(cellkey)) {
-        cellLifeTime = accumulator.f3.get(cellkey);
-        newCellLifeTime = cellLifeTime + (currentTimestamp - lastTs);
-      }
+      cellLifeTime = accumulator.f3.get(cellkey);
+      newCellLifeTime = cellLifeTime + (currentTimestamp - lastTs);
       accumulator.f3.put(cellkey,newCellLifeTime);
     } else {
       accumulator.f3.put(cellkey, 0L);
-      accumulator.f2 = currentCell;
     }
 
+    accumulator.f2 = currentCell;
     accumulator.f1 = currentTimestamp;
 
     LOG.info("ACC: {}", accumulator);
