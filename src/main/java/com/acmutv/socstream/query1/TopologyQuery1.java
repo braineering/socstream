@@ -96,6 +96,8 @@ public class TopologyQuery1 {
     // ENVIRONMENT
     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+    env.setParallelism(parallelism);
+
     final KafkaProperties kafkaProps = new KafkaProperties(kafkaBootstrap);
     final ESProperties elasticsearchProps = ESProperties.fromPropString(elasticsearch);
 
@@ -125,20 +127,21 @@ public class TopologyQuery1 {
         new RichSensorEventKafkaSource(kafkaTopic, kafkaProps, matchStart, matchEnd,
             matchIntervalStart, matchIntervalEnd, ignoredSensors, sid2Pid
         )
-    ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor());
+    ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor())
+    .setParallelism(parallelism);
 
     DataStream<PlayerRunningStatistics> statistics = sensorEvents.keyBy(new RichSensorEventKeyer())
         .timeWindow(Time.of(windowSize, windowUnit))
         .aggregate(new PlayerRunningStatisticsCalculatorAggregator(), new PlayerRunningStatisticsCalculatorWindowFunction())
         .setParallelism(parallelism);
 
-    statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
+    statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
 
-    if (elasticsearch != null) {
+    /*if (elasticsearch != null) {
       statistics.addSink(new ESSink<>(elasticsearchProps,
           new PlayerRunningStatisticsESSinkFunction(elasticsearchProps.getIndexName(), elasticsearchProps.getTypeName()))
       );
-    }
+    }*/
 
     // EXECUTION
     env.execute(PROGRAM_NAME);
