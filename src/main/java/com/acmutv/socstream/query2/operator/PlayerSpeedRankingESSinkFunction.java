@@ -94,7 +94,7 @@ public class PlayerSpeedRankingESSinkFunction implements ElasticsearchSinkFuncti
         ",\"tsStop\":" + value.getTsStop() +
         ",\"rank\":[" + rankJson + "]}";
 
-    LOG.debug("JSON: {}", json);
+    //LOG.debug("JSON: {}", json);
 
     return Requests.indexRequest()
         .index(this.indexName)

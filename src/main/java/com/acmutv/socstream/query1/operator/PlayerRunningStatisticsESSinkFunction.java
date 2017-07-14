@@ -88,7 +88,7 @@ public class PlayerRunningStatisticsESSinkFunction implements ElasticsearchSinkF
             ",\"totalDistance\":" + value.getTotalDistance() +
             ",\"averageSpeed\":" + value.getAverageSpeed() + "}";
 
-    LOG.debug("JSON: {}", json);
+    //LOG.debug("JSON: {}", json);
 
     return Requests.indexRequest()
         .index(this.indexName)

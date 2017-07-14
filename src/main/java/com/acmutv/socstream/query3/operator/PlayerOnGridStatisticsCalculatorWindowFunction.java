@@ -62,7 +62,7 @@ public class PlayerOnGridStatisticsCalculatorWindowFunction implements WindowFun
     stats.setPid(key);
     stats.setTsStart(window.getStart());
 
-    LOG.info("OUT: {}", stats);
+    //LOG.info("OUT: {}", stats);
 
     out.collect(stats);
   }

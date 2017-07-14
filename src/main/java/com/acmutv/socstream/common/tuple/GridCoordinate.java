@@ -118,9 +118,6 @@ public class GridCoordinate {
     }
     GridCoordinate gc = (GridCoordinate) obj;
 
-    if(this.x == gc.getX() && this.y == gc.getY())
-      return true;
-    else
-      return false;
+    return this.x == gc.getX() && this.y == gc.getY();
   }
 }
