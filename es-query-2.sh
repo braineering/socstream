@@ -9,9 +9,9 @@ ES_INDEX="socstream"
 ES_TYPE_NAME="query-2"
 ES_TYPE_SCHEMA="{
 	"properties": {
-		"wStart": {"type": "date"},
-		"wEnd":   {"type": "date"},
-		"rank":   {
+		"tsStart": {"type": "date"},
+		"tsStop":  {"type": "date"},
+		"rank":    {
 			"properties": {
                 "pid":          {"type": "long"},
                 "averageSpeed": {"type": "double"}

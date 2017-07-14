@@ -91,8 +91,8 @@ Create the Elasticsearch index `socstream` with mapping `query-1` and mapping sc
 
     {
         "properties": {
-            "wStart":        {"type": "date"},
-            "wEnd":          {"type": "date"},
+            "tsStart":       {"type": "date"},
+            "tsStop":        {"type": "date"},
             "pid":           {"type": "long"},
             "totalDistance": {"type": "double"},
             "averageSpeed":  {"type": "double"}
@@ -104,9 +104,9 @@ Create the Elasticsearch index `socstream` with mapping `query-2` and mapping sc
 
     {
         "properties": {
-            "wStart": {"type": "date"},
-            "wEnd":   {"type": "date"},
-            "rank":   {
+            "tsStart": {"type": "date"},
+            "tsStop":  {"type": "date"},
+            "rank":    {
                 "properties": {
                     "pid":          {"type": "long"},
                     "averageSpeed": {"type": "double"}
@@ -120,10 +120,9 @@ Create the Elasticsearch index `socstream` with mapping `query-2` and mapping sc
  
     {
         "properties": {
-            "wStart": {"type": "date"},
-            "wEnd":   {"type": "date"},
-            "pid":    {"type": "long"},
-            "cells":  {
+            "ts":      {"type": "date"},
+            "pid":     {"type": "long"},
+            "cells":   {
                 "properties": {
                     "cid":      {"type": "text"},
                     "presence": {"type": "double"}

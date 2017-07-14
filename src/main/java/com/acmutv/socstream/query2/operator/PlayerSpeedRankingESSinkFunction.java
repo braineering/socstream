@@ -85,8 +85,8 @@ public class PlayerSpeedRankingESSinkFunction implements ElasticsearchSinkFuncti
    */
   private IndexRequest createWindowWordRanking(PlayersSpeedRanking value) {
     Map<String,String> json = new HashMap<>();
-    json.put("wStart", String.valueOf(value.getTsStart()));
-    json.put("wEnd", String.valueOf(value.getTsStop()));
+    json.put("tsStart", String.valueOf(value.getTsStart()));
+    json.put("tsStop", String.valueOf(value.getTsStop()));
 
     String rankJson = value.getRank().stream()
         .map(e -> "{" + "\"pid\":" + e.getPid() + ",\"averageSpeed\":" + e.getAverageSpeed() + "}")
