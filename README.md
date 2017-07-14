@@ -12,6 +12,7 @@ The system needs to be provided with the following packages:
 * Hadoop = 2.8.0
 * Flink = 1.3.0 (scala 2.11)
 * Kafka >= 0.10.2.1
+* ElasticSearch >= 5.5.0
 
 and the following environment variables, pointing to the respective package home directory:
 * JAVA_HOME
