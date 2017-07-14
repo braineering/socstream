@@ -91,7 +91,7 @@ public class PlayerGridStatisticsESSinkFunction implements ElasticsearchSinkFunc
         ",\"pid\":" + value.getPid() +
         ",\"cells\":[" + cellsJson + "]}";
 
-    LOG.debug("JSON: {}", json);
+    //LOG.debug("JSON: {}", json);
 
     return Requests.indexRequest()
         .index(this.indexName)
