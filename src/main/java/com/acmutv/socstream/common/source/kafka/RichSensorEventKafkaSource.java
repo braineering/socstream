@@ -51,7 +51,7 @@ public class RichSensorEventKafkaSource extends FlinkKafkaConsumer010<RichSensor
   /**
    * The special tuple signaling the end of stream.
    */
-  public static final RichSensorEvent END_OF_STREAM = new RichSensorEvent(0, Long.MAX_VALUE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  public static final RichSensorEvent END_OF_STREAM = new RichSensorEvent(0, Long.MAX_VALUE, 0, 0, 0, 0, 0, 0, 0, 0);
 
   /**
    * Constructs a new Kafka source for sensor events with ignoring features.

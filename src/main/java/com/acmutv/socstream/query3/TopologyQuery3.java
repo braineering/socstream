@@ -134,11 +134,13 @@ public class TopologyQuery3 {
 
     statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
 
+    /*
     if (elasticsearch != null) {
       statistics.addSink(new ESSink<>(elasticsearchProps,
           new PlayerGridStatisticsESSinkFunction(elasticsearchProps.getIndexName(), elasticsearchProps.getTypeName()))
       );
     }
+    */
 
     // EXECUTION
     env.execute(PROGRAM_NAME);

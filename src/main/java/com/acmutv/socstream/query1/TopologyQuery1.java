@@ -33,7 +33,6 @@ import com.acmutv.socstream.common.source.kafka.KafkaProperties;
 import com.acmutv.socstream.common.source.kafka.RichSensorEventKafkaSource;
 import com.acmutv.socstream.common.meta.Match;
 import com.acmutv.socstream.common.meta.MatchService;
-import com.acmutv.socstream.common.source.kafka.RichSensorEventKafkaSource2;
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.query1.operator.*;
 import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
@@ -135,11 +134,13 @@ public class TopologyQuery1 {
 
     statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
 
-    /*if (elasticsearch != null) {
+    /*
+    if (elasticsearch != null) {
       statistics.addSink(new ESSink<>(elasticsearchProps,
           new PlayerRunningStatisticsESSinkFunction(elasticsearchProps.getIndexName(), elasticsearchProps.getTypeName()))
       );
-    }*/
+    }
+    */
 
     // EXECUTION
     env.execute(PROGRAM_NAME);

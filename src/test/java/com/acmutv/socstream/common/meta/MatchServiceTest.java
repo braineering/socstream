@@ -81,9 +81,6 @@ public class MatchServiceTest {
     expected.getTeamB().getPlayers().add(new Person("player-B-2", 23L, 24L, null, null));
     expected.getTeamB().getPlayers().add(new Person("player-B-3", 25L, 26L, null, null));
 
-
-    System.out.println(expected);
-    System.out.println(actual);
     Assert.assertEquals(expected, actual);
   }
 
@@ -108,9 +105,6 @@ public class MatchServiceTest {
     expected.add(10L);
     expected.add(19L);
     expected.add(20L);
-
-    System.out.println(expected);
-    System.out.println(actual);
 
     Assert.assertEquals(expected, actual);
   }

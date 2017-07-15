@@ -50,7 +50,7 @@ public class PositionSensorEventKafkaSource extends FlinkKafkaConsumer010<Positi
   /**
    * The special tuple signaling the end of stream.
    */
-  public static final PositionSensorEvent END_OF_STREAM = new PositionSensorEvent(0, Long.MAX_VALUE, 0, 0, 0);
+  public static final PositionSensorEvent END_OF_STREAM = new PositionSensorEvent(0, Long.MAX_VALUE, 0, 0);
 
   /**
    * Constructs a new Kafka source for sensor events with ignoring features.

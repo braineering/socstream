@@ -54,11 +54,6 @@ public class PositionSensorEventDeserializationSchema extends AbstractDeserializ
   private static final Logger LOG = LoggerFactory.getLogger(PositionSensorEventDeserializationSchema.class);
 
   /**
-   * The special tuple signaling the end of stream.
-   */
-  private static final PositionSensorEvent END_OF_STREAM = new PositionSensorEvent(0, Long.MAX_VALUE, 0, 0, 0);
-
-  /**
    * The starting timestamp (events before this will be ignored).
    */
   private Long tsStart;
@@ -113,7 +108,7 @@ public class PositionSensorEventDeserializationSchema extends AbstractDeserializ
     final String strEvent = new String(message);
 
     try {
-      event = PositionSensorEvent.valueOfAsSensorEvent(strEvent);
+      event = PositionSensorEvent.fromDataset(strEvent);
     } catch (IllegalArgumentException exc) {
       //LOG.warn("Malformed sensor event: {}", strEvent);
       return null;
