@@ -99,8 +99,8 @@ public class TopologyQuery1bis {
     // ENVIRONMENT
     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-    env.setParallelism(parallelism);
-    env.getConfig().enableForceAvro();
+    //env.setParallelism(parallelism);
+    //env.getConfig().enableForceAvro();
     final KafkaProperties kafkaProps = new KafkaProperties(kafkaBootstrap);
     final ESProperties elasticsearchProps = ESProperties.fromPropString(elasticsearch);
 
@@ -129,17 +129,19 @@ public class TopologyQuery1bis {
     DataStream<RichSensorEvent2> sensorEvents = env.addSource(
         new RichSensorEventKafkaSource2(kafkaTopic, kafkaProps, matchEnd
         )
-    );
+    ).setParallelism(1);
 
     DataStream<RichSensorEvent2> filteredSensorEvents = sensorEvents.filter(new RichSensorEventFilter(matchStart, matchEnd,
-        matchIntervalStart, matchIntervalEnd, ignoredSensors))
-        .assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor2());
+        matchIntervalStart, matchIntervalEnd, ignoredSensors)).setParallelism(parallelism)
+        .assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor2())
+        .setParallelism(parallelism);
 
     DataStream<PlayerRunningStatistics> statistics = filteredSensorEvents.keyBy(new RichSensorEventKeyer2(sid2Pid))
         .timeWindow(Time.of(windowSize, windowUnit))
-        .aggregate(new PlayerRunningStatisticsCalculatorAggregator2(), new PlayerRunningStatisticsCalculatorWindowFunction2());
+        .aggregate(new PlayerRunningStatisticsCalculatorAggregator2(), new PlayerRunningStatisticsCalculatorWindowFunction2())
+        .setParallelism(parallelism);
 
-    statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
+    statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
 
     /*
     if (elasticsearch != null) {

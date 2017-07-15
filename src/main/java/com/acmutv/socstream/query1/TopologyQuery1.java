@@ -126,7 +126,7 @@ public class TopologyQuery1 {
         new RichSensorEventKafkaSource(kafkaTopic, kafkaProps, matchStart, matchEnd,
             matchIntervalStart, matchIntervalEnd, ignoredSensors, sid2Pid
         )
-    ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor());
+    ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor()).setParallelism(parallelism);
 
     DataStream<PlayerRunningStatistics> statistics = sensorEvents.keyBy(new RichSensorEventKeyer())
         .timeWindow(Time.of(windowSize, windowUnit))
