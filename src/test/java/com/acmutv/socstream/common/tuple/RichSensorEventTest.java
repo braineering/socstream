@@ -49,19 +49,21 @@ public class RichSensorEventTest {
   private static final Logger LOG = LoggerFactory.getLogger(RichSensorEventTest.class);
 
   /**
-   * Tests serialization/deserialization of {@link RichSensorEvent}.
+   * Tests deserialization from dataset of {@link RichSensorEvent}.
    */
   @Test
-  public void test_serialize() throws Exception {
-    List<RichSensorEvent> sensorEvents = new ArrayList<>();
-    sensorEvents.add(new RichSensorEvent(1,2,3,4,5,6,7,8,9,10,11,12,13));
-    sensorEvents.add(new RichSensorEvent(2,2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13));
+  public void test_fromDataset() throws Exception {
+    List<String> events = new ArrayList<>();
+    events.add("1,2,3,4,5,6,7,8,9,10,11,12,13");
+    events.add("1,2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13");
 
-    for (RichSensorEvent expected : sensorEvents) {
-      LOG.debug("RichSensorEvent serialized: " + expected);
-      String str = expected.toString();
-      RichSensorEvent actual = RichSensorEvent.valueOf(str);
-      Assert.assertEquals(expected, actual);
+    List<RichSensorEvent> expected = new ArrayList<>();
+    expected.add(new RichSensorEvent(1,2,3,4,6,7,8,9,11,12));
+    expected.add(new RichSensorEvent(1,2,-3,-4,-6,-7,-8,-9,-11,-12));
+
+    for (int i = 0; i < events.size(); i++) {
+      RichSensorEvent actual = RichSensorEvent.fromDataset(events.get(i));
+      Assert.assertEquals(expected.get(i), actual);
     }
   }
 }

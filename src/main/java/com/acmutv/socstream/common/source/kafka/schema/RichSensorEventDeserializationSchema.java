@@ -108,7 +108,7 @@ public class RichSensorEventDeserializationSchema extends AbstractDeserializatio
     final String strEvent = new String(message);
 
     try {
-      event = RichSensorEvent.valueOf(strEvent);
+      event = RichSensorEvent.fromDataset(strEvent);
     } catch (IllegalArgumentException exc) {
       //LOG.warn("Malformed sensor event: {}", strEvent);
       return null;

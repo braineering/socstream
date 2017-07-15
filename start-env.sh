@@ -38,6 +38,6 @@ ${SOCSTREAM_HOME}/env/systemd/kafka-manager.sh start
 ##
 # ELASTICSEARCH
 ##
-${SOCSTREAM_HOME}/env/systemd/elasticsearch-manager.sh start
+#${SOCSTREAM_HOME}/env/systemd/elasticsearch-manager.sh start
 
 exit 0

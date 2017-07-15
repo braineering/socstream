@@ -49,33 +49,21 @@ public class PositionSensorEventTest {
   private static final Logger LOG = LoggerFactory.getLogger(PositionSensorEventTest.class);
 
   /**
-   * Tests serialization/deserialization of {@link PositionSensorEvent}.
+   * Tests deserialization from dataset of {@link PositionSensorEvent}.
    */
   @Test
-  public void test_serialize() throws Exception {
-    List<PositionSensorEvent> sensorEvents = new ArrayList<>();
-    sensorEvents.add(new PositionSensorEvent(1,2,3,4,5));
-    sensorEvents.add(new PositionSensorEvent(2,2,-3,-4,-5));
+  public void test_fromDataset() throws Exception {
+    List<String> events = new ArrayList<>();
+    events.add("1,2,3,4,5,6,7,8,9,10,11,12,13");
+    events.add("1,2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13");
 
-    for (PositionSensorEvent expected : sensorEvents) {
-      LOG.debug("PositionSensorEvent serialized: " + expected);
-      String str = expected.toString();
-      PositionSensorEvent actual = PositionSensorEvent.valueOf(str);
-      Assert.assertEquals(expected, actual);
+    List<PositionSensorEvent> expected = new ArrayList<>();
+    expected.add(new PositionSensorEvent(1,2,3,4));
+    expected.add(new PositionSensorEvent(1,2,-3,-4));
+
+    for (int i = 0; i < events.size(); i++) {
+      PositionSensorEvent actual = PositionSensorEvent.fromDataset(events.get(i));
+      Assert.assertEquals(expected.get(i), actual);
     }
-  }
-
-  /**
-   * Tests deserialization of {@link PositionSensorEvent} from a string representing a {@link RichSensorEvent}.
-   */
-  @Test
-  public void test_valueOfAsSensorEvent() throws Exception {
-    RichSensorEvent sensorEvent = new RichSensorEvent(1,2,3,4,5,6,7,8,9,10,11,12,13);
-
-    PositionSensorEvent actual = PositionSensorEvent.valueOfAsSensorEvent(sensorEvent.toString());
-
-    PositionSensorEvent expected = new PositionSensorEvent(1, 2, 3, 4, 5);
-
-    Assert.assertEquals(expected, actual);
   }
 }

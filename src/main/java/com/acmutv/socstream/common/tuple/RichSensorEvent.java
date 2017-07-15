@@ -46,13 +46,26 @@ public class RichSensorEvent extends PositionSensorEvent implements Serializable
   /**
    * The regular expression
    */
+  /*
   private static final String REGEXP =
-      "^(\\d+),(\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+)$";
-
+      "^(\\d+),(\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+)$";
+  */
   /**
    * The pattern matcher used to match strings on {@code REGEXP}.
    */
-  public static final Pattern PATTERN = Pattern.compile(REGEXP);
+  //public static final Pattern PATTERN = Pattern.compile(REGEXP);
+
+  /**
+   * The regular expression
+   */
+  /*
+  private static final String REGEXP_COMPLETE =
+      "^(\\d+),(\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+)$";
+  */
+  /**
+   * The pattern matcher used to match strings on {@code REGEXP}.
+   */
+  //public static final Pattern PATTERN_COMPLETE = Pattern.compile(REGEXP_COMPLETE);
 
   /**
    * The sensor speed magnitude (um/s).
@@ -75,11 +88,6 @@ public class RichSensorEvent extends PositionSensorEvent implements Serializable
   private long vy;
 
   /**
-   * The sensor speed z-coordinate (mm).
-   */
-  private long vz;
-
-  /**
    * The sensor acceleration x-coordinate (mm).
    */
   private long ax;
@@ -89,26 +97,19 @@ public class RichSensorEvent extends PositionSensorEvent implements Serializable
    */
   private long ay;
 
-  /**
-   * The sensor acceleration z-coordinate (mm).
-   */
-  private long az;
-
 
   public RichSensorEvent(long id, long ts,
-                         long x, long y, long z,
+                         long x, long y,
                          long v, long a,
-                         long vx, long vy, long vz,
-                         long ax, long ay, long az) {
-    super(id, ts, x, y, z);
+                         long vx, long vy,
+                         long ax, long ay) {
+    super(id, ts, x, y);
     this.v = v;
     this.a = a;
     this.vx = vx;
     this.vy = vy;
-    this.vz = vz;
     this.ax = ax;
     this.ay = ay;
-    this.az = az;
   }
 
   /**
@@ -125,6 +126,7 @@ public class RichSensorEvent extends PositionSensorEvent implements Serializable
    * @return the parsed {@link RichSensorEvent}.
    * @throws IllegalArgumentException when {@code string} cannot be parsed.
    */
+  /*
   public static RichSensorEvent valueOf(String string) throws IllegalArgumentException {
     if (string == null) throw new IllegalArgumentException();
     Matcher matcher = PATTERN.matcher(string);
@@ -133,24 +135,99 @@ public class RichSensorEvent extends PositionSensorEvent implements Serializable
     long ts = Long.valueOf(matcher.group(2));
     long x = Long.valueOf(matcher.group(3));
     long y = Long.valueOf(matcher.group(4));
-    long z = Long.valueOf(matcher.group(5));
+    long v = Long.valueOf(matcher.group(5));
+    long a = Long.valueOf(matcher.group(6));
+    long vx = Long.valueOf(matcher.group(7));
+    long vy = Long.valueOf(matcher.group(8));
+    long ax = Long.valueOf(matcher.group(9));
+    long ay = Long.valueOf(matcher.group(10));
+    return new RichSensorEvent(id, ts, x, y, v, a, vx, vy, ax, ay);
+  }
+  */
+
+  /**
+   * Parses {@link RichSensorEvent} from string.
+   * @param string the string to parse.
+   * @return the parsed {@link RichSensorEvent}.
+   * @throws IllegalArgumentException when {@code string} cannot be parsed.
+   */
+  /*
+  public static RichSensorEvent valueOfComplete(String string) throws IllegalArgumentException {
+    if (string == null) throw new IllegalArgumentException();
+    Matcher matcher = PATTERN_COMPLETE.matcher(string);
+    if (!matcher.matches()) throw new IllegalArgumentException(string);
+    long id = Long.valueOf(matcher.group(1));
+    long ts = Long.valueOf(matcher.group(2));
+    long x = Long.valueOf(matcher.group(3));
+    long y = Long.valueOf(matcher.group(4));
     long v = Long.valueOf(matcher.group(6));
     long a = Long.valueOf(matcher.group(7));
     long vx = Long.valueOf(matcher.group(8));
     long vy = Long.valueOf(matcher.group(9));
-    long vz = Long.valueOf(matcher.group(10));
     long ax = Long.valueOf(matcher.group(11));
     long ay = Long.valueOf(matcher.group(12));
-    long az = Long.valueOf(matcher.group(13));
-    return new RichSensorEvent(id, ts, x, y, z, v, a, vx, vy, vz, ax, ay, az);
+    return new RichSensorEvent(id, ts, x, y, v, a, vx, vy, ax, ay);
   }
+  */
+
+  /**
+   * Parses {@link RichSensorEvent} from string.
+   * @param string the string to parse.
+   * @return the parsed {@link RichSensorEvent}.
+   * @throws IllegalArgumentException when {@code string} cannot be parsed.
+   */
+  /*
+  public static RichSensorEvent valueOfCompleteFast(String string) throws IllegalArgumentException {
+    String fields[] = string.split(",");
+    if (fields.length != 5) {
+      throw new IllegalArgumentException();
+    }
+    long id = Long.valueOf(fields[0]);
+    long ts = Long.valueOf(fields[1]);
+    long x = Long.valueOf(fields[2]);
+    long y = Long.valueOf(fields[3]);
+    if (string == null) throw new IllegalArgumentException();
+    Matcher matcher = PATTERN_COMPLETE.matcher(string);
+    if (!matcher.matches()) throw new IllegalArgumentException(string);
+    long id = Long.valueOf(matcher.group(1));
+    long ts = Long.valueOf(matcher.group(2));
+    long x = Long.valueOf(matcher.group(3));
+    long y = Long.valueOf(matcher.group(4));
+    long v = Long.valueOf(matcher.group(6));
+    long a = Long.valueOf(matcher.group(7));
+    long vx = Long.valueOf(matcher.group(8));
+    long vy = Long.valueOf(matcher.group(9));
+    long ax = Long.valueOf(matcher.group(11));
+    long ay = Long.valueOf(matcher.group(12));
+    return new RichSensorEvent(id, ts, x, y, v, a, vx, vy, ax, ay);
+  }
+  */
+
+  public static RichSensorEvent fromDataset(String string) throws IllegalArgumentException {
+    String fields[] = string.split(",");
+    if (fields.length != 13) {
+      throw new IllegalArgumentException();
+    }
+    long id = Long.valueOf(fields[0]);
+    long ts = Long.valueOf(fields[1]);
+    long x = Long.valueOf(fields[2]);
+    long y = Long.valueOf(fields[3]);
+    long v = Long.valueOf(fields[5]);
+    long a = Long.valueOf(fields[6]);
+    long vx = Long.valueOf(fields[7]);
+    long vy = Long.valueOf(fields[8]);
+    long ax = Long.valueOf(fields[10]);
+    long ay = Long.valueOf(fields[11]);
+    return new RichSensorEvent(id, ts, x, y, v, a, vx, vy, ax, ay);
+  }
+
 
   @Override
   public String toString() {
-    return String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
-        super.getId(), super.getTs(), super.getX(), super.getY(), super.getZ(),
+    return String.format("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
+        super.getId(), super.getTs(), super.getX(), super.getY(),
         this.v, this.a,
-        this.vx, this.vy, this.vz,
-        this.ax, this.ay, this.az);
+        this.vx, this.vy,
+        this.ax, this.ay);
   }
 }
