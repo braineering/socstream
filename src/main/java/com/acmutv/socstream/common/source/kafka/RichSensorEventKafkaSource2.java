@@ -51,6 +51,11 @@ public class RichSensorEventKafkaSource2 extends FlinkKafkaConsumer010<RichSenso
   private static final Logger LOG = LoggerFactory.getLogger(RichSensorEventKafkaSource2.class);
 
   /**
+   * The special tuple signaling the end of stream.
+   */
+  public static final RichSensorEvent2 END_OF_STREAM = new RichSensorEvent2(0, Long.MAX_VALUE, 0, 0, 0, 0, 0, 0, 0, 0);
+
+  /**
    * Constructs a new Kafka source for sensor events with ignoring features.
    *
    * @param topic Kafka topics.
@@ -60,6 +65,6 @@ public class RichSensorEventKafkaSource2 extends FlinkKafkaConsumer010<RichSenso
   public RichSensorEventKafkaSource2(String topic, Properties props,
                                      long tsEnd) {
     super(topic, new RichSensorEventDeserializationSchema2(
-        tsEnd), props);
+        tsEnd, END_OF_STREAM), props);
   }
 }

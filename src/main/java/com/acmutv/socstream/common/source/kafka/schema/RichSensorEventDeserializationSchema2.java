@@ -60,6 +60,11 @@ public class RichSensorEventDeserializationSchema2 extends AbstractDeserializati
   private long tsEnd;
 
   /**
+   * The tuple signaling the end of stream.
+   */
+  private RichSensorEvent2 eos;
+
+  /**
    * Creates a new deserialization schema.
    */
   public RichSensorEventDeserializationSchema2() {
@@ -83,6 +88,10 @@ public class RichSensorEventDeserializationSchema2 extends AbstractDeserializati
     } catch (IllegalArgumentException exc) {
       //LOG.warn("Malformed sensor event: {}", strEvent);
       return null;
+    }
+
+    if (event.getTs() > this.getTsEnd()) {
+      return this.eos;
     }
 
     //LOG.info("Emitting event: {}", event);

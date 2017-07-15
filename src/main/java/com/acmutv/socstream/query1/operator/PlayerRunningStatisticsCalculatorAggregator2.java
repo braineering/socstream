@@ -30,6 +30,7 @@ import com.acmutv.socstream.common.tuple.RichSensorEvent2;
 import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.tool.physics.PhysicsUtil;
 import org.apache.flink.api.common.functions.AggregateFunction;
+import org.apache.flink.api.common.functions.RichAggregateFunction;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -100,6 +100,7 @@ public class TopologyQuery1bis {
     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
     env.setParallelism(parallelism);
+    env.getConfig().enableForceAvro();
     final KafkaProperties kafkaProps = new KafkaProperties(kafkaBootstrap);
     final ESProperties elasticsearchProps = ESProperties.fromPropString(elasticsearch);
 
