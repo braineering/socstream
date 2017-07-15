@@ -27,14 +27,15 @@
 package com.acmutv.socstream.query1;
 
 import com.acmutv.socstream.common.keyer.RichSensorEventKeyer;
+import com.acmutv.socstream.common.keyer.RichSensorEventKeyer2;
+import com.acmutv.socstream.common.meta.Match;
+import com.acmutv.socstream.common.meta.MatchService;
 import com.acmutv.socstream.common.sink.es.ESProperties;
 import com.acmutv.socstream.common.sink.es.ESSink;
 import com.acmutv.socstream.common.source.kafka.KafkaProperties;
-import com.acmutv.socstream.common.source.kafka.RichSensorEventKafkaSource;
-import com.acmutv.socstream.common.meta.Match;
-import com.acmutv.socstream.common.meta.MatchService;
 import com.acmutv.socstream.common.source.kafka.RichSensorEventKafkaSource2;
 import com.acmutv.socstream.common.tuple.RichSensorEvent;
+import com.acmutv.socstream.common.tuple.RichSensorEvent2;
 import com.acmutv.socstream.query1.operator.*;
 import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;
@@ -47,7 +48,8 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -57,12 +59,12 @@ import java.util.concurrent.TimeUnit;
  * @since 1.0
  * @see RuntimeManager
  */
-public class TopologyQuery1 {
+public class TopologyQuery1bis {
 
   /**
    * The program name.
    */
-  public static final String PROGRAM_NAME = "query-1";
+  public static final String PROGRAM_NAME = "query-1bis";
 
   /**
    * The program description.
@@ -97,6 +99,8 @@ public class TopologyQuery1 {
     // ENVIRONMENT
     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+    env.setParallelism(parallelism);
+    env.getConfig().enableForceAvro();
     final KafkaProperties kafkaProps = new KafkaProperties(kafkaBootstrap);
     final ESProperties elasticsearchProps = ESProperties.fromPropString(elasticsearch);
 
@@ -122,24 +126,28 @@ public class TopologyQuery1 {
     System.out.println("############################################################################");
 
     // TOPOLOGY
-    DataStream<RichSensorEvent> sensorEvents = env.addSource(
-        new RichSensorEventKafkaSource(kafkaTopic, kafkaProps, matchStart, matchEnd,
-            matchIntervalStart, matchIntervalEnd, ignoredSensors, sid2Pid
+    DataStream<RichSensorEvent2> sensorEvents = env.addSource(
+        new RichSensorEventKafkaSource2(kafkaTopic, kafkaProps, matchEnd
         )
-    ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor());
+    );
 
-    DataStream<PlayerRunningStatistics> statistics = sensorEvents.keyBy(new RichSensorEventKeyer())
+    DataStream<RichSensorEvent2> filteredSensorEvents = sensorEvents.filter(new RichSensorEventFilter(matchStart, matchEnd,
+        matchIntervalStart, matchIntervalEnd, ignoredSensors))
+        .assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor2());
+
+    DataStream<PlayerRunningStatistics> statistics = filteredSensorEvents.keyBy(new RichSensorEventKeyer2(sid2Pid))
         .timeWindow(Time.of(windowSize, windowUnit))
-        .aggregate(new PlayerRunningStatisticsCalculatorAggregator(), new PlayerRunningStatisticsCalculatorWindowFunction())
-        .setParallelism(parallelism);
+        .aggregate(new PlayerRunningStatisticsCalculatorAggregator2(), new PlayerRunningStatisticsCalculatorWindowFunction2());
 
-    statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
+    statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
 
-    /*if (elasticsearch != null) {
+    /*
+    if (elasticsearch != null) {
       statistics.addSink(new ESSink<>(elasticsearchProps,
           new PlayerRunningStatisticsESSinkFunction(elasticsearchProps.getIndexName(), elasticsearchProps.getTypeName()))
       );
-    }*/
+    }
+    */
 
     // EXECUTION
     env.execute(PROGRAM_NAME);
