@@ -8,9 +8,9 @@ start)  echo "[kafka-manager] starting kafka..."
         echo "[kafka-manager] kafka started"
         ;;
 stop)   echo "[kafka-manager] stopping kafka..."
-        sudo ${KAFKA_HOME}/bin/kafka-server-stop.sh
-	    sudo ${KAFKA_HOME}/bin/zookeeper-server-stop.sh
-	    sudo ${KAFKA_HOME}/bin/zookeeper-server-stop.sh
+        ${KAFKA_HOME}/bin/kafka-server-stop.sh
+	    ${KAFKA_HOME}/bin/zookeeper-server-stop.sh
+	    ${KAFKA_HOME}/bin/zookeeper-server-stop.sh
         echo "[kafka-manager] kafka stopped"
         ;;
 restart) echo "[kafka-manager] restarting kafka..."
