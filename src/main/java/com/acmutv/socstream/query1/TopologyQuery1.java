@@ -96,8 +96,6 @@ public class TopologyQuery1 {
     // ENVIRONMENT
     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-    env.setParallelism(parallelism);
-
     final KafkaProperties kafkaProps = new KafkaProperties(kafkaBootstrap);
     final ESProperties elasticsearchProps = ESProperties.fromPropString(elasticsearch);
 
@@ -127,8 +125,7 @@ public class TopologyQuery1 {
         new RichSensorEventKafkaSource(kafkaTopic, kafkaProps, matchStart, matchEnd,
             matchIntervalStart, matchIntervalEnd, ignoredSensors, sid2Pid
         )
-    ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor())
-    .setParallelism(parallelism);
+    ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor());
 
     DataStream<PlayerRunningStatistics> statistics = sensorEvents.keyBy(new RichSensorEventKeyer())
         .timeWindow(Time.of(windowSize, windowUnit))
