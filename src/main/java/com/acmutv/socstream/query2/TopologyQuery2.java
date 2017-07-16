@@ -144,13 +144,11 @@ public class TopologyQuery2 {
 
     ranking.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
 
-    /*
     if (elasticsearch != null) {
       ranking.addSink(new ESSink<>(elasticsearchProps,
           new PlayerSpeedRankingESSinkFunction(elasticsearchProps.getIndexName(), elasticsearchProps.getTypeName()))
-      );
+      ).setParallelism(1);
     }
-    */
 
     // EXECUTION
     env.execute(PROGRAM_NAME);
