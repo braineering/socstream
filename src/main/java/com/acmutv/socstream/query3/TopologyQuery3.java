@@ -125,14 +125,14 @@ public class TopologyQuery3 {
     DataStream<PositionSensorEvent> sensorEvents = env.addSource(
         new PositionSensorEventKafkaSource(kafkaTopic, kafkaProps, matchStart, matchEnd,
             matchIntervalStart, matchIntervalEnd, ignoredSensors, sid2Pid
-        ).assignTimestampsAndWatermarks(new PositionSensorEventTimestampExtractor()));
+        ).assignTimestampsAndWatermarks(new PositionSensorEventTimestampExtractor())).setParallelism(1);
 
     DataStream<PlayerGridStatistics> statistics = sensorEvents.keyBy(new PositionSensorEventKeyer())
         .timeWindow(Time.of(windowSize, windowUnit))
         .aggregate(new PlayerOnGridStatisticsCalculatorAggregator(), new PlayerOnGridStatisticsCalculatorWindowFunction())
         .setParallelism(parallelism);
 
-    statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
+    statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
 
     /*
     if (elasticsearch != null) {

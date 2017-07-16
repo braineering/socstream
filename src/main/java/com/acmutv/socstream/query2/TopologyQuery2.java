@@ -132,7 +132,7 @@ public class TopologyQuery2 {
         new RichSensorEventKafkaSource(kafkaTopic, kafkaProps, matchStart, matchEnd,
             matchIntervalStart, matchIntervalEnd, ignoredSensors, sid2Pid
         )
-    ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor());
+    ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor()).setParallelism(parallelism);
 
     DataStream<PlayerSpeedStatistics> statistics = sensorEvents.keyBy(new RichSensorEventKeyer())
         .timeWindow(Time.of(windowSize, windowUnit))
@@ -142,7 +142,7 @@ public class TopologyQuery2 {
     DataStream<PlayersSpeedRanking> ranking = statistics.timeWindowAll(Time.of(windowSize, windowUnit))
         .apply(new GlobalRankerWindowFunction(rankSize));
 
-    ranking.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE);
+    ranking.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
 
     /*
     if (elasticsearch != null) {
