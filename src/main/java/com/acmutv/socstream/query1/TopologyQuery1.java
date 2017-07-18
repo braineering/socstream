@@ -26,14 +26,14 @@
 
 package com.acmutv.socstream.query1;
 
-import com.acmutv.socstream.common.keyer.RichSensorEventKeyer;
+import com.acmutv.socstream.common.tuple.RichSensorEvent;
+import com.acmutv.socstream.query1.operator.RichSensorEventKeyer;
 import com.acmutv.socstream.common.sink.es.ESProperties;
 import com.acmutv.socstream.common.sink.es.ESSink;
 import com.acmutv.socstream.common.source.kafka.KafkaProperties;
 import com.acmutv.socstream.common.source.kafka.RichSensorEventKafkaSource;
 import com.acmutv.socstream.common.meta.Match;
 import com.acmutv.socstream.common.meta.MatchService;
-import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import com.acmutv.socstream.query1.operator.*;
 import com.acmutv.socstream.query1.tuple.PlayerRunningStatistics;
 import com.acmutv.socstream.tool.runtime.RuntimeManager;

@@ -42,30 +42,6 @@ import java.util.regex.Pattern;
 public class PositionSensorEvent implements Serializable {
 
   /**
-   * The regular expression
-   */
-  /*
-  private static final String REGEXP =
-      "^(\\d+),(\\d+),(-?\\d+),(-?\\d+)$";
-  */
-  /**
-   * The pattern matcher used to match strings on {@code REGEXP}.
-   */
-  //public static final Pattern PATTERN = Pattern.compile(REGEXP);
-
-  /**
-   * The regular expression
-   */
-  /*
-  private static final String REGEXP_COMPLETE =
-      "^(\\d+),(\\d+),(-?\\d+),(-?\\d+),(-?\\d+)$";
-  */
-  /**
-   * The pattern matcher used to match strings on {@code REGEXP}.
-   */
-  //public static final Pattern PATTERN_COMPLETE = Pattern.compile(REGEXP_COMPLETE);
-
-  /**
    * The SID or PID.
    */
   private long id;
@@ -99,64 +75,6 @@ public class PositionSensorEvent implements Serializable {
    * This constructor is mandatory for Flink serialization.
    */
   public PositionSensorEvent(){}
-
-  /**
-   * Parses {@link PositionSensorEvent} from string.
-   * @param string the string to parse.
-   * @return the parsed {@link PositionSensorEvent}.
-   * @throws IllegalArgumentException when {@code string} cannot be parsed.
-   */
-  /*
-  public static PositionSensorEvent valueOf(String string) throws IllegalArgumentException {
-    if (string == null) throw new IllegalArgumentException();
-    Matcher matcher = PATTERN.matcher(string);
-    if (!matcher.matches()) throw new IllegalArgumentException(string);
-    long id = Long.valueOf(matcher.group(1));
-    long ts = Long.valueOf(matcher.group(2));
-    long x = Long.valueOf(matcher.group(3));
-    long y = Long.valueOf(matcher.group(4));
-    return new PositionSensorEvent(id, ts, x, y);
-  }
-  */
-
-  /**
-   * Parses {@link PositionSensorEvent} from string.
-   * @param string the string to parse.
-   * @return the parsed {@link PositionSensorEvent}.
-   * @throws IllegalArgumentException when {@code string} cannot be parsed.
-   */
-  /*
-  public static PositionSensorEvent valueOfComplete(String string) throws IllegalArgumentException {
-    if (string == null) throw new IllegalArgumentException();
-    Matcher matcher = PATTERN_COMPLETE.matcher(string);
-    if (!matcher.matches()) throw new IllegalArgumentException(string);
-    long id = Long.valueOf(matcher.group(1));
-    long ts = Long.valueOf(matcher.group(2));
-    long x = Long.valueOf(matcher.group(3));
-    long y = Long.valueOf(matcher.group(4));
-    return new PositionSensorEvent(id, ts, x, y);
-  }
-  */
-
-  /**
-   * Parses {@link PositionSensorEvent} from string.
-   * @param string the string to parse.
-   * @return the parsed {@link PositionSensorEvent}.
-   * @throws IllegalArgumentException when {@code string} cannot be parsed.
-   */
-  /*
-  public static PositionSensorEvent valueOfCompleteFast(String string) throws IllegalArgumentException {
-    String fields[] = string.split(",");
-    if (fields.length != 5) {
-      throw new IllegalArgumentException();
-    }
-    long id = Long.valueOf(fields[0]);
-    long ts = Long.valueOf(fields[1]);
-    long x = Long.valueOf(fields[2]);
-    long y = Long.valueOf(fields[3]);
-    return new PositionSensorEvent(id, ts, x, y);
-  }
-  */
 
   public static PositionSensorEvent fromDataset(String string) throws IllegalArgumentException {
     String fields[] = string.split(",");

@@ -26,15 +26,13 @@
 
 package com.acmutv.socstream.query2;
 
-import com.acmutv.socstream.common.keyer.RichSensorEventKeyer;
 import com.acmutv.socstream.common.sink.es.ESProperties;
 import com.acmutv.socstream.common.sink.es.ESSink;
 import com.acmutv.socstream.common.source.kafka.KafkaProperties;
-import com.acmutv.socstream.common.source.kafka.RichSensorEventKafkaSource;
 import com.acmutv.socstream.common.meta.Match;
 import com.acmutv.socstream.common.meta.MatchService;
-import com.acmutv.socstream.common.tuple.RichSensorEvent;
-import com.acmutv.socstream.query1.operator.RichSensorEventTimestampExtractor;
+import com.acmutv.socstream.common.source.kafka.SpeedSensorEventKafkaSource;
+import com.acmutv.socstream.query2.tuple.SpeedSensorEvent;
 import com.acmutv.socstream.query2.operator.*;
 import com.acmutv.socstream.query2.tuple.PlayerSpeedStatistics;
 import com.acmutv.socstream.query2.tuple.PlayersSpeedRanking;
@@ -43,7 +41,6 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
@@ -128,13 +125,13 @@ public class TopologyQuery2 {
     System.out.println("############################################################################");
 
     // TOPOLOGY
-    DataStream<RichSensorEvent> sensorEvents = env.addSource(
-        new RichSensorEventKafkaSource(kafkaTopic, kafkaProps, matchStart, matchEnd,
+    DataStream<SpeedSensorEvent> sensorEvents = env.addSource(
+        new SpeedSensorEventKafkaSource(kafkaTopic, kafkaProps, matchStart, matchEnd,
             matchIntervalStart, matchIntervalEnd, ignoredSensors, sid2Pid
         )
-    ).assignTimestampsAndWatermarks(new RichSensorEventTimestampExtractor()).setParallelism(parallelism);
+    ).assignTimestampsAndWatermarks(new SpeedSensorEventTimestampExtractor()).setParallelism(parallelism);
 
-    DataStream<PlayerSpeedStatistics> statistics = sensorEvents.keyBy(new RichSensorEventKeyer())
+    DataStream<PlayerSpeedStatistics> statistics = sensorEvents.keyBy(new SpeedSensorEventKeyer())
         .timeWindow(Time.of(windowSize, windowUnit))
         .aggregate(new PlayerSpeedStatisticsCalculatorAggregator(), new PlayerSpeedStatisticsCalculatorWindowFunction())
         .setParallelism(parallelism);

@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,47 +23,49 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
-package com.acmutv.socstream.common.keyer;
+
+package com.acmutv.socstream.core.query3.tuple;
 
 import com.acmutv.socstream.common.tuple.PositionSensorEvent;
-import org.apache.flink.api.java.functions.KeySelector;
+import com.acmutv.socstream.common.tuple.RichSensorEvent;
+import org.junit.Assert;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * A keyselector that used the player id (PID) as key of a position sensor event.
- *
+ * JUnit test suite for {@link RichSensorEvent}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
+ * @see RichSensorEvent
  */
-public class PositionSensorEventKeyer implements KeySelector<PositionSensorEvent,Long> {
+public class PositionSensorEventTest {
 
   /**
-   * User-defined function that extracts the key from an arbitrary object.
-   * <p>
-   * For example for a class:
-   * <pre>
-   * 	public class Word {
-   * 		String word;
-   * 		int count;
-   *    }
-   * </pre>
-   * The key extractor could return the word as
-   * a key to group all Word objects by the String they contain.
-   * <p>
-   * The code would look like this
-   * <pre>
-   * 	public String getKey(Word w) {
-   * 		return w.word;
-   *  }
-   * </pre>
-   *
-   * @param value The object to get the key from.
-   * @return The extracted key.
-   * @throws Exception Throwing an exception will cause the execution of the respective task to fail,
-   *                   and trigger recovery or cancellation of the program.
+   * The logger.
    */
-  @Override
-  public Long getKey(PositionSensorEvent value) throws Exception {
-    return value.getId();
+  private static final Logger LOG = LoggerFactory.getLogger(PositionSensorEventTest.class);
+
+  /**
+   * Tests deserialization from dataset of {@link PositionSensorEvent}.
+   */
+  @Test
+  public void test_fromDataset() throws Exception {
+    List<String> events = new ArrayList<>();
+    events.add("1,2,3,4,5,6,7,8,9,10,11,12,13");
+    events.add("1,2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13");
+
+    List<PositionSensorEvent> expected = new ArrayList<>();
+    expected.add(new PositionSensorEvent(1,2,3,4));
+    expected.add(new PositionSensorEvent(1,2,-3,-4));
+
+    for (int i = 0; i < events.size(); i++) {
+      PositionSensorEvent actual = PositionSensorEvent.fromDataset(events.get(i));
+      Assert.assertEquals(expected.get(i), actual);
+    }
   }
 }

@@ -26,6 +26,7 @@
 package com.acmutv.socstream.common.sink.es;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -41,6 +42,7 @@ import java.util.List;
  * @since 1.0
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class ESProperties extends HashMap<String,String> {
 
   public static final String CLUSTER_NAME = "cluster.name";

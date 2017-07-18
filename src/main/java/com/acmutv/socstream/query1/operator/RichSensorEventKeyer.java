@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,25 +23,47 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
+package com.acmutv.socstream.query1.operator;
 
-package com.acmutv.socstream.core.query3.tuple;
-
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import com.acmutv.socstream.common.tuple.RichSensorEvent;
+import org.apache.flink.api.java.functions.KeySelector;
 
 /**
- * JUnit test suite for tuples related to query1.
+ * A keyselector that used the player id (PID) as key of a sensor event.
+ *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see PositionSensorEventTest
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        GridCoordinateTest.class,
-        PlayerGridStatisticsTest.class,
-        ComputeCellTest.class,
-        PositionSensorEventTest.class
-})
-public class TestAllQuery3Tuple {
+public class RichSensorEventKeyer implements KeySelector<RichSensorEvent,Long> {
+
+  /**
+   * User-defined function that extracts the key from an arbitrary object.
+   * <p>
+   * For example for a class:
+   * <pre>
+   * 	public class Word {
+   * 		String word;
+   * 		int count;
+   *    }
+   * </pre>
+   * The key extractor could return the word as
+   * a key to group all Word objects by the String they contain.
+   * <p>
+   * The code would look like this
+   * <pre>
+   * 	public String getKey(Word w) {
+   * 		return w.word;
+   *  }
+   * </pre>
+   *
+   * @param value The object to get the key from.
+   * @return The extracted key.
+   * @throws Exception Throwing an exception will cause the execution of the respective task to fail,
+   *                   and trigger recovery or cancellation of the program.
+   */
+  @Override
+  public Long getKey(RichSensorEvent value) throws Exception {
+    return value.getId();
+  }
 }

@@ -1,7 +1,7 @@
 /*
   The MIT License (MIT)
 
-  Copyright (c) 2016 Giacomo Marciani and Michele Porretta
+  Copyright (c) 2017 Giacomo Marciani and Michele Porretta
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -23,47 +23,34 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
+package com.acmutv.socstream.query2.operator;
 
-package com.acmutv.socstream.common.tuple;
-
-import org.junit.Assert;
-import org.junit.Test;
+import com.acmutv.socstream.query2.tuple.SpeedSensorEvent;
+import org.apache.flink.streaming.api.functions.timestamps.AscendingTimestampExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * JUnit test suite for {@link RichSensorEvent}.
+ * The operator extracts the event timestamp.
+ *
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see RichSensorEvent
  */
-public class RichSensorEventTest {
+public class SpeedSensorEventTimestampExtractor extends AscendingTimestampExtractor<SpeedSensorEvent> {
 
   /**
    * The logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(RichSensorEventTest.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SpeedSensorEventTimestampExtractor.class);
 
   /**
-   * Tests deserialization from dataset of {@link RichSensorEvent}.
+   * The factor for pico to milli conversion.
    */
-  @Test
-  public void test_fromDataset() throws Exception {
-    List<String> events = new ArrayList<>();
-    events.add("1,2,3,4,5,6,7,8,9,10,11,12,13");
-    events.add("1,2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13");
+  private static final double PICO_TO_MILLI = Math.pow(10, -9);
 
-    List<RichSensorEvent> expected = new ArrayList<>();
-    expected.add(new RichSensorEvent(1,2,3,4,6,7,8,9,11,12));
-    expected.add(new RichSensorEvent(1,2,-3,-4,-6,-7,-8,-9,-11,-12));
-
-    for (int i = 0; i < events.size(); i++) {
-      RichSensorEvent actual = RichSensorEvent.fromDataset(events.get(i));
-      Assert.assertEquals(expected.get(i), actual);
-    }
+  @Override
+  public long extractAscendingTimestamp(SpeedSensorEvent richSensorEvent) {
+    return Math.round(richSensorEvent.getTs() * PICO_TO_MILLI);
   }
 }

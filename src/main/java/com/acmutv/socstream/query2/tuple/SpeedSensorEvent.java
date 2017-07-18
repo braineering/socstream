@@ -23,47 +23,69 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
  */
-package com.acmutv.socstream.common.keyer;
 
-import com.acmutv.socstream.common.tuple.RichSensorEvent;
-import org.apache.flink.api.java.functions.KeySelector;
+package com.acmutv.socstream.query2.tuple;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
 
 /**
- * A keyselector that used the player id (PID) as key of a sensor event.
- *
+ * The tuple representing a sensor event.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  */
-public class RichSensorEventKeyer implements KeySelector<RichSensorEvent,Long> {
+@Data
+@EqualsAndHashCode(callSuper=false)
+public class SpeedSensorEvent implements Serializable {
 
   /**
-   * User-defined function that extracts the key from an arbitrary object.
-   * <p>
-   * For example for a class:
-   * <pre>
-   * 	public class Word {
-   * 		String word;
-   * 		int count;
-   *    }
-   * </pre>
-   * The key extractor could return the word as
-   * a key to group all Word objects by the String they contain.
-   * <p>
-   * The code would look like this
-   * <pre>
-   * 	public String getKey(Word w) {
-   * 		return w.word;
-   *  }
-   * </pre>
-   *
-   * @param value The object to get the key from.
-   * @return The extracted key.
-   * @throws Exception Throwing an exception will cause the execution of the respective task to fail,
-   *                   and trigger recovery or cancellation of the program.
+   * The SID or PID.
    */
+  private long id;
+
+  /**
+   * The timestamp (picoseconds).
+   */
+  private long ts;
+
+  /**
+   * The sensor speed magnitude (um/s).
+   */
+  private long v;
+
+  public SpeedSensorEvent(long id, long ts,
+                          long v) {
+    this.id = id;
+    this.ts = ts;
+    this.v = v;
+  }
+
+  /**
+   * Creates an empty sensor event..
+   * This constructor is mandatory for Flink serialization.
+   */
+  public SpeedSensorEvent(){
+    super();
+  }
+
+  public static SpeedSensorEvent fromDataset(String string) throws IllegalArgumentException {
+    String fields[] = string.split(",");
+    if (fields.length != 13) {
+      throw new IllegalArgumentException();
+    }
+    long id = Long.valueOf(fields[0]);
+    long ts = Long.valueOf(fields[1]);
+    long v = Long.valueOf(fields[5]);
+    return new SpeedSensorEvent(id, ts, v);
+  }
+
+
   @Override
-  public Long getKey(RichSensorEvent value) throws Exception {
-    return value.getId();
+  public String toString() {
+    return String.format("%d,%d,%d",
+        this.id, this.ts, this.v);
   }
 }

@@ -44,30 +44,6 @@ import java.util.regex.Pattern;
 public class RichSensorEvent extends PositionSensorEvent implements Serializable {
 
   /**
-   * The regular expression
-   */
-  /*
-  private static final String REGEXP =
-      "^(\\d+),(\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+)$";
-  */
-  /**
-   * The pattern matcher used to match strings on {@code REGEXP}.
-   */
-  //public static final Pattern PATTERN = Pattern.compile(REGEXP);
-
-  /**
-   * The regular expression
-   */
-  /*
-  private static final String REGEXP_COMPLETE =
-      "^(\\d+),(\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+),(-?\\d+)$";
-  */
-  /**
-   * The pattern matcher used to match strings on {@code REGEXP}.
-   */
-  //public static final Pattern PATTERN_COMPLETE = Pattern.compile(REGEXP_COMPLETE);
-
-  /**
    * The sensor speed magnitude (um/s).
    */
   private long v;
@@ -119,89 +95,6 @@ public class RichSensorEvent extends PositionSensorEvent implements Serializable
   public RichSensorEvent(){
     super();
   }
-
-  /**
-   * Parses {@link RichSensorEvent} from string.
-   * @param string the string to parse.
-   * @return the parsed {@link RichSensorEvent}.
-   * @throws IllegalArgumentException when {@code string} cannot be parsed.
-   */
-  /*
-  public static RichSensorEvent valueOf(String string) throws IllegalArgumentException {
-    if (string == null) throw new IllegalArgumentException();
-    Matcher matcher = PATTERN.matcher(string);
-    if (!matcher.matches()) throw new IllegalArgumentException(string);
-    long id = Long.valueOf(matcher.group(1));
-    long ts = Long.valueOf(matcher.group(2));
-    long x = Long.valueOf(matcher.group(3));
-    long y = Long.valueOf(matcher.group(4));
-    long v = Long.valueOf(matcher.group(5));
-    long a = Long.valueOf(matcher.group(6));
-    long vx = Long.valueOf(matcher.group(7));
-    long vy = Long.valueOf(matcher.group(8));
-    long ax = Long.valueOf(matcher.group(9));
-    long ay = Long.valueOf(matcher.group(10));
-    return new RichSensorEvent(id, ts, x, y, v, a, vx, vy, ax, ay);
-  }
-  */
-
-  /**
-   * Parses {@link RichSensorEvent} from string.
-   * @param string the string to parse.
-   * @return the parsed {@link RichSensorEvent}.
-   * @throws IllegalArgumentException when {@code string} cannot be parsed.
-   */
-  /*
-  public static RichSensorEvent valueOfComplete(String string) throws IllegalArgumentException {
-    if (string == null) throw new IllegalArgumentException();
-    Matcher matcher = PATTERN_COMPLETE.matcher(string);
-    if (!matcher.matches()) throw new IllegalArgumentException(string);
-    long id = Long.valueOf(matcher.group(1));
-    long ts = Long.valueOf(matcher.group(2));
-    long x = Long.valueOf(matcher.group(3));
-    long y = Long.valueOf(matcher.group(4));
-    long v = Long.valueOf(matcher.group(6));
-    long a = Long.valueOf(matcher.group(7));
-    long vx = Long.valueOf(matcher.group(8));
-    long vy = Long.valueOf(matcher.group(9));
-    long ax = Long.valueOf(matcher.group(11));
-    long ay = Long.valueOf(matcher.group(12));
-    return new RichSensorEvent(id, ts, x, y, v, a, vx, vy, ax, ay);
-  }
-  */
-
-  /**
-   * Parses {@link RichSensorEvent} from string.
-   * @param string the string to parse.
-   * @return the parsed {@link RichSensorEvent}.
-   * @throws IllegalArgumentException when {@code string} cannot be parsed.
-   */
-  /*
-  public static RichSensorEvent valueOfCompleteFast(String string) throws IllegalArgumentException {
-    String fields[] = string.split(",");
-    if (fields.length != 5) {
-      throw new IllegalArgumentException();
-    }
-    long id = Long.valueOf(fields[0]);
-    long ts = Long.valueOf(fields[1]);
-    long x = Long.valueOf(fields[2]);
-    long y = Long.valueOf(fields[3]);
-    if (string == null) throw new IllegalArgumentException();
-    Matcher matcher = PATTERN_COMPLETE.matcher(string);
-    if (!matcher.matches()) throw new IllegalArgumentException(string);
-    long id = Long.valueOf(matcher.group(1));
-    long ts = Long.valueOf(matcher.group(2));
-    long x = Long.valueOf(matcher.group(3));
-    long y = Long.valueOf(matcher.group(4));
-    long v = Long.valueOf(matcher.group(6));
-    long a = Long.valueOf(matcher.group(7));
-    long vx = Long.valueOf(matcher.group(8));
-    long vy = Long.valueOf(matcher.group(9));
-    long ax = Long.valueOf(matcher.group(11));
-    long ay = Long.valueOf(matcher.group(12));
-    return new RichSensorEvent(id, ts, x, y, v, a, vx, vy, ax, ay);
-  }
-  */
 
   public static RichSensorEvent fromDataset(String string) throws IllegalArgumentException {
     String fields[] = string.split(",");
