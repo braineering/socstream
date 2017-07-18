@@ -35,10 +35,12 @@ import org.junit.runners.Suite;
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
  * @see PlayerRunningStatisticsTest
+ * @see RichSensorEventTest
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-    PlayerRunningStatisticsTest.class
+    PlayerRunningStatisticsTest.class,
+        RichSensorEventTest.class
 })
 public class TestAllQuery1Tuple {
 }

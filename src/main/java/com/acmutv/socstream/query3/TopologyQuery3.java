@@ -26,7 +26,7 @@
 
 package com.acmutv.socstream.query3;
 
-import com.acmutv.socstream.common.keyer.PositionSensorEventKeyer;
+import com.acmutv.socstream.query3.operator.PositionSensorEventKeyer;
 import com.acmutv.socstream.common.meta.Match;
 import com.acmutv.socstream.common.meta.MatchService;
 import com.acmutv.socstream.common.sink.es.ESProperties;
@@ -40,7 +40,6 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
@@ -134,13 +133,11 @@ public class TopologyQuery3 {
 
     statistics.writeAsText(outputPath.toAbsolutePath().toString(), FileSystem.WriteMode.OVERWRITE).setParallelism(1);
 
-    /*
     if (elasticsearch != null) {
       statistics.addSink(new ESSink<>(elasticsearchProps,
           new PlayerGridStatisticsESSinkFunction(elasticsearchProps.getIndexName(), elasticsearchProps.getTypeName()))
       );
     }
-    */
 
     // EXECUTION
     env.execute(PROGRAM_NAME);

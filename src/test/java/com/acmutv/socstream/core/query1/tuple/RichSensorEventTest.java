@@ -24,24 +24,47 @@
   THE SOFTWARE.
  */
 
-package com.acmutv.socstream.core.query3.tuple;
+package com.acmutv.socstream.core.query1.tuple;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import com.acmutv.socstream.common.tuple.RichSensorEvent;
+import org.junit.Assert;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * JUnit test suite for tuples related to query1.
+ * JUnit test suite for {@link RichSensorEvent}.
  * @author Giacomo Marciani {@literal <gmarciani@acm.org>}
  * @author Michele Porretta {@literal <mporretta@acm.org>}
  * @since 1.0
- * @see PositionSensorEventTest
+ * @see RichSensorEvent
  */
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-        GridCoordinateTest.class,
-        PlayerGridStatisticsTest.class,
-        ComputeCellTest.class,
-        PositionSensorEventTest.class
-})
-public class TestAllQuery3Tuple {
+public class RichSensorEventTest {
+
+  /**
+   * The logger.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(RichSensorEventTest.class);
+
+  /**
+   * Tests deserialization from dataset of {@link RichSensorEvent}.
+   */
+  @Test
+  public void test_fromDataset() throws Exception {
+    List<String> events = new ArrayList<>();
+    events.add("1,2,3,4,5,6,7,8,9,10,11,12,13");
+    events.add("1,2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13");
+
+    List<RichSensorEvent> expected = new ArrayList<>();
+    expected.add(new RichSensorEvent(1,2,3,4,6,7,8,9,11,12));
+    expected.add(new RichSensorEvent(1,2,-3,-4,-6,-7,-8,-9,-11,-12));
+
+    for (int i = 0; i < events.size(); i++) {
+      RichSensorEvent actual = RichSensorEvent.fromDataset(events.get(i));
+      Assert.assertEquals(expected.get(i), actual);
+    }
+  }
 }

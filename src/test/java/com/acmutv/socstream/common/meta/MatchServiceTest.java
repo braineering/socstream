@@ -26,7 +26,6 @@
 
 package com.acmutv.socstream.common.meta;
 
-import com.acmutv.socstream.common.tuple.RichSensorEvent;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;

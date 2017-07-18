@@ -26,9 +26,10 @@
 
 package com.acmutv.socstream.common.tuple;
 
-import com.acmutv.socstream.core.query3.tuple.ComputeCellTest;
+import com.acmutv.socstream.core.query1.tuple.RichSensorEventTest;
 import com.acmutv.socstream.core.query3.tuple.GridCoordinateTest;
 import com.acmutv.socstream.core.query3.tuple.PlayerGridStatisticsTest;
+import com.acmutv.socstream.core.query3.tuple.PositionSensorEventTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
